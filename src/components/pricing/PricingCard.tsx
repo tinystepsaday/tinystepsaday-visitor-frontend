@@ -71,7 +71,7 @@ const PricingCard = ({ tier, billingCycle }: PricingCardProps) => {
 
   return (
     <Card
-      className={`flex flex-col h-full transition-all ${
+      className={`flex flex-col w-full h-full transition-all ${
         tier.highlight ? "border-primary shadow-lg scale-105" : ""
       }`}
     >

@@ -45,7 +45,7 @@ const quizCards = [
 
 export function QuizSection() {
   return (
-    <section className="py-16 md:py-24 bg-muted/50">
+    <section className="py-16 md:py-24 bg-muted/50 w-full">
       <div className="container mx-auto px-4">
         <SectionHeader
           title="Discover Your Path"

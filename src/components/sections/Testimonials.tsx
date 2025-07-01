@@ -12,7 +12,7 @@ const Testimonials = () => {
   const [emblaRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000, stopOnInteraction: true })]);
 
   return (
-    <section className="py-24 bg-muted">
+    <section className="py-24 bg-muted w-full">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <SectionHeader
           title="Transformation Stories"

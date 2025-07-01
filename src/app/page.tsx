@@ -89,7 +89,7 @@ export default function Home() {
       <Services />
       
       {/* Services Inspiration Section */}
-      <section className="py-20 bg-gradient-to-b from-purple-50/50 to-transparent dark:from-purple-900/10">
+      <section className="py-20 bg-gradient-to-b from-purple-50/50 to-transparent dark:from-purple-900/10 w-full">
         <div className="max-w-4xl mx-auto text-center mb-16 px-4">
           <h2 className="text-3xl font-bold mb-6">Transform Your Journey</h2>
           <div className="prose dark:prose-invert mx-auto text-left space-y-6">
@@ -110,8 +110,8 @@ export default function Home() {
       <HowItWorks />
 
       {/* Featured Courses Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-2">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Featured Courses</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -179,7 +179,7 @@ export default function Home() {
       </section>
 
       {/* Featured Products Section */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-20 bg-muted/30 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Featured Products</h2>
@@ -243,7 +243,7 @@ export default function Home() {
       </section>
 
       {/* Book Waitlist Section */}
-      <section className="py-20">
+      <section className="py-20 w-full">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-2xl p-12">
             <div className="grid md:grid-cols-2 gap-12 items-center">

@@ -7,14 +7,14 @@ import Link from "next/link";
 
 const Hero = () => {
   return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-background to-muted pt-32 pb-24">
+    <div className="relative overflow-hidden bg-gradient-to-b from-background to-muted pt-32 pb-24 w-full">
       {/* Background Elements */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200/30 rounded-full filter blur-3xl opacity-60 animate-pulse-subtle"></div>
         <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-200/20 rounded-full filter blur-3xl opacity-60 animate-pulse-subtle"></div>
       </div>
       
-      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 lg:px-2">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
           {/* Hero Content */}
           <div className="space-y-8 animate-fade-in">

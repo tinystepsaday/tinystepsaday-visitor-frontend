@@ -1,9 +1,7 @@
 import { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { PricingTier } from "@/components/pricing/PricingCard";
 import PricingCard from "@/components/pricing/PricingCard";
-
-const BillingCycleTabs = dynamic(() => import("./BillingCycleTabs"), { ssr: false });
+import BillingCycleTabsWrapper from "./BillingCycleTabsWrapper";
 
 export const revalidate = 3600; // Revalidate every hour (ISR)
 
@@ -137,16 +135,16 @@ export default async function PricingPage({
   const pricingTiers = await fetchPricingTiers();
 
   return (
-    <div className="container py-16">
-      <div className="max-w-3xl mx-auto text-center mb-12">
+    <div className="container py-16 w-full flex flex-col items-center justify-center">
+      <div className="max-w-3xl mx-auto text-center mb-12 flex flex-col items-center justify-center">
         <h1 className="text-4xl font-bold mb-4">Choose Your Path</h1>
         <p className="text-lg text-muted-foreground mb-8">
           Select the plan that best matches your needs and transformational goals.
         </p>
-        <BillingCycleTabs billingCycle={billingCycle} />
+        <BillingCycleTabsWrapper billingCycle={billingCycle} />
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 w-full max-w-8xl">
         {pricingTiers.map((tier) => (
           <PricingCard
             key={tier.name}

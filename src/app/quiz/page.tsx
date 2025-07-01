@@ -1,5 +1,6 @@
 
 // import { useEffect } from "react";
+import { Metadata } from "next";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,16 @@ import {
   Activity
 } from "lucide-react";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Self-Improvement Quiz - Discover Your Path",
+  description: "Take our self-improvement quiz to discover your personal development path and find the right resources for your journey.",
+  openGraph: {
+    title: "Self-Improvement Quiz - Discover Your Path",
+    description: "Take our self-improvement quiz to discover your personal development path and find the right resources for your journey.",
+    url: "/quiz",
+  },
+};
 
 const quizCategories = [
   {
@@ -72,7 +83,7 @@ const Quiz = () => {
   // }, []);
 
   return (
-    <div className="container max-w-7xl mx-auto px-4 py-12 md:py-20">
+    <div className="container max-w-7xl mx-auto px-4 py-12 md:py-20 w-full">
       <SectionHeader
         title="Self-Discovery Quizzes"
         subtitle="Take a quick assessment to receive personalized recommendations tailored to your unique journey"
