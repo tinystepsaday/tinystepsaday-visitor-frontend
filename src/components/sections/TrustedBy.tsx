@@ -24,7 +24,7 @@ const TrustedBy = () => {
 
         <div className="mt-12 text-center">
           <p className="text-muted-foreground max-w-3xl mx-auto mb-12">
-            InnerPath Journey is trusted by professionals and organizations worldwide who are committed to personal growth and authentic leadership.
+            Tiny Steps A Day Journey is trusted by professionals and organizations worldwide who are committed to personal growth and authentic leadership.
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 md:gap-12">

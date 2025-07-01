@@ -94,7 +94,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold mb-6">Transform Your Journey</h2>
           <div className="prose dark:prose-invert mx-auto text-left space-y-6">
             <p>
-              At InnerPath Journey, we understand that true transformation comes from within. Our platform was born from a deep commitment to helping individuals discover their authentic selves and unlock their full potential. Drawing inspiration from ancient wisdom traditions and modern psychology, we&apos;ve created a comprehensive system that addresses the whole person - mind, body, and spirit.
+              At Tiny Steps A Day Journey, we understand that true transformation comes from within. Our platform was born from a deep commitment to helping individuals discover their authentic selves and unlock their full potential. Drawing inspiration from ancient wisdom traditions and modern psychology, we&apos;ve created a comprehensive system that addresses the whole person - mind, body, and spirit.
             </p>
             <p>
               Our approach combines cutting-edge personal development tools with timeless spiritual practices. Whether you&apos;re seeking career advancement, emotional healing, or spiritual growth, our carefully curated programs provide the structure and support you need. Through our platform, you&apos;ll gain access to expert-led courses, one-on-one mentorship, supportive community spaces, and transformative workshops.
@@ -249,7 +249,7 @@ export default function Home() {
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <h2 className="text-3xl font-bold mb-4">
-                  Coming Soon: &quot;The Inner Path to Authentic Living&quot;
+                  Coming Soon: &quot;The Tiny Steps A Day to Authentic Living&quot;
                 </h2>
                 <p className="text-muted-foreground mb-6">
                   A transformative guide to discovering your true self and living with purpose. This groundbreaking book combines ancient wisdom with practical exercises to help you navigate life&apos;s challenges and unlock your full potential.

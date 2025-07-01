@@ -5,12 +5,48 @@ import Image from "next/image";
 import Link from "next/link";
 import TeamMembers from "@/components/sections/TeamMembers";
 
+export const metadata = {
+  title: "About | Tiny Steps A Day Journey",
+  description: "Learn more about Tiny Steps A Day Journey and the people behind it.",
+  keywords: ["tiny steps a day", "tiny steps", "a day", "actionable steps", "improve your life", "personal growth", "self improvement", "daily habits", "tips", "strategies", "small changes", "big improvements", "start your journey to a better you today", "personal growth", "self improvement", "daily habits", "tips", "strategies", "meditation", "mindfulness", "mindfulness meditation", "mindfulness practice", "mindfulness exercises", "mindfulness techniques", "mindfulness tips", "mindfulness strategies", "spirituality", "career guidance", "career development", "career advice", "career tips", "career strategies", "career planning", "love", "the law of one", "the law of attraction", "the law of abundance", "the law of prosperity", "the law of success", "mental health", "life direction", "purpose", "mentorship"],
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "About | Tiny Steps A Day Journey",
+    description: "Learn more about Tiny Steps A Day Journey and the people behind it.",
+    images: ["https://www.tinystepsaday.com/banner-image.jpg"],
+    url: "https://www.tinystepsaday.com",
+    siteName: "Tiny Steps A Day Journey",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About | Tiny Steps A Day Journey",
+    description: "Learn more about Tiny Steps A Day Journey and the people behind it.",
+    images: ["https://www.tinystepsaday.com/banner-image.jpg"],
+  },
+  alternates: {
+    canonical: "https://www.tinystepsaday.com/about",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,  
+      follow: true,
+    },
+  },
+  metadataBase: new URL("https://www.tinystepsaday.com"),
+};
+
 // Team member data
 const teamMembers = [
   {
     name: "Sarah Johnson",
     role: "Founder & CEO",
-    bio: "With over 15 years of experience in mindfulness coaching and organizational psychology, Sarah founded InnerPath Journey to help people discover their authentic selves and live with greater purpose.",
+    bio: "With over 15 years of experience in mindfulness coaching and organizational psychology, Sarah founded Tiny Steps A Day Journey to help people discover their authentic selves and live with greater purpose.",
     image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
     social: {
       linkedin: "#",
@@ -89,9 +125,37 @@ const teamMembers = [
   }
 ];
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Tiny Steps A Day Journey",
+  "url": "https://www.tinystepsaday.com",
+  "description": "Learn more about Tiny Steps A Day Journey and the people behind it.",
+  "author": {
+    "@type": "Person",
+    "name": "Tiny Steps A Day Journey",
+    "url": "https://www.tinystepsaday.com",
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Tiny Steps A Day Journey",
+    "url": "https://www.tinystepsaday.com",
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Tiny Steps A Day Journey",
+    "url": "https://www.tinystepsaday.com",
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "url": "https://www.tinystepsaday.com/about",
+  },
+};
+
 const About = () => {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
@@ -99,7 +163,7 @@ const About = () => {
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Mission</h1>
               <p className="text-lg md:text-xl text-muted-foreground mb-6">
-                At InnerPath Journey, we&apos;re dedicated to helping people discover their authentic selves and live with greater purpose, joy, and connection.
+                At Tiny Steps A Day Journey, we&apos;re dedicated to helping people discover their authentic selves and live with greater purpose, joy, and connection.
               </p>
               <p className="text-lg mb-8">
                 Through evidence-based programs, expert guidance, and supportive community, we empower individuals to transform their lives from the inside out.
@@ -138,7 +202,7 @@ const About = () => {
         <div className="max-w-7xl mx-auto">
           <SectionHeader
             title="Our Story"
-            subtitle="How InnerPath Journey was born from a personal transformation"
+            subtitle="How Tiny Steps A Day Journey was born from a personal transformation"
           />
 
           <div className="grid md:grid-cols-3 gap-8 mt-12">
@@ -155,7 +219,7 @@ const About = () => {
             </div>
             <div className="md:col-span-2 space-y-6">
               <p className="text-lg">
-                InnerPath Journey began in 2020 when our founder, Sarah Johnson, experienced her own transformative journey through mindfulness and personal development practices after a period of burnout and disconnection.
+                Tiny Steps A Day Journey began in 2020 when our founder, Sarah Johnson, experienced her own transformative journey through mindfulness and personal development practices after a period of burnout and disconnection.
               </p>
               <p className="text-lg">
                 After 15 years in corporate consulting, Sarah realized that many people were struggling with the same challenges: feeling disconnected from their purpose, overwhelmed by the pace of modern life, and unsure how to create meaningful change.
@@ -164,7 +228,7 @@ const About = () => {
                 Drawing on her background in organizational psychology and her training in mindfulness practices, Sarah assembled a team of experts to create accessible, science-backed programs that would help people navigate their own inner paths to growth and fulfillment.
               </p>
               <p className="text-lg">
-                Today, InnerPath Journey has grown from a small startup to a global community, but our mission remains the same: to guide people toward lives of greater authenticity, purpose, and connection.
+                Today, Tiny Steps A Day Journey has grown from a small startup to a global community, but our mission remains the same: to guide people toward lives of greater authenticity, purpose, and connection.
               </p>
 
               <div className="pt-6">
@@ -326,7 +390,7 @@ const About = () => {
         <div className="max-w-7xl mx-auto">
           <SectionHeader
             title="Meet Our Team"
-            subtitle="The passionate individuals behind InnerPath Journey"
+            subtitle="The passionate individuals behind Tiny Steps A Day Journey"
             centered={true}
           />
 

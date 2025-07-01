@@ -16,7 +16,7 @@ const Footer = () => {
               href="/" 
               className="text-2xl font-bold gradient-text inline-block"
             >
-              InnerPath Journey
+              Tiny Steps A Day Journey
             </Link>
             <p className="text-muted-foreground max-w-sm">
               Guiding you through your journey of self-discovery, growth, and transformation.
@@ -154,7 +154,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center mt-16 pt-8 border-t border-border">
           <div className="flex items-center space-x-4 mb-4 md:mb-0">
             <span className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} InnerPath Journey. All rights reserved.
+              © {new Date().getFullYear()} Tiny Steps A Day Journey. All rights reserved.
             </span>
           </div>
           

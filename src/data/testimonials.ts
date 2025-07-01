@@ -13,7 +13,7 @@ export const testimonials: Testimonial[] = [
     id: 1,
     name: "Sarah Johnson",
     role: "Marketing Executive",
-    quote: "The mentorship program at InnerPath Journey transformed my approach to leadership. I gained deeper self-awareness and practical tools that helped me navigate a major career transition with confidence and purpose.",
+    quote: "The mentorship program at Tiny Steps A Day Journey transformed my approach to leadership. I gained deeper self-awareness and practical tools that helped me navigate a major career transition with confidence and purpose.",
     rating: 5,
     image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
   },
