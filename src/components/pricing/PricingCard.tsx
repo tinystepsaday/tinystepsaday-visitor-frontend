@@ -1,8 +1,8 @@
-
 import { Check } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { BillingCycle } from "@/app/pricing/page";
 
 export interface PricingFeature {
   name: string;
@@ -27,7 +27,7 @@ export interface PricingTier {
 
 interface PricingCardProps {
   tier: PricingTier;
-  billingCycle: "monthly" | "yearly" | "threeYear";
+  billingCycle: BillingCycle;
 }
 
 const PricingCard = ({ tier, billingCycle }: PricingCardProps) => {
@@ -68,11 +68,13 @@ const PricingCard = ({ tier, billingCycle }: PricingCardProps) => {
 
   const price = getBillingPrice();
   const savings = getSavingsPercentage();
-  
+
   return (
-    <Card className={`flex flex-col h-full transition-all ${
-      tier.highlight ? 'border-primary shadow-lg scale-105' : ''
-    }`}>
+    <Card
+      className={`flex flex-col h-full transition-all ${
+        tier.highlight ? "border-primary shadow-lg scale-105" : ""
+      }`}
+    >
       <CardHeader className="pb-8">
         {tier.recommended && (
           <div className="py-1 px-3 bg-primary text-primary-foreground text-xs font-medium rounded-full max-w-fit mb-2">
@@ -81,31 +83,28 @@ const PricingCard = ({ tier, billingCycle }: PricingCardProps) => {
         )}
         <CardTitle className="text-xl">{tier.name}</CardTitle>
         <div className="mt-4 flex items-baseline">
-          <span className="text-3xl font-bold">
-            ${price}
-          </span>
-          <span className="ml-1 text-sm text-muted-foreground">
-            {getBillingPeriod()}
-          </span>
+          <span className="text-3xl font-bold">${price.toFixed(2)}</span>
+          <span className="ml-1 text-sm text-muted-foreground">{getBillingPeriod()}</span>
         </div>
         {savings > 0 && (
           <div className="mt-1 text-sm text-green-600 dark:text-green-400">
             Save {savings}% with this plan
           </div>
         )}
-        <p className="text-sm text-muted-foreground mt-4">
-          {tier.description}
-        </p>
+        <p className="text-sm text-muted-foreground mt-4">{tier.description}</p>
       </CardHeader>
       <CardContent className="flex-grow">
         <ul className="space-y-3">
           {tier.features.map((feature, index) => (
             <li key={index} className="flex items-start">
               <div className="mr-2 mt-0.5">
-                <Check className={`h-4 w-4 ${feature.included ? 'text-green-500' : 'text-muted-foreground'}`} />
+                <Check
+                  className={`h-4 w-4 ${feature.included ? "text-green-500" : "text-muted-foreground"}`}
+                  aria-hidden="true"
+                />
               </div>
               <div>
-                <span className={feature.included ? 'text-foreground' : 'text-muted-foreground'}>
+                <span className={feature.included ? "text-foreground" : "text-muted-foreground"}>
                   {feature.name}
                 </span>
                 {feature.details && (
@@ -117,14 +116,18 @@ const PricingCard = ({ tier, billingCycle }: PricingCardProps) => {
         </ul>
       </CardContent>
       <CardFooter className="pt-4">
-        <Button 
+        <Button
           asChild
-          className="w-full" 
+          className="w-full"
           variant={tier.highlight ? "default" : "outline"}
+          aria-label={`Select ${tier.name} plan with ${billingCycle} billing`}
         >
-          <Link 
-            href={tier.name === "Free" ? "/signup" : "/checkout"} 
-            // state={tier.name !== "Free" ? { tier: tier, billingCycle } : undefined}
+          <Link
+            href={
+              tier.name === "Free"
+                ? "/signup"
+                : `/checkout?tier=${encodeURIComponent(tier.name)}&cycle=${billingCycle}`
+            }
           >
             {tier.buttonText}
           </Link>

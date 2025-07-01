@@ -1,20 +1,31 @@
-import PricingCard, { PricingTier } from "@/components/pricing/PricingCard";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Metadata } from "next";
+import dynamic from "next/dynamic";
+import { PricingTier } from "@/components/pricing/PricingCard";
+import PricingCard from "@/components/pricing/PricingCard";
 
-const PRICING_CYCLES = ["monthly", "yearly", "threeYear"] as const;
-type BillingCycle = typeof PRICING_CYCLES[number];
+const BillingCycleTabs = dynamic(() => import("./BillingCycleTabs"), { ssr: false });
 
-export default async function PricingPage(
-  props: { searchParams: () => Promise<{ billingCycle?: string }> }
-) {
-  const params = await props.searchParams();
-  const billingCycleRaw = params.billingCycle;
-  const billingCycle: BillingCycle =
-    PRICING_CYCLES.includes(billingCycleRaw as BillingCycle)
-      ? (billingCycleRaw as BillingCycle)
-      : "monthly";
+export const revalidate = 3600; // Revalidate every hour (ISR)
 
-  const pricingTiers: PricingTier[] = [
+export const PRICING_CYCLES = ["monthly", "yearly", "threeYear"] as const;
+export type BillingCycle = typeof PRICING_CYCLES[number];
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Pricing - Choose Your Transformation Plan",
+    description: "Explore our pricing plans to find the perfect fit for your transformational journey.",
+    openGraph: {
+      title: "Pricing - Choose Your Transformation Plan",
+      description: "Explore our pricing plans to find the perfect fit for your transformational journey.",
+      url: "/pricing",
+      type: "website",
+    },
+  };
+}
+
+async function fetchPricingTiers(): Promise<PricingTier[]> {
+  // Placeholder for API/CMS fetch
+  return [
     {
       name: "Free",
       price: 0,
@@ -22,7 +33,7 @@ export default async function PricingPage(
       billingOptions: {
         monthly: 0,
         yearly: 0,
-        threeYear: 0
+        threeYear: 0,
       },
       buttonText: "Sign Up Free",
       features: [
@@ -36,7 +47,7 @@ export default async function PricingPage(
         { name: "Growth plan", included: false },
         { name: "Priority support", included: false },
         { name: "VIP resources & workshops", included: false },
-      ]
+      ],
     },
     {
       name: "Starter",
@@ -45,7 +56,7 @@ export default async function PricingPage(
       billingOptions: {
         monthly: 19.99,
         yearly: 199.90,
-        threeYear: 539.73
+        threeYear: 539.73,
       },
       buttonText: "Get Started",
       features: [
@@ -59,7 +70,7 @@ export default async function PricingPage(
         { name: "Starter growth plan", included: true },
         { name: "Priority support", included: false },
         { name: "VIP resources & workshops", included: false },
-      ]
+      ],
     },
     {
       name: "Transformation",
@@ -68,7 +79,7 @@ export default async function PricingPage(
       billingOptions: {
         monthly: 49.99,
         yearly: 479.90,
-        threeYear: 1259.73
+        threeYear: 1259.73,
       },
       buttonText: "Transform Now",
       highlight: true,
@@ -84,7 +95,7 @@ export default async function PricingPage(
         { name: "Customized growth plan", included: true },
         { name: "Event ticket discounts", included: true, details: "25% off" },
         { name: "101 sessions with facilitators", included: true, details: "Quarterly" },
-      ]
+      ],
     },
     {
       name: "Complete",
@@ -93,7 +104,7 @@ export default async function PricingPage(
       billingOptions: {
         monthly: 99.99,
         yearly: 959.90,
-        threeYear: 2519.73
+        threeYear: 2519.73,
       },
       buttonText: "Get Complete Access",
       features: [
@@ -107,9 +118,23 @@ export default async function PricingPage(
         { name: "Transformational roadmap", included: true, details: "With quarterly reviews" },
         { name: "Free event tickets", included: true, details: "4 per year" },
         { name: "Emergency sessions", included: true, details: "Available on-demand" },
-      ]
-    }
+      ],
+    },
   ];
+}
+
+export default async function PricingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ billingCycle?: string }>;
+}) {
+  const params = await searchParams;
+  const billingCycleRaw = params.billingCycle;
+  const billingCycle: BillingCycle = PRICING_CYCLES.includes(billingCycleRaw as BillingCycle)
+    ? (billingCycleRaw as BillingCycle)
+    : "monthly";
+
+  const pricingTiers = await fetchPricingTiers();
 
   return (
     <div className="container py-16">
@@ -118,29 +143,7 @@ export default async function PricingPage(
         <p className="text-lg text-muted-foreground mb-8">
           Select the plan that best matches your needs and transformational goals.
         </p>
-
-        <Tabs defaultValue={billingCycle} className="max-w-md mx-auto">
-          <TabsList className="grid grid-cols-3">
-            {PRICING_CYCLES.map((cycle) => (
-              <TabsTrigger
-                key={cycle}
-                value={cycle}
-                asChild
-              >
-                <a
-                  href={`?billingCycle=${cycle}`}
-                  className={billingCycle === cycle ? "font-bold" : ""}
-                >
-                  {cycle === "monthly"
-                    ? "Monthly"
-                    : cycle === "yearly"
-                      ? "Yearly"
-                      : "3-Year"}
-                </a>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+        <BillingCycleTabs billingCycle={billingCycle} />
       </div>
 
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
