@@ -28,7 +28,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  
+
   const { isLoggedIn } = useAuthStore();
   const { totalItems } = useCartStore();
 
@@ -83,41 +83,40 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 py-4 px-6 md:px-12 ${
-        isScrolled
+      className={`fixed top-0 w-full z-50 transition-all duration-300 py-4 px-6 md:px-12 ${isScrolled
           ? "bg-background/80 backdrop-blur-lg shadow-sm"
           : "bg-transparent"
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="text-xl md:text-2xl font-bold gradient-text"
         >
           Tiny Steps A Day
         </Link>
 
         <div className="hidden md:flex items-center justify-center flex-1">
-          <MainNavigationMenu 
-            mainNavLinks={mainNavLinks} 
-            resourcesDropdown={resourcesDropdown} 
+          <MainNavigationMenu
+            mainNavLinks={mainNavLinks}
+            resourcesDropdown={resourcesDropdown}
             exploreDropdown={exploreDropdown}
             aboutDropdown={aboutDropdown}
           />
         </div>
-          
+
         <div className="hidden md:flex items-center space-x-4">
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={toggleTheme}
             className="rounded-full w-9 p-0"
           >
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
-          
-          <Button 
-            variant="outline" 
+
+          <Button
+            variant="outline"
             size="sm"
             className="rounded-full relative"
             onClick={() => setIsCartOpen(true)}
@@ -130,7 +129,7 @@ const Navbar = () => {
               </span>
             )}
           </Button>
-          
+
           {isLoggedIn ? (
             <Button asChild className="rounded-full">
               <Link href="/dashboard">
@@ -148,8 +147,16 @@ const Navbar = () => {
         </div>
 
         <div className="md:hidden flex items-center space-x-4">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleTheme}
+            className="rounded-full w-9 p-0"
+          >
+            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
+          <Button
+            variant="outline"
             size="sm"
             className="rounded-full relative"
             onClick={() => setIsCartOpen(true)}
@@ -162,7 +169,7 @@ const Navbar = () => {
               </span>
             )}
           </Button>
-          
+
           <Button
             variant="ghost"
             size="icon"
@@ -192,7 +199,7 @@ const Navbar = () => {
                 </Link>
               </li>
             ))}
-            
+
             <li className="py-2 font-semibold">About</li>
             {aboutDropdown.map((item) => (
               <li key={item.name} className="pl-4">
@@ -205,7 +212,7 @@ const Navbar = () => {
                 </Link>
               </li>
             ))}
-            
+
             <li className="py-2 font-semibold">Resources</li>
             {resourcesDropdown.map((item) => (
               <li key={item.name} className="pl-4">
@@ -218,7 +225,7 @@ const Navbar = () => {
                 </Link>
               </li>
             ))}
-            
+
             <li className="py-2 font-semibold">Explore</li>
             {exploreDropdown.map((item) => (
               <li key={item.name} className="pl-4">
@@ -233,9 +240,9 @@ const Navbar = () => {
             ))}
 
             <li className="pt-2 border-t">
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={toggleTheme}
                 className="w-full flex justify-center items-center py-2 mb-2"
               >
@@ -249,7 +256,7 @@ const Navbar = () => {
                   </>
                 )}
               </Button>
-              
+
               {isLoggedIn ? (
                 <Button asChild className="w-full rounded-full">
                   <Link href="/dashboard" onClick={() => setIsOpen(false)}>
@@ -268,7 +275,7 @@ const Navbar = () => {
           </ul>
         </div>
       )}
-      
+
       <CartDropdown open={isCartOpen} onOpenChange={setIsCartOpen} />
     </nav>
   );

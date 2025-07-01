@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Tiny Steps A Day | Actionable steps and daily habits to improve your life",
     description: "Tiny Steps A Day is a source of actionable steps and daily habits to improve your life. Discover daily habits, tips, and strategies to make small changes that lead to big improvements. Start your journey to a better you today.",
-    images: ["https://www.tinystepsaday.com/tinystepsaday-logo.png"],
+    images: ["https://www.tinystepsaday.com/banner-image.jpg"],
     url: "https://www.tinystepsaday.com",
     siteName: "Tiny Steps A Day",
     locale: "en_US",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Tiny Steps A Day | Actionable steps and daily habits to improve your life",
     description: "Tiny Steps A Day is a source of actionable steps and daily habits to improve your life. Discover daily habits, tips, and strategies to make small changes that lead to big improvements. Start your journey to a better you today.",
-    images: ["https://www.tinystepsaday.com/tinystepsaday-logo.png"],
+    images: ["https://www.tinystepsaday.com/banner-image.jpg"],
   },
   alternates: {
     canonical: "https://www.tinystepsaday.com",
@@ -53,7 +53,7 @@ const jsonLd = {
   name: "Tiny Steps A Day",
   url: "https://www.tinystepsaday.com",
   description: "Tiny Steps A Day is a source of actionable steps and daily habits to improve your life. Discover daily habits, tips, and strategies to make small changes that lead to big improvements. Start your journey to a better you today.",
-  image: "https://www.tinystepsaday.com/tinystepsaday-logo.png",
+  image: "https://www.tinystepsaday.com/banner-image.jpg",
   sameAs: [
     "https://x.com/tiny_steps_aday",
     "https://www.instagram.com/tiny_steps_aday/",
@@ -292,7 +292,7 @@ export default function Home() {
                 <Image
                   src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?fit=crop&w=800&q=80"
                   alt="Book preview"
-                  width={200}
+                  width={500}
                   height={200}
                   className="relative rounded-lg shadow-xl"
                 />

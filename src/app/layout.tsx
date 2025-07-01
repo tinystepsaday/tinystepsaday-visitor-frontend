@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "%s - Tiny Steps A Day | Actionable steps and daily habits to improve your life",
     description: "Tiny Steps A Day is a source of actionable steps and daily habits to improve your life. Discover daily habits, tips, and strategies to make small changes that lead to big improvements. Start your journey to a better you today.",
-    images: ["https://www.tinystepsaday.com/tinystepsaday-logo.png"],
+    images: ["https://www.tinystepsaday.com/cover-image.jpg"],
     url: "https://www.tinystepsaday.com",
     siteName: "Tiny Steps A Day",
     locale: "en_US",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "%s - Tiny Steps A Day | Actionable steps and daily habits to improve your life",
     description: "Tiny Steps A Day is a source of actionable steps and daily habits to improve your life. Discover daily habits, tips, and strategies to make small changes that lead to big improvements. Start your journey to a better you today.",
-    images: ["https://www.tinystepsaday.com/tinystepsaday-logo.png"],
+    images: ["https://www.tinystepsaday.com/cover-image.jpg"],
   },
   alternates: {
     canonical: "https://www.tinystepsaday.com",

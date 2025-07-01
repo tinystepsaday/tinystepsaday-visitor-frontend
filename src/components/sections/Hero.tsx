@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ShieldCheck, Compass, Lightbulb } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const Hero = () => {
@@ -66,9 +67,8 @@ const Hero = () => {
           {/* Hero Image - Stylized */}
           <div className="relative animate-fade-in">
             <div className="relative z-10 aspect-square max-w-md mx-auto lg:mx-0 lg:ml-auto overflow-hidden rounded-2xl shadow-xl">
-              {/* This would be replaced with an actual image in production */}
-              {/* <div className="absolute inset-0 bg-gradient-to-br from-innerpath-primary/30 via-innerpath-light/40 to-innerpath-blue/20"></div> */}
-              {/* <img src="https://images.unsplash.com/photo-1500673922987-e212871fec22?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Lorem ipsum" /> */}
+              <div className="absolute inset-0 bg-gradient-to-br from-innerpath-primary/30 via-innerpath-light/40 to-innerpath-blue/20"></div>
+              <Image src="/banner-image.jpg" alt="Kid playing in the grass" width={900} height={900} />
               <div className="aspect-square bg-muted flex items-center justify-center">
                 <div className="text-center p-8">
                   <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center">
