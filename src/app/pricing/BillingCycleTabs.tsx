@@ -6,7 +6,7 @@ import { PRICING_CYCLES, type BillingCycle } from "./constants";
 
 export default function BillingCycleTabs({ billingCycle }: { billingCycle: BillingCycle }) {
   return (
-    <Tabs defaultValue={billingCycle} className="max-w-md mx-auto w-full">
+    <Tabs defaultValue={billingCycle} className="max-w-md mx-auto w-full px-6 md:px-2 lg:px-0">
       <TabsList className="grid grid-cols-3 w-full">
         {PRICING_CYCLES.map((cycle) => (
           <TabsTrigger key={cycle} value={cycle} asChild>

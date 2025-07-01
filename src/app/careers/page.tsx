@@ -1,9 +1,10 @@
+import { Metadata } from "next";
 import { SectionHeader } from "@/components/ui/section-header";
 import Image from "next/image";
 import { Heart, Sparkles, Globe, Users, Lightbulb, Coffee } from "lucide-react";
 import CareerList from "@/components/careers/CareerList";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Careers | Tiny Steps A Day Journey",
   description: "Join our team of mindfulness coaches, content creators, and product designers to create transformative experiences that empower people to live with greater purpose, joy, and connection.",
   keywords: ["tiny steps a day", "tiny steps", "a day", "actionable steps", "improve your life", "personal growth", "self improvement", "daily habits", "tips", "strategies", "small changes", "big improvements", "start your journey to a better you today", "personal growth", "self improvement", "daily habits", "tips", "strategies", "meditation", "mindfulness", "mindfulness meditation", "mindfulness practice", "mindfulness exercises", "mindfulness techniques", "mindfulness tips", "mindfulness strategies", "spirituality", "career guidance", "career development", "career advice", "career tips", "career strategies", "career planning", "love", "the law of one", "the law of attraction", "the law of abundance", "the law of prosperity", "the law of success", "mental health", "life direction", "purpose", "mentorship"],

@@ -9,4 +9,19 @@ export const metadata: Metadata = {
     url: "/pricing",
     type: "website",
   },
+  icons: {
+    icon: "/favicon.ico",
+  },
+  alternates: {
+    canonical: "https://www.tinystepsaday.com/pricing",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,  
+      follow: true,
+    },
+  },
+  metadataBase: new URL("https://www.tinystepsaday.com"),
 };
