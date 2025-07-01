@@ -1,7 +1,44 @@
+import { Metadata } from "next";
 import { SectionHeader } from "@/components/ui/section-header";
 import Image from "next/image";
 import { Heart, Sparkles, Globe, Users, Lightbulb, Coffee } from "lucide-react";
 import CareerList from "@/components/careers/CareerList";
+
+export const metadata: Metadata = {
+  title: "Careers | Tiny Steps A Day Journey",
+  description: "Join our team of mindfulness coaches, content creators, and product designers to create transformative experiences that empower people to live with greater purpose, joy, and connection.",
+  keywords: ["tiny steps a day", "tiny steps", "a day", "actionable steps", "improve your life", "personal growth", "self improvement", "daily habits", "tips", "strategies", "small changes", "big improvements", "start your journey to a better you today", "personal growth", "self improvement", "daily habits", "tips", "strategies", "meditation", "mindfulness", "mindfulness meditation", "mindfulness practice", "mindfulness exercises", "mindfulness techniques", "mindfulness tips", "mindfulness strategies", "spirituality", "career guidance", "career development", "career advice", "career tips", "career strategies", "career planning", "love", "the law of one", "the law of attraction", "the law of abundance", "the law of prosperity", "the law of success", "mental health", "life direction", "purpose", "mentorship"],
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "Careers | Tiny Steps A Day Journey",
+    description: "Join our team of mindfulness coaches, content creators, and product designers to create transformative experiences that empower people to live with greater purpose, joy, and connection.",
+    images: ["https://www.tinystepsaday.com/banner-image.jpg"],
+    url: "https://www.tinystepsaday.com",
+    siteName: "Tiny Steps A Day Journey",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Careers | Tiny Steps A Day Journey",
+    description: "Join our team of mindfulness coaches, content creators, and product designers to create transformative experiences that empower people to live with greater purpose, joy, and connection.",
+    images: ["https://www.tinystepsaday.com/banner-image.jpg"],
+  },
+  alternates: {
+    canonical: "https://www.tinystepsaday.com/careers",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,  
+      follow: true,
+    },
+  },
+  metadataBase: new URL("https://www.tinystepsaday.com"),
+};
 
 const careersData = [
   {
@@ -51,9 +88,45 @@ const careersData = [
   },
 ];
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Tiny Steps A Day Journey",
+  "url": "https://www.tinystepsaday.com",
+  "description": "Join our team of mindfulness coaches, content creators, and product designers to create transformative experiences that empower people to live with greater purpose, joy, and connection.",
+  "image": "https://www.tinystepsaday.com/banner-image.jpg",
+  "sameAs": [
+    "https://x.com/tiny_steps_aday",
+    "https://www.instagram.com/tiny_steps_aday/",
+    "https://www.facebook.com/tiny_steps_aday/",
+    "https://www.youtube.com/@tiny_steps_aday/",
+  ],
+  "author": {
+    "@type": "Person",
+    "name": "Tiny Steps A Day Journey",
+    "url": "https://www.tinystepsaday.com",
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Tiny Steps A Day Journey",
+    "url": "https://www.tinystepsaday.com",
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Tiny Steps A Day Journey",
+    "url": "https://www.tinystepsaday.com",
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "url": "https://www.tinystepsaday.com/careers",
+  },
+};
+
 const Careers = () => {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
       <section className="py-20 px-6 md:px-12 w-full">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -86,7 +159,7 @@ const Careers = () => {
       <section className="py-16 px-6 md:px-12 bg-muted/30 w-full">
         <div className="max-w-7xl mx-auto">
           <SectionHeader
-            title="Why Join InnerPath Journey"
+            title="Why Join Tiny Steps A Day Journey"
             subtitle="Work with purpose and passion in a supportive, innovative environment"
             centered={true}
           />

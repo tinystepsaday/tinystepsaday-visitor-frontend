@@ -23,7 +23,7 @@ const Hero = () => {
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              Discover Your <span className="gradient-text">Inner Path</span> to Growth and Fulfillment
+              Discover Your <span className="gradient-text">Tiny Steps A Day</span> to Growth and Fulfillment
             </h1>
             
             <p className="text-xl text-muted-foreground max-w-xl">

@@ -1,9 +1,70 @@
+import { Metadata } from "next";
 import { PricingTier } from "@/components/pricing/PricingCard";
 import PricingCard from "@/components/pricing/PricingCard";
 import BillingCycleTabsWrapper from "./BillingCycleTabsWrapper";
 import { PRICING_CYCLES, type BillingCycle } from "./constants";
 
+export const metadata: Metadata = {
+  title: "Pricing - Choose Your Transformation Plan",
+  description: "Explore our pricing plans to find the perfect fit for your transformational journey.",
+  openGraph: {
+    title: "Pricing - Choose Your Transformation Plan",
+    description: "Explore our pricing plans to find the perfect fit for your transformational journey.",
+    url: "/pricing",
+    type: "website",
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
+  alternates: {
+    canonical: "https://www.tinystepsaday.com/pricing",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,  
+      follow: true,
+    },
+  },
+  metadataBase: new URL("https://www.tinystepsaday.com"),
+};
+
 export const revalidate = 3600; // Revalidate every hour (ISR)
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Tiny Steps A Day",
+  "url": "https://www.tinystepsaday.com",
+  "description": "Tiny Steps A Day is a source of actionable steps and daily habits to improve your life. Discover daily habits, tips, and strategies to make small changes that lead to big improvements. Start your journey to a better you today.",
+  "image": "https://www.tinystepsaday.com/banner-image.jpg",
+  "sameAs": [
+    "https://x.com/tiny_steps_aday",
+    "https://www.instagram.com/tiny_steps_aday/",
+    "https://www.facebook.com/tiny_steps_aday/",
+    "https://www.youtube.com/@tiny_steps_aday/",
+  ],
+  "author": {
+    "@type": "Person",
+    "name": "Tiny Steps A Day",
+    "url": "https://www.tinystepsaday.com",
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Tiny Steps A Day",
+    "url": "https://www.tinystepsaday.com",
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Tiny Steps A Day",
+    "url": "https://www.tinystepsaday.com",
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "url": "https://www.tinystepsaday.com/pricing",
+  },
+}
 
 async function fetchPricingTiers(): Promise<PricingTier[]> {
   // Placeholder for API/CMS fetch
@@ -120,6 +181,7 @@ export default async function PricingPage({
 
   return (
     <div className="container py-16 w-full flex flex-col items-center justify-center">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="max-w-3xl mx-auto text-center mb-12 flex flex-col items-center justify-center">
         <h1 className="text-4xl font-bold mb-4">Choose Your Path</h1>
         <p className="text-lg text-muted-foreground mb-8">
@@ -128,7 +190,7 @@ export default async function PricingPage({
         <BillingCycleTabsWrapper billingCycle={billingCycle} />
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 w-full max-w-8xl">
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 w-full max-w-8xl px-6 md:px-2 lg:px-0">
         {pricingTiers.map((tier) => (
           <PricingCard
             key={tier.name}
@@ -138,7 +200,7 @@ export default async function PricingPage({
         ))}
       </div>
 
-      <div className="mt-16 max-w-2xl mx-auto text-center">
+      <div className="mt-16 max-w-2xl mx-auto text-center px-6 md:px-2 lg:px-0">
         <h2 className="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
         <div className="text-left space-y-6 mt-8">
           <div>

@@ -108,7 +108,7 @@ export function MainNavigationMenu({ mainNavLinks, resourcesDropdown, exploreDro
                 />
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg font-medium">About InnerPath Journey</h3>
+                <h3 className="text-lg font-medium">About Tiny Steps A Day Journey</h3>
                 <p className="text-sm text-muted-foreground">
                   Discover our mission, our team, and exciting career opportunities
                 </p>
