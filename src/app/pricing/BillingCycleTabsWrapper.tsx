@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { BillingCycle } from './page';
+import { type BillingCycle } from './constants';
 
 const BillingCycleTabs = dynamic(() => import('./BillingCycleTabs'), { ssr: false });
 

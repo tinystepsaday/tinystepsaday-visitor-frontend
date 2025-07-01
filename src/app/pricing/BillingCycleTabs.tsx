@@ -2,7 +2,7 @@
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
-import { PRICING_CYCLES, BillingCycle } from "./page";
+import { PRICING_CYCLES, type BillingCycle } from "./constants";
 
 export default function BillingCycleTabs({ billingCycle }: { billingCycle: BillingCycle }) {
   return (

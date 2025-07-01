@@ -1,25 +1,9 @@
-import { Metadata } from "next";
 import { PricingTier } from "@/components/pricing/PricingCard";
 import PricingCard from "@/components/pricing/PricingCard";
 import BillingCycleTabsWrapper from "./BillingCycleTabsWrapper";
+import { PRICING_CYCLES, type BillingCycle } from "./constants";
 
 export const revalidate = 3600; // Revalidate every hour (ISR)
-
-export const PRICING_CYCLES = ["monthly", "yearly", "threeYear"] as const;
-export type BillingCycle = typeof PRICING_CYCLES[number];
-
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: "Pricing - Choose Your Transformation Plan",
-    description: "Explore our pricing plans to find the perfect fit for your transformational journey.",
-    openGraph: {
-      title: "Pricing - Choose Your Transformation Plan",
-      description: "Explore our pricing plans to find the perfect fit for your transformational journey.",
-      url: "/pricing",
-      type: "website",
-    },
-  };
-}
 
 async function fetchPricingTiers(): Promise<PricingTier[]> {
   // Placeholder for API/CMS fetch
