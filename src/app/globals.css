@@ -122,6 +122,43 @@
 }
 
 @layer utilities {
+  /* Custom prose styles for rich text content */
+  .prose-custom {
+    @apply text-foreground;
+  }
+  
+  .prose-custom h2 {
+    @apply text-2xl font-semibold mb-4 mt-8 first:mt-0;
+  }
+  
+  .prose-custom h3 {
+    @apply text-xl font-semibold mb-3 mt-6;
+  }
+  
+  .prose-custom p {
+    @apply text-lg mb-4 leading-relaxed;
+  }
+  
+  .prose-custom ul {
+    @apply space-y-3 list-disc pl-5 mb-4;
+  }
+  
+  .prose-custom ol {
+    @apply space-y-3 list-decimal pl-5 mb-4;
+  }
+  
+  .prose-custom li {
+    @apply text-base leading-relaxed;
+  }
+  
+  .prose-custom section {
+    @apply mb-8;
+  }
+  
+  .prose-custom section:last-child {
+    @apply mb-0;
+  }
+
   @keyframes spin-slow {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }

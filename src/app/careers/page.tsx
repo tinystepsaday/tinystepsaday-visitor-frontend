@@ -3,26 +3,27 @@ import { SectionHeader } from "@/components/ui/section-header";
 import Image from "next/image";
 import { Heart, Sparkles, Globe, Users, Lightbulb, Coffee } from "lucide-react";
 import CareerList from "@/components/careers/CareerList";
+import { getAllCareers } from "@/data/careers";
 
 export const metadata: Metadata = {
-  title: "Careers | Tiny Steps A Day Journey",
+  title: "Careers | Tiny Steps A Day",
   description: "Join our team of mindfulness coaches, content creators, and product designers to create transformative experiences that empower people to live with greater purpose, joy, and connection.",
   keywords: ["tiny steps a day", "tiny steps", "a day", "actionable steps", "improve your life", "personal growth", "self improvement", "daily habits", "tips", "strategies", "small changes", "big improvements", "start your journey to a better you today", "personal growth", "self improvement", "daily habits", "tips", "strategies", "meditation", "mindfulness", "mindfulness meditation", "mindfulness practice", "mindfulness exercises", "mindfulness techniques", "mindfulness tips", "mindfulness strategies", "spirituality", "career guidance", "career development", "career advice", "career tips", "career strategies", "career planning", "love", "the law of one", "the law of attraction", "the law of abundance", "the law of prosperity", "the law of success", "mental health", "life direction", "purpose", "mentorship"],
   icons: {
     icon: "/favicon.ico",
   },
   openGraph: {
-    title: "Careers | Tiny Steps A Day Journey",
+    title: "Careers | Tiny Steps A Day",
     description: "Join our team of mindfulness coaches, content creators, and product designers to create transformative experiences that empower people to live with greater purpose, joy, and connection.",
     images: ["https://www.tinystepsaday.com/banner-image.jpg"],
     url: "https://www.tinystepsaday.com",
-    siteName: "Tiny Steps A Day Journey",
+    siteName: "Tiny Steps A Day",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Careers | Tiny Steps A Day Journey",
+    title: "Careers | Tiny Steps A Day",
     description: "Join our team of mindfulness coaches, content creators, and product designers to create transformative experiences that empower people to live with greater purpose, joy, and connection.",
     images: ["https://www.tinystepsaday.com/banner-image.jpg"],
   },
@@ -40,58 +41,12 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.tinystepsaday.com"),
 };
 
-const careersData = [
-  {
-    id: "mindfulness-coach",
-    title: "Mindfulness Coach",
-    department: "Coaching",
-    location: "Remote",
-    type: "Full-time",
-    postedDate: "2025-04-01",
-    summary: "Guide clients through our mindfulness programs and provide personalized support on their journey."
-  },
-  {
-    id: "content-writer",
-    title: "Content Writer",
-    department: "Content",
-    location: "Remote",
-    type: "Full-time",
-    postedDate: "2025-04-05",
-    summary: "Create engaging and insightful content for our blog, courses, and programs."
-  },
-  {
-    id: "ux-designer",
-    title: "UX Designer",
-    department: "Product",
-    location: "Hybrid (San Francisco)",
-    type: "Full-time",
-    postedDate: "2025-04-10",
-    summary: "Design intuitive and engaging user experiences for our web and mobile applications."
-  },
-  {
-    id: "frontend-developer",
-    title: "Frontend Developer",
-    department: "Engineering",
-    location: "Remote",
-    type: "Full-time",
-    postedDate: "2025-04-15",
-    summary: "Build beautiful, responsive, and accessible user interfaces for our platform."
-  },
-  {
-    id: "community-manager",
-    title: "Community Manager",
-    department: "Community",
-    location: "Remote",
-    type: "Full-time",
-    postedDate: "2025-04-18",
-    summary: "Nurture and grow our community of users, facilitating connections and engagement."
-  },
-];
+const careersData = getAllCareers();
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "Tiny Steps A Day Journey",
+  "name": "Tiny Steps A Day",
   "url": "https://www.tinystepsaday.com",
   "description": "Join our team of mindfulness coaches, content creators, and product designers to create transformative experiences that empower people to live with greater purpose, joy, and connection.",
   "image": "https://www.tinystepsaday.com/banner-image.jpg",
@@ -103,17 +58,17 @@ const jsonLd = {
   ],
   "author": {
     "@type": "Person",
-    "name": "Tiny Steps A Day Journey",
+    "name": "Tiny Steps A Day",
     "url": "https://www.tinystepsaday.com",
   },
   "publisher": {
     "@type": "Organization",
-    "name": "Tiny Steps A Day Journey",
+    "name": "Tiny Steps A Day",
     "url": "https://www.tinystepsaday.com",
   },
   "isPartOf": {
     "@type": "WebSite",
-    "name": "Tiny Steps A Day Journey",
+    "name": "Tiny Steps A Day",
     "url": "https://www.tinystepsaday.com",
   },
   "mainEntityOfPage": {
@@ -155,10 +110,10 @@ const Careers = () => {
         </div>
       </section>
 
-      <section className="py-16 md:py-20 bg-muted/30 w-full">
+      <section className="py-16 md:py-20 px-6 md:px-12 bg-muted/30 w-full">
         <div className="max-w-7xl mx-auto">
           <SectionHeader
-            title="Why Join Tiny Steps A Day Journey"
+            title="Why Join Tiny Steps A Day"
             subtitle="Work with purpose and passion in a supportive, innovative environment"
             centered={true}
             isPageHeader={false}
@@ -275,7 +230,7 @@ const Careers = () => {
         <div className="max-w-7xl mx-auto">
           <SectionHeader
             title="Open Positions"
-            subtitle="We're always looking for talented individuals who are passionate about our mission."
+            subtitle="We&apos;re always looking for talented individuals who are passionate about our mission."
             centered={true}
             isPageHeader={false}
           />
