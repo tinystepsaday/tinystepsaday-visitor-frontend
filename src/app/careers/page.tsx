@@ -3,6 +3,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import Image from "next/image";
 import { Heart, Sparkles, Globe, Users, Lightbulb, Coffee } from "lucide-react";
 import CareerList from "@/components/careers/CareerList";
+import { getAllCareers } from "@/data/careers";
 
 export const metadata: Metadata = {
   title: "Careers | Tiny Steps A Day Journey",
@@ -40,53 +41,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.tinystepsaday.com"),
 };
 
-const careersData = [
-  {
-    id: "mindfulness-coach",
-    title: "Mindfulness Coach",
-    department: "Coaching",
-    location: "Remote",
-    type: "Full-time",
-    postedDate: "2025-04-01",
-    summary: "Guide clients through our mindfulness programs and provide personalized support on their journey."
-  },
-  {
-    id: "content-writer",
-    title: "Content Writer",
-    department: "Content",
-    location: "Remote",
-    type: "Full-time",
-    postedDate: "2025-04-05",
-    summary: "Create engaging and insightful content for our blog, courses, and programs."
-  },
-  {
-    id: "ux-designer",
-    title: "UX Designer",
-    department: "Product",
-    location: "Hybrid (San Francisco)",
-    type: "Full-time",
-    postedDate: "2025-04-10",
-    summary: "Design intuitive and engaging user experiences for our web and mobile applications."
-  },
-  {
-    id: "frontend-developer",
-    title: "Frontend Developer",
-    department: "Engineering",
-    location: "Remote",
-    type: "Full-time",
-    postedDate: "2025-04-15",
-    summary: "Build beautiful, responsive, and accessible user interfaces for our platform."
-  },
-  {
-    id: "community-manager",
-    title: "Community Manager",
-    department: "Community",
-    location: "Remote",
-    type: "Full-time",
-    postedDate: "2025-04-18",
-    summary: "Nurture and grow our community of users, facilitating connections and engagement."
-  },
-];
+const careersData = getAllCareers();
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -155,7 +110,7 @@ const Careers = () => {
         </div>
       </section>
 
-      <section className="py-16 md:py-20 bg-muted/30 w-full">
+      <section className="py-16 md:py-20 px-6 md:px-12 bg-muted/30 w-full">
         <div className="max-w-7xl mx-auto">
           <SectionHeader
             title="Why Join Tiny Steps A Day Journey"
