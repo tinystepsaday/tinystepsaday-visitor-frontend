@@ -250,6 +250,7 @@ const About = () => {
             title="Our Values"
             subtitle="The core principles that guide everything we do"
             centered={true}
+            className="text-primary"
           />
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
@@ -257,7 +258,7 @@ const About = () => {
               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                 <Heart className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Compassion</h3>
+              <h3 className="text-xl font-semibold mb-3 text-primary">Compassion</h3>
               <p className="text-muted-foreground">
                 We approach every interaction with kindness, understanding, and care for the whole person.
               </p>
@@ -267,7 +268,7 @@ const About = () => {
               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                 <Compass className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Authenticity</h3>
+              <h3 className="text-xl font-semibold mb-3 text-primary">Authenticity</h3>
               <p className="text-muted-foreground">
                 We champion honesty, transparency, and the courage to be truly ourselves in all we do.
               </p>
