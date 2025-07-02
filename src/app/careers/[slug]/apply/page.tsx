@@ -13,14 +13,14 @@ export async function generateMetadata({ params }: CareerApplicationPageProps): 
 
   if (!career) {
     return {
-      title: "Position Not Found | Tiny Steps A Day Journey",
+      title: "Position Not Found | Tiny Steps A Day",
       description: "The job position you're looking for doesn't exist or has been filled.",
     };
   }
 
   return {
-    title: `Apply for ${career.title} | Careers | Tiny Steps A Day Journey`,
-    description: `Apply for the ${career.title} position at Tiny Steps A Day Journey. ${career.summary}`,
+    title: `Apply for ${career.title} | Careers | Tiny Steps A Day`,
+    description: `Apply for the ${career.title} position at Tiny Steps A Day. ${career.summary}`,
     keywords: [
       "apply",
       "job application",
@@ -32,20 +32,19 @@ export async function generateMetadata({ params }: CareerApplicationPageProps): 
       "mindfulness",
       "personal growth",
       "tiny steps a day",
-      "tiny steps a day journey"
     ],
     openGraph: {
-      title: `Apply for ${career.title} | Tiny Steps A Day Journey`,
-      description: `Apply for the ${career.title} position at Tiny Steps A Day Journey. ${career.summary}`,
+      title: `Apply for ${career.title} | Tiny Steps A Day`,
+      description: `Apply for the ${career.title} position at Tiny Steps A Day. ${career.summary}`,
       url: `https://www.tinystepsaday.com/careers/${slug}/apply`,
-      siteName: "Tiny Steps A Day Journey",
+      siteName: "Tiny Steps A Day",
       locale: "en_US",
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: `Apply for ${career.title} | Tiny Steps A Day Journey`,
-      description: `Apply for the ${career.title} position at Tiny Steps A Day Journey. ${career.summary}`,
+      title: `Apply for ${career.title} | Tiny Steps A Day`,
+      description: `Apply for the ${career.title} position at Tiny Steps A Day. ${career.summary}`,
     },
     alternates: {
       canonical: `https://www.tinystepsaday.com/careers/${slug}/apply`,
@@ -85,22 +84,22 @@ export default async function CareerApplicationPage({ params }: CareerApplicatio
     "@context": "https://schema.org",
     "@type": "WebPage",
     "name": `Apply for ${career.title}`,
-    "description": `Application form for the ${career.title} position at Tiny Steps A Day Journey`,
+    "description": `Application form for the ${career.title} position at Tiny Steps A Day`,
     "url": `https://www.tinystepsaday.com/careers/${slug}/apply`,
     "isPartOf": {
       "@type": "WebSite",
-      "name": "Tiny Steps A Day Journey",
+      "name": "Tiny Steps A Day",
       "url": "https://www.tinystepsaday.com"
     },
-    "mainEntity": {
-      "@type": "JobPosting",
-      "title": career.title,
-      "description": career.description,
-      "datePosted": career.postedDate,
-      "employmentType": career.type,
+          "mainEntity": {
+        "@type": "JobPosting",
+        "title": career.title,
+        "description": career.summary,
+        "datePosted": career.postedDate,
+        "employmentType": career.type,
       "hiringOrganization": {
         "@type": "Organization",
-        "name": "Tiny Steps A Day Journey",
+        "name": "Tiny Steps A Day",
         "url": "https://www.tinystepsaday.com"
       }
     }

@@ -6,6 +6,7 @@ import { ArrowLeft, MapPin, Clock, Building, Calendar, Share2 } from "lucide-rea
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { Career } from "@/data/careers";
+import { sanitizeHtml } from "@/lib/html-sanitizer";
 
 interface CareerPositionClientProps {
   career: Career;
@@ -16,12 +17,12 @@ export default function CareerPositionClient({ career, careerId }: CareerPositio
   const handleShareClick = () => {
     if (navigator.share) {
       navigator.share({
-        title: `${career.title} at Tiny Steps A Day Journey`,
-        text: `Check out this job opportunity: ${career.title} at Tiny Steps A Day Journey`,
+        title: `${career.title} at Tiny Steps A Day`,
+        text: `Check out this job opportunity: ${career.title} at Tiny Steps A Day`,
         url: window.location.href,
       })
-      .then(() => console.log('Successful share'))
-      .catch((error) => console.log('Error sharing', error));
+        .then(() => console.log('Successful share'))
+        .catch((error) => console.log('Error sharing', error));
     } else {
       navigator.clipboard.writeText(window.location.href);
       toast("Link copied to clipboard");
@@ -37,7 +38,7 @@ export default function CareerPositionClient({ career, careerId }: CareerPositio
           </Link>
 
           <h1 className="text-3xl font-bold mb-4">{career.title}</h1>
-          
+
           <div className="flex flex-wrap items-center gap-4 text-sm mb-6">
             <div className="flex items-center">
               <Building className="h-4 w-4 mr-1 text-muted-foreground" />
@@ -77,55 +78,23 @@ export default function CareerPositionClient({ career, careerId }: CareerPositio
         <Separator className="my-8" />
 
         <div className="space-y-8">
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">Position Overview</h2>
-            <p className="text-lg">{career.description}</p>
-          </section>
+          {/* Render HTML content from rich text editor */}
+          <div
+            className="prose-custom"
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(career.content) }}
+          />
 
           <Separator />
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">Responsibilities</h2>
-            <ul className="space-y-3 list-disc pl-5">
-              {career.responsibilities.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </section>
-
-          <Separator />
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">Requirements</h2>
-            <ul className="space-y-3 list-disc pl-5">
-              {career.requirements.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </section>
-
-          <Separator />
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">Nice to Have</h2>
-            <ul className="space-y-3 list-disc pl-5">
-              {career.preferred.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </section>
-
-          <Separator />
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">About Tiny Steps A Day Journey</h2>
+            <h2 className="text-2xl font-semibold mb-4">About Tiny Steps A Day</h2>
             <p className="mb-4">
-              Tiny Steps A Day Journey is dedicated to helping people transform their lives through mindfulness and personal growth. 
+              Tiny Steps A Day is dedicated to helping people transform their lives through mindfulness and personal growth.
               Our platform offers courses, coaching, and community support for individuals seeking greater purpose, joy, and connection.
             </p>
             <p>
-              We are committed to creating a diverse, equitable, and inclusive workplace. We encourage applications from all qualified individuals, 
-              regardless of race, color, religion, gender, sexual orientation, gender identity or expression, age, national origin, disability status, 
+              We are committed to creating a diverse, equitable, and inclusive workplace. We encourage applications from all qualified individuals,
+              regardless of race, color, religion, gender, sexual orientation, gender identity or expression, age, national origin, disability status,
               or any other characteristic protected by law.
             </p>
           </section>

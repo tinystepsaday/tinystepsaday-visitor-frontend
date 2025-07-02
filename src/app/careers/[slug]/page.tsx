@@ -13,13 +13,13 @@ export async function generateMetadata({ params }: CareerPositionPageProps): Pro
 
   if (!career) {
     return {
-      title: "Position Not Found | Tiny Steps A Day Journey",
+      title: "Position Not Found | Tiny Steps A Day",
       description: "The job position you're looking for doesn't exist or has been filled.",
     };
   }
 
   return {
-    title: `${career.title} | Careers | Tiny Steps A Day Journey`,
+    title: `${career.title} | Careers | Tiny Steps A Day`,
     description: career.summary,
     keywords: [
       career.title.toLowerCase(),
@@ -31,19 +31,18 @@ export async function generateMetadata({ params }: CareerPositionPageProps): Pro
       "mindfulness",
       "personal growth",
       "tiny steps a day",
-      "tiny steps a day journey"
     ],
     openGraph: {
-      title: `${career.title} | Tiny Steps A Day Journey`,
+      title: `${career.title} | Tiny Steps A Day`,
       description: career.summary,
       url: `https://www.tinystepsaday.com/careers/${slug}`,
-      siteName: "Tiny Steps A Day Journey",
+      siteName: "Tiny Steps A Day",
       locale: "en_US",
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${career.title} | Tiny Steps A Day Journey`,
+      title: `${career.title} | Tiny Steps A Day`,
       description: career.summary,
     },
     alternates: {
@@ -84,13 +83,13 @@ export default async function CareerPositionPage({ params }: CareerPositionPageP
     "@context": "https://schema.org",
     "@type": "JobPosting",
     "title": career.title,
-    "description": career.description,
+    "description": career.summary,
     "datePosted": career.postedDate,
     "validThrough": "2025-12-31",
     "employmentType": career.type,
     "hiringOrganization": {
       "@type": "Organization",
-      "name": "Tiny Steps A Day Journey",
+      "name": "Tiny Steps A Day",
       "url": "https://www.tinystepsaday.com",
       "logo": "https://www.tinystepsaday.com/tinystepsaday-logo.png"
     },
@@ -108,8 +107,8 @@ export default async function CareerPositionPage({ params }: CareerPositionPageP
       "currency": "USD",
       "value": career.salary.replace(/[$,]/g, "").split(" - ")[0]
     },
-    "qualifications": career.requirements.join(", "),
-    "responsibilities": career.responsibilities.join(", "),
+    "qualifications": "See job description for requirements",
+    "responsibilities": "See job description for responsibilities",
     "url": `https://www.tinystepsaday.com/careers/${slug}`
   };
 
