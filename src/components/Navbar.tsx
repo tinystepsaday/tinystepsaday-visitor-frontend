@@ -1,15 +1,8 @@
 "use client"
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
+import {  
   Menu,
   Moon,
   Sun,
@@ -22,6 +15,7 @@ import { useCartStore } from "@/store/cartStore";
 import CartDropdown from "./cart/CartDropdown";
 import { MainNavigationMenu } from "./MainNavigationMenu";
 import Link from "next/link";
+import Logo from "./Logo";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -83,18 +77,13 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 py-4 px-6 md:px-12 ${isScrolled
+      className={`fixed top-0 w-full z-50 transition-all duration-300 py-4 px-6 md:px-10 ${isScrolled
           ? "bg-background/80 backdrop-blur-lg shadow-sm"
           : "bg-transparent"
         }`}
     >
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <Link
-          href="/"
-          className="text-xl md:text-2xl font-bold gradient-text"
-        >
-          Tiny Steps A Day
-        </Link>
+        <Logo />
 
         <div className="hidden md:flex items-center justify-center flex-1">
           <MainNavigationMenu

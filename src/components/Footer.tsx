@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, Heart, Compass, MessageSquare, Shield } from "lucide-react";
 import Link from "next/link";
+import Logo from "./Logo";
 
 const Footer = () => {
   return (
@@ -12,12 +13,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
           {/* Branding and Newsletter */}
           <div className="md:col-span-5 space-y-6">
-            <Link 
-              href="/" 
-              className="text-2xl font-bold gradient-text inline-block"
-            >
-              Tiny Steps A Day Journey
-            </Link>
+            <Logo />
             <p className="text-muted-foreground max-w-sm">
               Guiding you through your journey of self-discovery, growth, and transformation.
             </p>

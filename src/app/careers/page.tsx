@@ -161,8 +161,7 @@ const Careers = () => {
             title="Why Join Tiny Steps A Day Journey"
             subtitle="Work with purpose and passion in a supportive, innovative environment"
             centered={true}
-            isSectionHeader={false}
-            className="text-primary"
+            isPageHeader={false}
           />
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
@@ -215,7 +214,7 @@ const Careers = () => {
             title="Benefits & Perks"
             subtitle="We take care of our team so they can take care of themselves and our users"
             centered={true}
-            isSectionHeader={false}
+            isPageHeader={false}
           />
 
           <div className="grid md:grid-cols-2 gap-8 mt-12">
@@ -278,7 +277,7 @@ const Careers = () => {
             title="Open Positions"
             subtitle="We're always looking for talented individuals who are passionate about our mission."
             centered={true}
-            isSectionHeader={false}
+            isPageHeader={false}
           />
           <CareerList careersData={careersData} />
         </div>

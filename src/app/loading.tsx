@@ -10,13 +10,13 @@ export default function Loading() {
                     <Image
                         src="/tinystepsaday-logo.png"
                         alt="TinyStepsADay Logo"
-                        width={120}
-                        height={120}
+                        width={100}
+                        height={100}
                         className="z-10 animate-spin-slow drop-shadow-xl"
                         priority
                     />
                 </div>
-                <span className="text-xl font-semibold text-violet-700 animate-fade-in">Loading Tiny Steps A Day...</span>
+                {/* <span className="text-xl font-semibold text-violet-700 animate-fade-in">Loading Tiny Steps A Day...</span> */}
             </div>
         </div>
     );

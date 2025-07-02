@@ -115,7 +115,7 @@ export default function StreakDetailsClient({ streak }: StreakDetailsClientProps
           </Card>
         </div>
 
-        <Tabs defaultValue="progress">
+        <Tabs defaultValue="progress" className="mt-10">
           <TabsList className="grid grid-cols-3 mb-6">
             <TabsTrigger value="progress">Progress</TabsTrigger>
             <TabsTrigger value="check-in">Check In</TabsTrigger>

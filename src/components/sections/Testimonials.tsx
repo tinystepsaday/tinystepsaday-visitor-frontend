@@ -18,6 +18,7 @@ const Testimonials = () => {
           title="Transformation Stories"
           subtitle="Hear from individuals who have experienced profound shifts through our programs"
           centered={true}
+          isPageHeader={false}
         />
 
         <div className="mt-16">

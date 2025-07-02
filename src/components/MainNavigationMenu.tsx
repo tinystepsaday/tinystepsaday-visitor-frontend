@@ -117,18 +117,18 @@ export function MainNavigationMenu({ mainNavLinks, resourcesDropdown, exploreDro
                 <li>
                   <Link href="/about" className="flex items-center gap-2 p-2 hover:bg-accent rounded transition-colors">
                     <UserRound className="h-5 w-5 text-primary" />
-                    <div>
+                    <div className="group">
                       <span className="font-medium">About Us</span>
-                      <p className="text-xs text-muted-foreground">Our mission and values</p>
+                      <p className="text-xs text-primary group-hover:text-white">Our mission and values</p>
                     </div>
                   </Link>
                 </li>
                 <li>
                   <Link href="/careers" className="flex items-center gap-2 p-2 hover:bg-accent rounded transition-colors">
                     <Briefcase className="h-5 w-5 text-primary" />
-                    <div>
+                    <div className="group">
                       <span className="font-medium">Careers</span>
-                      <p className="text-xs text-muted-foreground">Join our growing team</p>
+                      <p className="text-xs text-primary group-hover:text-white">Join our growing team</p>
                     </div>
                   </Link>
                 </li>
@@ -159,33 +159,33 @@ export function MainNavigationMenu({ mainNavLinks, resourcesDropdown, exploreDro
               </li>
               <NavigationMenuItem>
                 <ListItem href="/courses" title="Courses">
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="h-4 w-4 text-primary" />
-                    <span>Self-paced learning for personal growth</span>
+                  <div className="flex items-center gap-2 group">
+                    <BookOpen className="h-4 w-4 text-primary group-hover:text-white" />
+                    <span className="text-slate-700 group-hover:text-white">Self-paced learning for personal growth</span>
                   </div>
                 </ListItem>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <ListItem href="/blog" title="Blog">
-                  <div className="flex items-center gap-2">
-                    <Lightbulb className="h-4 w-4 text-primary" />
-                    <span>Insights and wisdom for your journey</span>
+                  <div className="flex items-center gap-2 group">
+                    <Lightbulb className="h-4 w-4 text-primary group-hover:text-white" />
+                    <span className="text-slate-700 group-hover:text-white">Insights and wisdom for your journey</span>
                   </div>
                 </ListItem>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <ListItem href="/events" title="Events">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-primary" />
-                    <span>Workshops, retreats, and gatherings</span>
+                  <div className="flex items-center gap-2 group">
+                    <Calendar className="h-4 w-4 text-primary group-hover:text-white" />
+                    <span className="text-slate-700 group-hover:text-white">Workshops, retreats, and gatherings</span>
                   </div>
                 </ListItem>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <ListItem href="/streaks" title="Streaks">
-                  <div className="flex items-center gap-2">
-                    <Heart className="h-4 w-4 text-primary" />
-                    <span>Build positive habits consistently</span>
+                  <div className="flex items-center gap-2 group">
+                    <Heart className="h-4 w-4 text-primary group-hover:text-white" />
+                    <span className="text-slate-700 group-hover:text-white">Build positive habits consistently</span>
                   </div>
                 </ListItem>
               </NavigationMenuItem>
