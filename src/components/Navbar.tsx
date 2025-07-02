@@ -16,12 +16,15 @@ import CartDropdown from "./cart/CartDropdown";
 import { MainNavigationMenu } from "./MainNavigationMenu";
 import Link from "next/link";
 import Logo from "./Logo";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const pathname = usePathname();
 
   const { isLoggedIn } = useAuthStore();
   const { totalItems } = useCartStore();
@@ -75,12 +78,14 @@ const Navbar = () => {
     { name: "Careers", path: "/careers" },
   ];
 
+  console.log(pathname);
+
   return (
     <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 py-4 px-6 md:px-10 ${isScrolled
+      className={cn(`${pathname === "/courses/[slug]/learning" ? "hidden" : ""} fixed top-0 w-full z-50 transition-all duration-300 py-4 px-6 md:px-10 ${isScrolled
           ? "bg-background/80 backdrop-blur-lg shadow-sm"
           : "bg-transparent"
-        }`}
+        }`)}
     >
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <Logo />

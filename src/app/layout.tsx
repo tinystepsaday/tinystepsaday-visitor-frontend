@@ -4,8 +4,8 @@ import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import ConditionalNavbar from "@/components/ConditionalNavbar"; 
+import ConditionalFooter from "@/components/ConditionalFooter";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({
@@ -70,9 +70,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Navbar />
+          <ConditionalNavbar />
           {children}
-          <Footer />
+          <ConditionalFooter />
           <Toaster richColors />
         </ThemeProvider>
         <SpeedInsights />
