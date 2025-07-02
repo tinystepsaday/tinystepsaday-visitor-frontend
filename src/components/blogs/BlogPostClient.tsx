@@ -16,7 +16,6 @@ import {
   Heart,
   MessageSquare,
   Mail,
-  ArrowLeft,
   Share2,
   Twitter,
   Facebook,
@@ -135,18 +134,11 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
 
   return (
     <div className="container mx-auto px-4 py-8 mt-16">
-      {/* Back Button */}
-      <div className="mb-8">
-        <Button asChild variant="ghost">
-          <Link href="/blog">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Blog
-          </Link>
-        </Button>
-      </div>
-
       {/* Article Header */}
       <div className="max-w-4xl mx-auto mb-12">
+        <Link href="/blog" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-12">
+          ← Back to Blog
+        </Link>
         <div className="flex items-center gap-2 mb-4">
           <span className="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full">
             {post.category}

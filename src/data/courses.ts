@@ -1,4 +1,3 @@
-
 export interface Lesson {
   id: number;
   title: string;
@@ -388,3 +387,54 @@ export const courses: Course[] = [
     certification: true
   }
 ];
+
+export async function getCourseBySlug(slug: string): Promise<Course | undefined> {
+  return courses.find(course => course.slug === slug);
+}
+
+export async function getAllCourses(): Promise<Course[]> {
+  return courses;
+}
+
+export async function getCoursesByCategory(category: string): Promise<Course[]> {
+  if (category === "All Categories") {
+    return courses;
+  }
+  return courses.filter(course => course.category === category);
+}
+
+export async function getCoursesByLevel(level: string): Promise<Course[]> {
+  if (level === "All Levels") {
+    return courses;
+  }
+  return courses.filter(course => course.level === level);
+}
+
+export async function getFeaturedCourses(): Promise<Course[]> {
+  return courses.filter(course => course.featured);
+}
+
+export async function getPopularCourses(): Promise<Course[]> {
+  return courses.filter(course => course.popular);
+}
+
+export async function searchCourses(query: string): Promise<Course[]> {
+  const lowercaseQuery = query.toLowerCase();
+  return courses.filter(course => 
+    course.title.toLowerCase().includes(lowercaseQuery) ||
+    course.description.toLowerCase().includes(lowercaseQuery) ||
+    course.instructor.name.toLowerCase().includes(lowercaseQuery)
+  );
+}
+
+export const categories = [
+  "All Categories",
+  "Mindfulness",
+  "Personal Growth", 
+  "Career",
+  "Relationships",
+  "Mental Health",
+  "Spirituality"
+];
+
+export const levels = ["All Levels", "Beginner", "Intermediate", "Advanced"];
