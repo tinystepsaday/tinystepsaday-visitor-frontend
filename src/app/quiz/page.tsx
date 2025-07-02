@@ -82,11 +82,12 @@ const Quiz = () => {
   // }, []);
 
   return (
-    <div className="container max-w-7xl mx-auto px-4 py-12 md:py-20 w-full">
+    <div className="container max-w-7xl mx-auto px-4 py-12 md:py-16 w-full">
       <SectionHeader
         title="Self-Discovery Quizzes"
         subtitle="Take a quick assessment to receive personalized recommendations tailored to your unique journey"
         centered={true}
+        isPageHeader={true}
       />
 
       <div className="mb-10 max-w-3xl mx-auto text-center">
@@ -98,7 +99,7 @@ const Quiz = () => {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {quizCategories.map((category) => (
           <Card key={category.id} className="overflow-hidden transition-all hover:shadow-lg">
-            <CardHeader className={`${category.color} ${category.textColor}`}>
+            <CardHeader className={`${category.color} py-5 ${category.textColor}`}>
               <div className="flex items-center justify-between">
                 {category.icon}
                 <div className="flex items-center gap-2 text-sm">

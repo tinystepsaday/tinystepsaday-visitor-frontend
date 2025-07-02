@@ -161,7 +161,7 @@ const About = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Mission</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6 text-primary">Our Mission</h1>
               <p className="text-lg md:text-xl text-muted-foreground mb-6">
                 At Tiny Steps A Day Journey, we&apos;re dedicated to helping people discover their authentic selves and live with greater purpose, joy, and connection.
               </p>
@@ -204,7 +204,7 @@ const About = () => {
             title="Our Story"
             subtitle="How Tiny Steps A Day Journey was born from a personal transformation"
             centered={true}
-            isSectionHeader={false}
+            isPageHeader={false}
           />
 
           <div className="grid md:grid-cols-3 gap-8 mt-12">
@@ -252,7 +252,7 @@ const About = () => {
             title="Our Values"
             subtitle="The core principles that guide everything we do"
             centered={true}
-            isSectionHeader={false}
+            isPageHeader={false}
           />
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
@@ -306,7 +306,7 @@ const About = () => {
             title="Our Approach"
             subtitle="How we help you transform your life"
             centered={true}
-            isSectionHeader={false}
+            isPageHeader={false}
           />
 
           <div className="grid md:grid-cols-2 gap-12 mt-12">
@@ -397,7 +397,7 @@ const About = () => {
             title="Meet Our Team"
             subtitle="The passionate individuals behind Tiny Steps A Day Journey"
             centered={true}
-            isSectionHeader={false}
+            isPageHeader={false}
           />
 
           <TeamMembers teamMembers={teamMembers} />

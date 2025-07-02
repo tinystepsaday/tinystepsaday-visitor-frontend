@@ -5,7 +5,7 @@ interface SectionHeaderProps {
   subtitle?: string;
   centered?: boolean;
   className?: string;
-  isSectionHeader?: boolean;
+  isPageHeader?: boolean;
 }
 
 export function SectionHeader({ 
@@ -13,15 +13,15 @@ export function SectionHeader({
   subtitle, 
   centered = false, 
   className,
-  isSectionHeader = true
+  isPageHeader = true
 }: SectionHeaderProps) {
   return (
     <div className={cn(
-      isSectionHeader ? "space-y-2 mt-20 md:mt-20 mb-10" : "space-y-2 mb-10",
+      isPageHeader ? "space-y-2 mt-20 md:mt-20 mb-10" : "space-y-2 mb-10",
       centered && "text-center",
       className
     )}>
-      <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{title}</h1>
+      <h1 className={cn("font-bold tracking-tight", isPageHeader ? "text-4xl md:text-5xl dark:text-primary text-slate-700" : "text-3xl md:text-4xl")}>{title}</h1>
       {subtitle && (
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">{subtitle}</p>
       )}
