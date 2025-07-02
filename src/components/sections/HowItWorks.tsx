@@ -38,6 +38,7 @@ const HowItWorks = () => {
           title="Your Journey With Us"
           subtitle="A simple, structured process designed to guide you towards meaningful transformation"
           centered={true}
+          isSectionHeader={false}
         />
         
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

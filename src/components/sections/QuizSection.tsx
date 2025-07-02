@@ -51,6 +51,7 @@ export function QuizSection() {
           title="Discover Your Path"
           subtitle="Take our quick quiz to find personalized courses and routines for your journey"
           centered={true}
+          isSectionHeader={false}
         />
         
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 max-w-5xl mx-auto mt-10">
