@@ -198,7 +198,7 @@ const About = () => {
       </section>
 
       {/* Our Story Section */}
-      <section className="py-16 px-6 md:px-12 bg-muted/30">
+      <section className="mt-20 md:mt-32 py-16 px-6 md:px-12 bg-muted/30">
         <div className="max-w-7xl mx-auto">
           <SectionHeader
             title="Our Story"

@@ -3,6 +3,7 @@ import { PricingTier } from "@/components/pricing/PricingCard";
 import PricingCard from "@/components/pricing/PricingCard";
 import BillingCycleTabsWrapper from "./BillingCycleTabsWrapper";
 import { PRICING_CYCLES, type BillingCycle } from "./constants";
+import { SectionHeader } from "@/components/ui/section-header";
 
 export const metadata: Metadata = {
   title: "Pricing - Choose Your Transformation Plan",
@@ -183,10 +184,11 @@ export default async function PricingPage({
     <div className="container py-16 w-full flex flex-col items-center justify-center">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="max-w-3xl mx-auto text-center mb-12 flex flex-col items-center justify-center">
-        <h1 className="text-4xl font-bold mb-4">Choose Your Path</h1>
-        <p className="text-lg text-muted-foreground mb-8">
-          Select the plan that best matches your needs and transformational goals.
-        </p>
+        <SectionHeader
+          title="Choose Your Path"
+          subtitle="Select the plan that best matches your needs and transformational goals."
+          centered={true}
+        />
         <BillingCycleTabsWrapper billingCycle={billingCycle} />
       </div>
 

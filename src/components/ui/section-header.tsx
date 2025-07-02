@@ -1,4 +1,3 @@
-
 import { cn } from "@/lib/utils";
 
 interface SectionHeaderProps {
@@ -16,17 +15,13 @@ export function SectionHeader({
 }: SectionHeaderProps) {
   return (
     <div className={cn(
-      "space-y-2 mb-10", 
+      "space-y-2 mt-20 md:mt-20 mb-10",
       centered && "text-center",
       className
     )}>
-      <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
-        {title}
-      </h2>
+      <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{title}</h1>
       {subtitle && (
-        <p className="text-muted-foreground mx-auto text-lg max-w-3xl">
-          {subtitle}
-        </p>
+        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">{subtitle}</p>
       )}
     </div>
   );

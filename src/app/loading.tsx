@@ -16,7 +16,7 @@ export default function Loading() {
                         priority
                     />
                 </div>
-                <span className="text-xl font-semibold text-violet-700 animate-fade-in">Loading Tiny Steps...</span>
+                <span className="text-xl font-semibold text-violet-700 animate-fade-in">Loading Tiny Steps A Day...</span>
             </div>
         </div>
     );

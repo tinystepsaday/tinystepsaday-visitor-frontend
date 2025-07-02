@@ -1,4 +1,3 @@
-
 // import { useEffect } from "react";
 import { Metadata } from "next";
 import { SectionHeader } from "@/components/ui/section-header";
