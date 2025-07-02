@@ -62,7 +62,7 @@ const jsonLd = {
     "url": "https://www.tinystepsaday.com",
   },
   "publisher": {
-    "@type": "Organization",
+    "@type": "Company",
     "name": "Tiny Steps A Day",
     "url": "https://www.tinystepsaday.com",
   },
