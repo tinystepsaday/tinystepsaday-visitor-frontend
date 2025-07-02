@@ -1,6 +1,7 @@
 import { streaks } from "@/data/streaks";
 import StreaksClient from "@/components/streaks/StreaksClient";
 import { getStreakParams } from "@/lib/utils";
+import { SectionHeader } from "@/components/ui/section-header";
 
 export const metadata = {
   title: "Streaks & Daily Challenges | Tiny Steps A Day Journey",
@@ -129,13 +130,22 @@ export default async function StreaksPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <StreaksClient
-        streaks={paginated}
-        currentPage={page}
-        totalPages={totalPages}
-        sort={sort}
-        filter={filter}
-      />
+      <div className="container py-12">
+        <div className="max-w-3xl mx-auto text-center mb-12"> 
+          <SectionHeader
+            title="Streaks & Daily Challenges"
+            subtitle="Build positive habits through daily practice. Join challenges and maintain your streaks."
+            centered={true}
+          />
+        </div>
+        <StreaksClient
+          streaks={paginated}
+          currentPage={page}
+          totalPages={totalPages}
+          sort={sort}
+          filter={filter}
+        />
+      </div>
     </>
   );
 }

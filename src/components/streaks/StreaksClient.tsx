@@ -76,13 +76,7 @@ export default function StreaksClient({ streaks, currentPage, totalPages, sort, 
   );
 
   return (
-    <div className="container py-8">
-      <div className="max-w-3xl mx-auto text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">Streaks & Daily Challenges</h1>
-        <p className="text-lg text-muted-foreground">
-          Build positive habits through daily practice. Join challenges and maintain your streaks.
-        </p>
-      </div>
+    <>
       <div className="flex flex-wrap gap-4 items-center mb-8">
         <input
           type="text"
@@ -153,6 +147,6 @@ export default function StreaksClient({ streaks, currentPage, totalPages, sort, 
           </PaginationContent>
         </Pagination>
       )}
-    </div>
+    </>
   );
 } 

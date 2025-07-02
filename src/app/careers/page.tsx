@@ -127,7 +127,7 @@ const Careers = () => {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <section className="py-20 px-6 md:px-12 w-full">
+      <section className="py-32 px-6 md:px-12 w-full">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Join Our Team</h1>
@@ -208,7 +208,7 @@ const Careers = () => {
         </div>
       </section>
 
-      <section className="py-16 px-6 md:px-12 w-full">
+      <section className="mt-20 md:mt-32 py-16 px-6 md:px-12 w-full">
         <div className="max-w-7xl mx-auto">
           <SectionHeader
             title="Benefits & Perks"

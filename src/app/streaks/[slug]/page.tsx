@@ -9,7 +9,7 @@ const getStreak = async (slug: string) => {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params; // Await params here
+  const { slug } = await params;
   const streak = await getStreak(slug);
 
   if (streak) {
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         title: `${streak.title} | Tiny Steps A Day`,
         description: streak.description,
         images: ["https://www.tinystepsaday.com/banner-image.jpg"],
-        url: `https://www.tinystepsaday.com/streaks/${slug}`, // Use slug directly
+        url: `https://www.tinystepsaday.com/streaks/${slug}`,
         siteName: "Tiny Steps A Day",
         locale: "en_US",
         type: "website",
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         images: ["https://www.tinystepsaday.com/banner-image.jpg"],
       },
       alternates: {
-        canonical: `https://www.tinystepsaday.com/streaks/${slug}`, // Use slug directly
+        canonical: `https://www.tinystepsaday.com/streaks/${slug}`,
       },
       robots: {
         index: true,
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 export default async function StreakDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params; // Await params here
+  const { slug } = await params;
   const streak = await getStreak(slug);
 
   return <StreakDetailsClient streak={streak} />;
