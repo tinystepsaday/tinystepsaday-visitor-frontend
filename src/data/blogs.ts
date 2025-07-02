@@ -424,22 +424,22 @@ export const categories = [
   "Personal Growth"
 ];
 
-export function getBlogPostBySlug(slug: string): BlogPost | undefined {
+export async function getBlogPostBySlug(slug: string): Promise<BlogPost | undefined> {
   return blogPosts.find(post => post.slug === slug);
 }
 
-export function getAllBlogPosts(): BlogPost[] {
+export async function getAllBlogPosts(): Promise<BlogPost[]> {
   return blogPosts;
 }
 
-export function getBlogPostsByCategory(category: string): BlogPost[] {
+export async function getBlogPostsByCategory(category: string): Promise<BlogPost[]> {
   if (category === "All Categories") {
     return blogPosts;
   }
   return blogPosts.filter(post => post.category === category);
 }
 
-export function getRelatedPosts(postId: number): BlogPost[] {
+export async function getRelatedPosts(postId: number): Promise<BlogPost[]> {
   const post = blogPosts.find(p => p.id === postId);
   if (!post || !post.related) {
     return [];
@@ -447,7 +447,7 @@ export function getRelatedPosts(postId: number): BlogPost[] {
   return blogPosts.filter(p => post.related.includes(p.id));
 }
 
-export function searchBlogPosts(query: string): BlogPost[] {
+export async function searchBlogPosts(query: string): Promise<BlogPost[]> {
   const lowercaseQuery = query.toLowerCase();
   return blogPosts.filter(post => 
     post.title.toLowerCase().includes(lowercaseQuery) ||
