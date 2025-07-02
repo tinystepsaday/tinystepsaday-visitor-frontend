@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { SectionHeader } from "@/components/ui/section-header";
 import Link from "next/link";
 import { Briefcase, ArrowRight } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -135,12 +134,6 @@ export default function CareerList({ careersData }: CareerListProps) {
 
   return (
     <>
-      <SectionHeader
-        title="Open Positions"
-        subtitle="Find your place on our team and help shape the future of personal growth"
-        centered={true}
-      />
-
       <CareerFilter
         departments={departments}
         locations={locations}

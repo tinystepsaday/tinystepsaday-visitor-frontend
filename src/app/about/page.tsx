@@ -198,11 +198,13 @@ const About = () => {
       </section>
 
       {/* Our Story Section */}
-      <section className="mt-20 md:mt-32 py-16 px-6 md:px-12 bg-muted/30">
+      <section className="py-16 px-6 md:px-12 bg-muted/30">
         <div className="max-w-7xl mx-auto">
           <SectionHeader
             title="Our Story"
             subtitle="How Tiny Steps A Day Journey was born from a personal transformation"
+            centered={true}
+            isSectionHeader={false}
           />
 
           <div className="grid md:grid-cols-3 gap-8 mt-12">
@@ -250,7 +252,7 @@ const About = () => {
             title="Our Values"
             subtitle="The core principles that guide everything we do"
             centered={true}
-            className="text-primary"
+            isSectionHeader={false}
           />
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
@@ -303,6 +305,8 @@ const About = () => {
           <SectionHeader
             title="Our Approach"
             subtitle="How we help you transform your life"
+            centered={true}
+            isSectionHeader={false}
           />
 
           <div className="grid md:grid-cols-2 gap-12 mt-12">
@@ -393,6 +397,7 @@ const About = () => {
             title="Meet Our Team"
             subtitle="The passionate individuals behind Tiny Steps A Day Journey"
             centered={true}
+            isSectionHeader={false}
           />
 
           <TeamMembers teamMembers={teamMembers} />

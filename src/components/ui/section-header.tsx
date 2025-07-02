@@ -5,17 +5,19 @@ interface SectionHeaderProps {
   subtitle?: string;
   centered?: boolean;
   className?: string;
+  isSectionHeader?: boolean;
 }
 
 export function SectionHeader({ 
   title, 
   subtitle, 
   centered = false, 
-  className 
+  className,
+  isSectionHeader = true
 }: SectionHeaderProps) {
   return (
     <div className={cn(
-      "space-y-2 mt-20 md:mt-20 mb-10",
+      isSectionHeader ? "space-y-2 mt-20 md:mt-20 mb-10" : "space-y-2 mb-10",
       centered && "text-center",
       className
     )}>
