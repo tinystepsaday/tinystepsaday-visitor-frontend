@@ -127,14 +127,13 @@ const Careers = () => {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <section className="py-32 px-6 md:px-12 w-full">
+      <section className="py-16 md:py-20 px-6 md:px-12 w-full">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Join Our Team</h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-              Help us create transformative experiences that empower people to live with greater purpose, joy, and connection.
-            </p>
-          </div>
+          <SectionHeader
+            title="Join Our Team"
+            subtitle="Help us create transformative experiences that empower people to live with greater purpose, joy, and connection."
+            centered={true}
+          />
 
           {/* Hero Image */}
           <div className="relative h-80 md:h-96 w-full mb-16 rounded-xl overflow-hidden">
@@ -156,12 +155,14 @@ const Careers = () => {
         </div>
       </section>
 
-      <section className="py-16 px-6 md:px-12 bg-muted/30 w-full">
+      <section className="py-16 md:py-20 bg-muted/30 w-full">
         <div className="max-w-7xl mx-auto">
           <SectionHeader
             title="Why Join Tiny Steps A Day Journey"
             subtitle="Work with purpose and passion in a supportive, innovative environment"
             centered={true}
+            isSectionHeader={false}
+            className="text-primary"
           />
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
@@ -208,12 +209,13 @@ const Careers = () => {
         </div>
       </section>
 
-      <section className="mt-20 md:mt-32 py-16 px-6 md:px-12 w-full">
+      <section className="py-16 px-6 md:px-12 w-full">
         <div className="max-w-7xl mx-auto">
           <SectionHeader
             title="Benefits & Perks"
             subtitle="We take care of our team so they can take care of themselves and our users"
             centered={true}
+            isSectionHeader={false}
           />
 
           <div className="grid md:grid-cols-2 gap-8 mt-12">
@@ -272,6 +274,12 @@ const Careers = () => {
 
       <section className="py-16 px-6 md:px-12 bg-muted/30 w-full">
         <div className="max-w-7xl mx-auto">
+          <SectionHeader
+            title="Open Positions"
+            subtitle="We're always looking for talented individuals who are passionate about our mission."
+            centered={true}
+            isSectionHeader={false}
+          />
           <CareerList careersData={careersData} />
         </div>
       </section>
