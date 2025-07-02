@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mail, Heart, Compass, MessageSquare, Shield } from "lucide-react";
+import { Mail, Instagram, Linkedin, Facebook, XIcon } from "lucide-react";
 import Link from "next/link";
 import Logo from "./Logo";
 
@@ -150,25 +150,25 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center mt-16 pt-8 border-t border-border">
           <div className="flex items-center space-x-4 mb-4 md:mb-0">
             <span className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Tiny Steps A Day Journey. All rights reserved.
+              © {new Date().getFullYear()} Tiny Steps A Day. All rights reserved.
             </span>
           </div>
           
           <div className="flex gap-4">
-            <Button variant="ghost" size="icon" className="rounded-full">
+            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => window.open("mailto:hello@tinystepsaday.com", "_blank")}>
               <Mail className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Heart className="h-4 w-4" />
+            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => window.open("https://www.instagram.com/tinystepsaday", "_blank")}>
+              <Instagram className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Compass className="h-4 w-4" />
+            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => window.open("https://www.facebook.com/tinystepsaday", "_blank")}>
+              <Facebook className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <MessageSquare className="h-4 w-4" />
+            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => window.open("https://x.com/tiny_steps_aday", "_blank")}>
+              <XIcon className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Shield className="h-4 w-4" />
+            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => window.open("https://www.linkedin.com/company/tinystepsaday", "_blank")}>
+              <Linkedin className="h-4 w-4" />
             </Button>
           </div>
         </div>

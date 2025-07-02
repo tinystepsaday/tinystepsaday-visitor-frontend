@@ -57,10 +57,13 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
 
   // Fetch related posts
   useEffect(() => {
-    if (post && post.related) {
-      const related = getRelatedPosts(post.id);
-      setRelatedPosts(related);
-    }
+    const fetchRelatedPosts = async () => {
+      if (post && post.related) {
+        const related = await getRelatedPosts(post.id);
+        setRelatedPosts(related);
+      }
+    };
+    fetchRelatedPosts();
   }, [post]);
 
   // Handle like action
@@ -131,7 +134,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 mt-16">
       {/* Back Button */}
       <div className="mb-8">
         <Button asChild variant="ghost">
