@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { GalleryLightbox } from "@/components/gallery/GalleryLightbox";
 import { getGalleryImages } from "@/data/gallery";
-import { sharedMetadata } from "../shared-metadata";
+import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
   title: "Gallery | Tiny Steps A Day",
@@ -65,7 +65,7 @@ export default function GalleryPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       
       <div className="max-w-6xl mx-auto space-y-8">
-        <div className="flex items-center gap-2 mb-8 mt-16 md:mt-32">
+        <div className="flex items-center gap-2 mb-8 mt-16 md:mt-24">
           <h1 className="text-4xl md:text-5xl dark:text-primary text-slate-700 font-bold">Gallery</h1>
         </div>
 

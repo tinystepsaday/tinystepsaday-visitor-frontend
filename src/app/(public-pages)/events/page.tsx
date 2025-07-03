@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { getUpcomingEvents } from "@/data/events";
-import { sharedMetadata } from "../shared-metadata";
+import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
   title: "Upcoming Events | Tiny Steps A Day",
@@ -83,7 +83,7 @@ export default function EventsPage() {
   return (
     <div className="container mx-auto py-8 px-4">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <div className="max-w-4xl mx-auto mt-16 md:mt-32">
+      <div className="max-w-4xl mx-auto mt-16 md:mt-24">
         <div className="flex items-center gap-2 mb-8">
           <Calendar className="h-6 w-6 text-primary" />
           <h1 className="text-3xl font-bold">Upcoming Events</h1>

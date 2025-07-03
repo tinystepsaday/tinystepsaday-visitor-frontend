@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { getEventBySlug, events } from "@/data/events";
 import { EventBookingCard } from "@/components/events/EventBookingCard";
-import { sharedMetadata } from "../../shared-metadata";
+import { sharedMetadata } from "../../../shared-metadata";
 
 export async function generateStaticParams() {
     return events.map((event) => ({
@@ -123,7 +123,7 @@ export default async function EventPage({ params }: EventPageProps) {
     return (
         <div className="container mx-auto py-8 px-4">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <div className="max-w-4xl mx-auto mt-16 md:mt-32">
+            <div className="max-w-4xl mx-auto mt-16 md:mt-24">
                 <Link href="/events" className="inline-flex items-center text-primary hover:text-primary/80 mb-6">
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     Back to Events

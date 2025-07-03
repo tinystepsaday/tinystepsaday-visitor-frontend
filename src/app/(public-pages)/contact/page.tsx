@@ -5,7 +5,7 @@ import { Mail, MessageSquare, Phone } from "lucide-react";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { NewsletterSubscription } from "@/components/contact/NewsletterSubscription";
 import { getContactFAQs, getContactInfo } from "@/data/contact";
-import { sharedMetadata } from "../shared-metadata";
+import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
   title: "Contact Us | Tiny Steps A Day",
