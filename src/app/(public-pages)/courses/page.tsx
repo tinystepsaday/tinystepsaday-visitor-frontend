@@ -21,7 +21,7 @@ export default async function CoursesPage() {
   ]);
 
   return (
-    <div className="container mx-auto px-4 py-16">
+    <div className="container mx-auto px-4 py-16 max-w-7xl">
       <SectionHeader
         title="Transform Your Life with Our Courses"
         subtitle="Explore self-paced learning experiences designed to help you grow personally and professionally"

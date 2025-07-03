@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -25,7 +25,11 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login } = useAuthStore();
+  
+  // Get return URL from search params
+  const returnUrl = searchParams.get('returnUrl') || '/dashboard';
   
   // Check for existing user in localStorage on component mount
   useEffect(() => {
@@ -40,10 +44,10 @@ export default function LoginForm() {
       if (user.role === 'admin') {
         router.push('/admin');
       } else {
-        router.push('/dashboard');
+        router.push(returnUrl);
       }
     }
-  }, [login, router]);
+  }, [login, returnUrl, router]);
   
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -95,10 +99,10 @@ export default function LoginForm() {
       login(user);
       
       toast.success("Login successful!", {
-        description: "Redirecting to your dashboard...",
+        description: "Redirecting...",
       });
       setIsLoading(false);
-      router.push("/dashboard");
+      router.push(returnUrl);
     }, 1500);
   };
 
@@ -108,10 +112,10 @@ export default function LoginForm() {
     setTimeout(() => {
       console.log(`Logging in with ${provider}`);
       toast.success("Login successful!", {
-        description: "Redirecting to your dashboard...",
+        description: "Redirecting...",
       });
       setIsLoading(false);
-      router.push("/dashboard");
+      router.push(returnUrl);
     }, 1500);
   };
 

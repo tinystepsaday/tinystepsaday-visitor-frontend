@@ -36,7 +36,7 @@ export default function StreakDetailsClient({ streak }: StreakDetailsClientProps
   };
 
   return (
-    <div className="container pb-8 mt-20 md:mt-32">
+    <div className="container pb-8 mt-20 md:mt-32 px-4">
       <div className="max-w-4xl mx-auto">
         <Link href="/streaks" className="inline-flex items-center text-primary hover:text-primary/80 mb-6">
           <ChevronLeft className="h-4 w-4 mr-1" />

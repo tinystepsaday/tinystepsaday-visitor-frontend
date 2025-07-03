@@ -156,7 +156,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
           {post.excerpt}
         </p>
         
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between md:flex-row flex-col">
           <div className="flex items-center gap-4">
             <Avatar className="h-12 w-12">
               <AvatarImage src={post.author.avatar} alt={post.author.name} />
@@ -200,7 +200,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
       <div className="max-w-4xl mx-auto mb-12">
         <Separator className="mb-8" />
         
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between md:flex-row flex-col">
           <div className="flex items-center gap-6">
             <Button 
               variant="outline" 
@@ -218,7 +218,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 md:flex-row flex-col">
             <Button variant="outline" size="sm" onClick={handleNativeShare}>
               <Share2 className="mr-2 h-4 w-4" />
               Share

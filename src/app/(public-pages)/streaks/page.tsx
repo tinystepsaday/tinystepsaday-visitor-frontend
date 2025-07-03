@@ -1,4 +1,5 @@
 import { streaks } from "@/data/streaks";
+import { Suspense } from "react";
 import StreaksClient from "@/components/streaks/StreaksClient";
 import { getStreakParams } from "@/lib/utils";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -130,7 +131,7 @@ export default async function StreaksPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="container py-12 w-full max-w-7xl mx-auto">
+      <div className="container py-12 w-full max-w-7xl mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center mb-12"> 
           <SectionHeader
             title="Streaks & Daily Challenges"
@@ -138,13 +139,15 @@ export default async function StreaksPage() {
             centered={true}
           />
         </div>
-        <StreaksClient
-          streaks={paginated}
-          currentPage={page}
-          totalPages={totalPages}
-          sort={sort}
-          filter={filter}
-        />
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading streaks...</div>}>
+          <StreaksClient
+            streaks={paginated}
+            currentPage={page}
+            totalPages={totalPages}
+            sort={sort}
+            filter={filter}
+          />
+        </Suspense>
       </div>
     </>
   );
