@@ -192,7 +192,7 @@ export default async function PricingPage({
         <BillingCycleTabsWrapper billingCycle={billingCycle} />
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 w-full max-w-8xl px-6 md:px-2 lg:px-0">
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 w-full max-w-8xl px-6 md:px-2 lg:px-0 max-w-7xl">
         {pricingTiers.map((tier) => (
           <PricingCard
             key={tier.name}

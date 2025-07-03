@@ -198,7 +198,7 @@ const About = () => {
       </section>
 
       {/* Our Story Section */}
-      <section className="py-16 px-6 md:px-12 bg-muted/30">
+      <section className="py-16 px-6 md:px-12 bg-muted/30 w-full">
         <div className="max-w-7xl mx-auto">
           <SectionHeader
             title="Our Story"
@@ -300,7 +300,7 @@ const About = () => {
       </section>
 
       {/* Our Approach */}
-      <section className="py-16 px-6 md:px-12 bg-muted/30">
+      <section className="py-16 px-6 md:px-12 bg-muted/30 w-full">
         <div className="max-w-7xl mx-auto">
           <SectionHeader
             title="Our Approach"

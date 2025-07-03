@@ -31,7 +31,7 @@ const Community = () => {
 
   return (
     <>
-      <div className="container py-8 w-full flex flex-col gap-4 items-center mt-10">
+      <div className="container py-8 w-full flex flex-col gap-4 items-center mt-10 max-w-7xl mx-auto">
         <SectionHeader
           title="Our Communities"
           subtitle="Join like-minded individuals on your journey of personal growth and transformation"

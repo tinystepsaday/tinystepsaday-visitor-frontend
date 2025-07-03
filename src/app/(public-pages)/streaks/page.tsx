@@ -130,7 +130,7 @@ export default async function StreaksPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="container py-12">
+      <div className="container py-12 w-full max-w-7xl mx-auto">
         <div className="max-w-3xl mx-auto text-center mb-12"> 
           <SectionHeader
             title="Streaks & Daily Challenges"

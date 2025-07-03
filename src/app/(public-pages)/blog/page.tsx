@@ -148,7 +148,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       />
       
       {/* Search and Filter */}
-      <div className="flex flex-col md:flex-row gap-4 mb-12 mt-8">
+      <div className="flex flex-col md:flex-row gap-4 mb-12 mt-8 max-w-7xl mx-auto">
         <form className="relative flex-grow" method="GET" action="/blog">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
@@ -183,7 +183,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       
       {/* Featured Post */}
       {paginatedPosts.length > 0 && (
-        <div className="mb-16">
+        <div className="mb-16 max-w-7xl mx-auto">
           <Link href={`/blog/${paginatedPosts[0].slug}`} className="group">
             <div className="rounded-2xl overflow-hidden bg-card shadow-md hover:shadow-lg transition-shadow">
               <div className="grid md:grid-cols-2 gap-6">
@@ -245,7 +245,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       
       {/* Blog Posts Grid */}
       {paginatedPosts.length > 1 && (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {paginatedPosts.slice(1).map((post) => (
             <Link key={post.id} href={`/blog/${post.slug}`} className="group">
               <Card className="h-full hover:shadow-lg transition-shadow">
