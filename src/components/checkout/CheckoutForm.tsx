@@ -77,12 +77,16 @@ interface CheckoutFormProps {
   courseInfo?: CourseInfo | null;
 }
 
-export default function CheckoutForm({ tierInfo, courseInfo: propCourseInfo }: CheckoutFormProps) {
+export default function CheckoutForm({ tierInfo: propTierInfo, courseInfo: propCourseInfo }: CheckoutFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [paymentStep, setPaymentStep] = useState(1);
   const [courseInfo, setCourseInfo] = useState<CourseInfo | null>(propCourseInfo || null);
+  const [tierInfo, setTierInfo] = useState<{
+    tier: PricingTier;
+    billingCycle: "monthly" | "yearly" | "threeYear";
+  } | null>(propTierInfo || null);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -100,8 +104,24 @@ export default function CheckoutForm({ tierInfo, courseInfo: propCourseInfo }: C
   const finalPrice = totalPrice - discount;
 
   useEffect(() => {
-    if (searchParams.get('tier')) {
-      setBillingCycle(searchParams.get('billingCycle') as "monthly" | "yearly" | "threeYear" || "monthly");
+    // Handle subscription tier from URL
+    const tierName = searchParams.get('tier');
+    const billingCycleParam = searchParams.get('cycle') || searchParams.get('billingCycle');
+    
+    if (tierName && !tierInfo) {
+      setBillingCycle(billingCycleParam as "monthly" | "yearly" | "threeYear" || "monthly");
+      
+      // Fetch pricing tiers data
+      import('@/data/pricing').then(({ getTierByName }) => {
+        getTierByName(tierName).then((selectedTier) => {
+          if (selectedTier) {
+            setTierInfo({
+              tier: selectedTier,
+              billingCycle: billingCycleParam as "monthly" | "yearly" | "threeYear" || "monthly"
+            });
+          }
+        });
+      });
     }
     
     // Handle course enrollment from URL
@@ -130,7 +150,7 @@ export default function CheckoutForm({ tierInfo, courseInfo: propCourseInfo }: C
         });
       });
     }
-  }, [searchParams, courseInfo]);
+  }, [searchParams, courseInfo, tierInfo]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

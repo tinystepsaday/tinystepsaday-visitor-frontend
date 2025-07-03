@@ -136,7 +136,7 @@ export default function ProgramsPage() {
                                     </Button>
 
                                     <Button variant="outline" asChild className="rounded-full">
-                                        <Link href="/assessment">
+                                        <Link href="/quiz">
                                             Take the Assessment First
                                         </Link>
                                     </Button>
@@ -444,7 +444,7 @@ export default function ProgramsPage() {
                                 Starter
                             </div>
                             <h3 className="text-2xl font-bold mb-2">Initial Guidance</h3>
-                            <div className="text-3xl font-bold mb-6">$199</div>
+                            <div className="text-3xl font-bold mb-6">Free</div>
                             <ul className="space-y-3 mb-8">
                                 <li className="flex items-start gap-3">
                                     <div className="w-6 h-6 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center mt-0.5">
@@ -478,7 +478,7 @@ export default function ProgramsPage() {
                                 </li>
                             </ul>
                             <Button variant="outline" asChild className="w-full rounded-full">
-                                <Link href="/signup">
+                                <Link href="/auth/signup">
                                     Sign Up Free
                                 </Link>
                             </Button>
@@ -523,7 +523,7 @@ export default function ProgramsPage() {
                                 </li>
                             </ul>
                             <Button variant="outline" asChild className="w-full rounded-full">
-                                <Link href="/checkout">
+                                <Link href="/checkout?tier=starter&cycle=monthly">
                                     Get Started
                                 </Link>
                             </Button>
@@ -571,7 +571,7 @@ export default function ProgramsPage() {
                                 </li>
                             </ul>
                             <Button asChild className="w-full rounded-full">
-                                <Link href="/contact">
+                                <Link href="/checkout?tier=transformation&cycle=monthly">
                                     Choose This Plan
                                 </Link>
                             </Button>
@@ -582,7 +582,7 @@ export default function ProgramsPage() {
                                 Complete
                             </div>
                             <h3 className="text-2xl font-bold mb-2">Full Journey</h3>
-                            <div className="text-3xl font-bold mb-6">$1,199</div>
+                            <div className="text-3xl font-bold mb-6">$99.99</div>
                             <ul className="space-y-3 mb-8">
                                 <li className="flex items-start gap-3">
                                     <div className="w-6 h-6 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center mt-0.5">
@@ -616,7 +616,7 @@ export default function ProgramsPage() {
                                 </li>
                             </ul>
                             <Button variant="outline" asChild className="w-full rounded-full">
-                                <Link href="/contact">
+                                <Link href="/checkout?tier=Complete&cycle=monthly">
                                     Get Started
                                 </Link>
                             </Button>
