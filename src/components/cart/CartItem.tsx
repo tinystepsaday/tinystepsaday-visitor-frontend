@@ -18,7 +18,7 @@ const CartItem: React.FC<CartItemProps> = ({
   onRemoveItem
 }) => {
   return (
-    <div className="flex items-center py-4 border-b">
+    <div className="flex items-center py-4 border-b w-full">
       <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border">
         <Image
           src={item.image}

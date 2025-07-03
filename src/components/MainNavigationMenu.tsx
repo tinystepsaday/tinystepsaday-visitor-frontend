@@ -115,18 +115,18 @@ export function MainNavigationMenu({ mainNavLinks, resourcesDropdown, exploreDro
               </div>
               <ul className="grid gap-2">
                 <li>
-                  <Link href="/about" className="flex items-center gap-2 p-2 hover:bg-accent rounded transition-colors">
-                    <UserRound className="h-5 w-5 text-primary" />
-                    <div className="group">
+                  <Link href="/about" className="flex items-center gap-2 p-2 hover:bg-accent rounded transition-colors group">
+                    <UserRound className="h-5 w-5 text-primary"/>
+                    <div>
                       <span className="font-medium">About Us</span>
                       <p className="text-xs text-primary group-hover:text-white">Our mission and values</p>
                     </div>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/careers" className="flex items-center gap-2 p-2 hover:bg-accent rounded transition-colors">
+                  <Link href="/careers" className="flex items-center gap-2 p-2 hover:bg-accent rounded transition-colors group">
                     <Briefcase className="h-5 w-5 text-primary" />
-                    <div className="group">
+                    <div>
                       <span className="font-medium">Careers</span>
                       <p className="text-xs text-primary group-hover:text-white">Join our growing team</p>
                     </div>
@@ -144,7 +144,7 @@ export function MainNavigationMenu({ mainNavLinks, resourcesDropdown, exploreDro
               <li className="row-span-3">
                 <NavigationMenuLink asChild>
                   <Link
-                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md group"
                     href="/programs"
                   >
                     <Lightbulb className="h-6 w-6 text-primary" />
@@ -158,34 +158,34 @@ export function MainNavigationMenu({ mainNavLinks, resourcesDropdown, exploreDro
                 </NavigationMenuLink>
               </li>
               <NavigationMenuItem>
-                <ListItem href="/courses" title="Courses">
-                  <div className="flex items-center gap-2 group">
+                <ListItem href="/courses" title="Courses" className="group">
+                  <div className="flex items-center gap-2">
                     <BookOpen className="h-4 w-4 text-primary group-hover:text-white" />
-                    <span className="text-slate-700 group-hover:text-white">Self-paced learning for personal growth</span>
+                    <span className="text-primary group-hover:text-white">Self-paced learning for personal growth</span>
                   </div>
                 </ListItem>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <ListItem href="/blog" title="Blog">
-                  <div className="flex items-center gap-2 group">
+                <ListItem href="/blog" title="Blog" className="group">
+                  <div className="flex items-center gap-2">
                     <Lightbulb className="h-4 w-4 text-primary group-hover:text-white" />
-                    <span className="text-slate-700 group-hover:text-white">Insights and wisdom for your journey</span>
+                    <span className="text-primary group-hover:text-white">Insights and wisdom for your journey</span>
                   </div>
                 </ListItem>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <ListItem href="/events" title="Events">
-                  <div className="flex items-center gap-2 group">
+                <ListItem href="/events" title="Events" className="group">
+                  <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-primary group-hover:text-white" />
-                    <span className="text-slate-700 group-hover:text-white">Workshops, retreats, and gatherings</span>
+                    <span className="text-primary group-hover:text-white">Workshops, retreats, and gatherings</span>
                   </div>
                 </ListItem>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <ListItem href="/streaks" title="Streaks">
-                  <div className="flex items-center gap-2 group">
+                <ListItem href="/streaks" title="Streaks" className="group">
+                  <div className="flex items-center gap-2">
                     <Heart className="h-4 w-4 text-primary group-hover:text-white" />
-                    <span className="text-slate-700 group-hover:text-white">Build positive habits consistently</span>
+                    <span className="text-primary group-hover:text-white">Build positive habits consistently</span>
                   </div>
                 </ListItem>
               </NavigationMenuItem>
