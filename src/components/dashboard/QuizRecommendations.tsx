@@ -1,10 +1,10 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SectionHeader } from "@/components/ui/section-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import DashboardPageHeader from "./DashboardPageHeader";
 
 // Mock recommendations data - in a real app, you'd fetch this from localStorage or backend
 const recommendationsData = [
@@ -45,10 +45,7 @@ const recommendationsData = [
 const QuizRecommendations = () => {
   return (
     <div>
-      <SectionHeader
-        title="Personalized Recommendations"
-        subtitle="Based on your assessment results, we've curated these resources for your journey"
-      />
+      <DashboardPageHeader title="Personalized Recommendations" subtitle="Based on your assessment results, we've curated these resources for your journey" />
       
       {recommendationsData.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2">

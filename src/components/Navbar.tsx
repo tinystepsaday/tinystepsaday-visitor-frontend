@@ -133,7 +133,7 @@ const Navbar = () => {
             </Button>
           ) : (
             <Button asChild className="rounded-full">
-              <Link href="/login">
+              <Link href="/auth/login">
                 Sign In
               </Link>
             </Button>
@@ -260,7 +260,7 @@ const Navbar = () => {
                 </Button>
               ) : (
                 <Button asChild className="w-full rounded-full">
-                  <Link href="/login" onClick={() => setIsOpen(false)}>
+                  <Link href="/auth/login" onClick={() => setIsOpen(false)}>
                     Sign In
                   </Link>
                 </Button>

@@ -17,7 +17,7 @@ export function DashboardNav({ onItemClick }: DashboardNavProps) {
     if (path === "/dashboard") {
       return router === "/dashboard";
     }
-    return location.pathname.startsWith(path);
+    return router.startsWith(path);
   };
 
   const handleLogout = () => {

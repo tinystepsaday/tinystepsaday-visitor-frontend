@@ -12,6 +12,8 @@ import StreakCheckInForm from "@/components/streaks/StreakCheckInForm";
 import StreakCalendarView from "@/components/streaks/StreakCalendarView";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Streak } from "@/data/streaks";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 
 interface StreakDetailsClientProps {
   streak: Streak;
@@ -36,6 +38,10 @@ export default function StreakDetailsClient({ streak }: StreakDetailsClientProps
   return (
     <div className="container pb-8 mt-20 md:mt-32">
       <div className="max-w-4xl mx-auto">
+        <Link href="/streaks" className="inline-flex items-center text-primary hover:text-primary/80 mb-6">
+          <ChevronLeft className="h-4 w-4 mr-1" />
+          Back to All Streaks
+        </Link>
         <div className="flex items-center gap-4 mb-8 ">
           <span className="text-4xl">{streak.icon}</span>
           <div>

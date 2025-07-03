@@ -2,7 +2,7 @@ import { Check } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { type BillingCycle } from "@/app/pricing/constants";
+import { type BillingCycle } from "@/app/(public-pages)/pricing/constants";
 
 export interface PricingFeature {
   name: string;

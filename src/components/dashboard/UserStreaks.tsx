@@ -1,17 +1,14 @@
 "use client"
 
 import StreakCard from "@/components/streaks/StreakCard";
-import { SectionHeader } from "@/components/ui/section-header";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import DashboardPageHeader from "./DashboardPageHeader";
 
 export function UserStreaks() {
   return (
     <div>
-      <SectionHeader
-        title="My Active Streaks"
-        subtitle="Track your progress on ongoing streak challenges"
-      />
+      <DashboardPageHeader title="My Active Streaks" subtitle="Track your progress on ongoing streak challenges" />
       <div className="grid gap-6 md:grid-cols-2">
         <StreakCard
           title="Meditation Streak"

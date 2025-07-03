@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
+import { ThemeToggle } from "../theme-toggle";
 
 interface QuizLayoutProps {
   children: ReactNode;
@@ -21,8 +22,8 @@ export function QuizLayout({
   onBackClick
 }: QuizLayoutProps) {
   return (
-    <div className="min-h-screen bg-muted/30 pt-16">
-      <header className="bg-background border-b sticky top-16 z-10">
+    <div className="min-h-screen bg-muted/30 w-full">
+      <header className="bg-background border-b sticky top-0 z-10">
         <div className="container max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
             <Link href="/quiz" className="text-primary hover:underline text-sm flex items-center">
@@ -32,6 +33,7 @@ export function QuizLayout({
             <h1 className="text-xl font-bold mt-1">{title}</h1>
             {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
           </div>
+          <ThemeToggle />
           {showBackButton && (
             <Button
               variant="outline"
