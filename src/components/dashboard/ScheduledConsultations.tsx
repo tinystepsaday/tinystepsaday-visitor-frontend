@@ -1,11 +1,11 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SectionHeader } from "@/components/ui/section-header";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Calendar, Clock } from "lucide-react";
 import Link from "next/link";
+import DashboardPageHeader from "./DashboardPageHeader";
 
 // Mock scheduled consultations data - in a real app, you'd fetch this from localStorage or backend
 const consultationsData = [
@@ -34,10 +34,7 @@ const consultationsData = [
 const ScheduledConsultations = () => {
   return (
     <div>
-      <SectionHeader
-        title="Scheduled Consultations"
-        subtitle="Your upcoming mentorship and coaching sessions"
-      />
+      <DashboardPageHeader title="Scheduled Consultations" subtitle="Your upcoming mentorship and coaching sessions" />
       
       {consultationsData.length > 0 ? (
         <div className="space-y-6">

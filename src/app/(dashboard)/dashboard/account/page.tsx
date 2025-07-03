@@ -1,7 +1,5 @@
-import React from 'react'
+import AccountAndBilling from "@/components/dashboard/AccountAndBilling";
 
-export default function page() {
-  return (
-    <div>Account</div>
-  )
+export default function AccountPage() {
+  return <AccountAndBilling />;
 }

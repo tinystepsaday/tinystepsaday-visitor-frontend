@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Download, CreditCard, Search, Filter } from "lucide-react";
+import Link from "next/link";
+import DashboardPageHeader from "./DashboardPageHeader";
 
 // Mock data
 const paymentHistory = [
@@ -128,17 +130,12 @@ const PaymentHistory = () => {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Payment History</h1>
-        <p className="text-muted-foreground">
-          View and manage your past transactions.
-        </p>
-      </div>
+      <DashboardPageHeader title="Payment History" subtitle="View and manage your past transactions." />
       
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="px-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted-foreground mb-1">Total Spent</p>
@@ -152,7 +149,7 @@ const PaymentHistory = () => {
         </Card>
         
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="px-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted-foreground mb-1">Course Purchases</p>
@@ -168,7 +165,7 @@ const PaymentHistory = () => {
         </Card>
         
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="px-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted-foreground mb-1">Session Bookings</p>
@@ -274,7 +271,7 @@ const PaymentTable = ({
           Try adjusting your search or explore our courses to make a purchase.
         </p>
         <Button asChild>
-          <a href="/courses">Browse Courses</a>
+          <Link href="/courses">Browse Courses</Link>
         </Button>
       </div>
     );
@@ -282,10 +279,10 @@ const PaymentTable = ({
 
   return (
     <Card>
-      <CardHeader className="px-6 py-5">
+      <CardHeader className="px-6 py-4">
         <CardTitle>Transaction History</CardTitle>
       </CardHeader>
-      <CardContent className="p-0">
+      <CardContent className="px-0">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>

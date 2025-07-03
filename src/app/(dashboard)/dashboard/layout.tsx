@@ -1,79 +1,72 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "../../globals.css";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/next"
-import { ThemeProvider } from "@/components/theme-provider"
-import { Toaster } from "sonner";
+"use client"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { useState } from "react";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { UserProfile } from "@/components/dashboard/UserProfile";
+import { DashboardNav } from "@/components/dashboard/DashboardNav";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import Link from "next/link";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "%s - Tiny Steps A Day | Actionable steps and daily habits to improve your life",
-  description: "Tiny Steps A Day is a source of actionable steps and daily habits to improve your life. Discover daily habits, tips, and strategies to make small changes that lead to big improvements. Start your journey to a better you today.",
-  keywords: ["tiny steps a day", "tiny steps", "a day", "actionable steps", "improve your life", "personal growth", "self improvement", "daily habits", "tips", "strategies", "small changes", "big improvements", "start your journey to a better you today", "personal growth", "self improvement", "daily habits", "tips", "strategies", "meditation", "mindfulness", "mindfulness meditation", "mindfulness practice", "mindfulness exercises", "mindfulness techniques", "mindfulness tips", "mindfulness strategies", "spirituality", "career guidance", "career development", "career advice", "career tips", "career strategies", "career planning", "love", "the law of one", "the law of attraction", "the law of abundance", "the law of prosperity", "the law of success", "mental health", "life direction", "purpose", "mentorship"],
-  icons: {
-    icon: "/favicon.ico",
-  },
-  openGraph: {
-    title: "%s - Tiny Steps A Day | Actionable steps and daily habits to improve your life",
-    description: "Tiny Steps A Day is a source of actionable steps and daily habits to improve your life. Discover daily habits, tips, and strategies to make small changes that lead to big improvements. Start your journey to a better you today.",
-    images: ["https://www.tinystepsaday.com/cover-image.jpg"],
-    url: "https://www.tinystepsaday.com",
-    siteName: "Tiny Steps A Day",
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "%s - Tiny Steps A Day | Actionable steps and daily habits to improve your life",
-    description: "Tiny Steps A Day is a source of actionable steps and daily habits to improve your life. Discover daily habits, tips, and strategies to make small changes that lead to big improvements. Start your journey to a better you today.",
-    images: ["https://www.tinystepsaday.com/cover-image.jpg"],
-  },
-  alternates: {
-    canonical: "https://www.tinystepsaday.com",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-    },
-  },
-  metadataBase: new URL("https://www.tinystepsaday.com"),
-};
-
-export default function RootLayout({
+export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col w-full justify-start items-center`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+    <div className="min-h-screen bg-muted/30 flex w-full">
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex md:w-64 lg:w-72 bg-background flex-col border-r border-border h-screen sticky top-0">
+        <div className="p-6">
+          <Link href="/" className="text-xl font-bold gradient-text inline-block">
+            Tiny Steps A Day
+          </Link>
+        </div>
+        
+        <UserProfile />
+        <DashboardNav />
+      </aside>
+      
+      {/* Mobile Sidebar Overlay */}
+      <div 
+        className={`
+          fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-200
+          ${isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
+        `} 
+        onClick={toggleSidebar}
+      />
+      
+      {/* Mobile Sidebar */}
+      <aside className={`
+        fixed left-0 top-0 z-50 h-screen w-72 bg-background md:hidden transform transition-transform duration-300 ease-in-out
+        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+      `}>
+        <div className="p-6 flex items-center justify-between">
+          <Link href="/" className="text-xl font-bold gradient-text inline-block">
+            Tiny Steps A Day
+          </Link>
+          <Button variant="ghost" size="icon" onClick={toggleSidebar}>
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+        
+        <UserProfile />
+        <DashboardNav onItemClick={toggleSidebar} />
+      </aside>
+      
+      <main className="flex-grow">
+        <DashboardHeader onToggleSidebar={toggleSidebar} />
+        
+        <div className="p-6 md:p-10">
           {children}
-          <Toaster richColors />
-        </ThemeProvider>
-        <SpeedInsights />
-        <Analytics />
-      </body>
-    </html>
+        </div>
+      </main>
+    </div>
   );
 }

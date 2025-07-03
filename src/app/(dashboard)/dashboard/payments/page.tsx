@@ -1,7 +1,5 @@
-import React from 'react'
+import PaymentHistory from "@/components/dashboard/PaymentHistory";
 
-export default function page() {
-  return (
-    <div>Payments</div>
-  )
+export default function PaymentsPage() {
+  return <PaymentHistory />;
 }

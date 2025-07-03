@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { SectionHeader } from "@/components/ui/section-header";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Mail, MessageSquare, Phone } from "lucide-react";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { NewsletterSubscription } from "@/components/contact/NewsletterSubscription";
@@ -141,8 +141,10 @@ export default function ContactPage() {
           <div className="grid gap-6">
             {faqs.map((faq, index) => (
               <Card key={index}>
-                <CardContent className="p-6">
-                  <h4 className="text-lg font-semibold mb-2">{faq.question}</h4>
+                <CardHeader className="px-6">
+                  <h4 className="text-lg font-semibold">{faq.question}</h4>
+                </CardHeader>
+                <CardContent className="px-6">
                   <p className="text-muted-foreground">{faq.answer}</p>
                 </CardContent>
               </Card>

@@ -1,7 +1,5 @@
-import React from 'react'
+import ScheduledConsultations from "@/components/dashboard/ScheduledConsultations";
 
-export default function page() {
-  return (
-    <div>Consultations</div>
-  )
+export default function ConsultationsPage() {
+  return <ScheduledConsultations />;
 }

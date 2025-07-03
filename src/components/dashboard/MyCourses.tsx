@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import DashboardPageHeader from "./DashboardPageHeader";
 
 const allCourses = [
   {
@@ -148,12 +149,7 @@ const MyCourses = () => {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">My Courses</h1>
-        <p className="text-muted-foreground">
-          Track your progress and continue your learning journey.
-        </p>
-      </div>
+      <DashboardPageHeader title="My Courses" subtitle="Track your progress and continue your learning journey." />
 
       <div className="mb-8 flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">

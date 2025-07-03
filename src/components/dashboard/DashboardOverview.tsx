@@ -133,7 +133,7 @@ const DashboardOverview = () => {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         {stats.map((stat, index) => (
           <Card key={index} className="animate-fade-in">
-            <CardContent className="p-6">
+            <CardContent className="px-6">
               <div className="flex justify-between items-start mb-4">
                 <div className={`p-3 rounded-lg ${stat.color}`}>
                   {stat.icon}
@@ -175,7 +175,7 @@ const DashboardOverview = () => {
                   className="h-full w-full object-cover transition-transform hover:scale-105 duration-300"
                 />
               </div>
-              <CardContent className="p-6">
+              <CardContent className="px-6">
                 <h3 className="font-semibold mb-4 line-clamp-1">
                   {course.title}
                 </h3>
@@ -198,7 +198,7 @@ const DashboardOverview = () => {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="px-6 py-4 bg-muted/30 border-t">
+              <CardFooter className="px-6 border-t">
                 <Button className="w-full" asChild>
                   <Link href={`/courses/${course.slug}`}>
                     Continue Learning

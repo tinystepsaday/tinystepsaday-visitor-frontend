@@ -10,6 +10,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { ChevronLeft, BookOpen, FileText, PlayCircle, Award, CheckCircle, Clock } from "lucide-react";
 import { getCourseBySlug, getAllCourses } from "@/data/courses";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface CourseLearningPageProps {
   params: Promise<{ slug: string }>;
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: CourseLearningPageProps): Pro
   }
 
   return {
-    title: `Learning: ${course.title} | InnerPath Journey`,
+    title: `Learning: ${course.title} | Tiny Steps A Day`,
     description: `Continue your learning journey with ${course.title}`,
   };
 }
@@ -49,7 +50,7 @@ export default async function CourseLearningPage({ params }: CourseLearningPageP
   return (
     <div className="min-h-screen bg-background w-full">
       {/* Header */}
-      <div className="border-b bg-card mt-1 w-full">
+      <div className="border-b bg-card w-full sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -62,6 +63,7 @@ export default async function CourseLearningPage({ params }: CourseLearningPageP
             </div>
             
             <div className="flex items-center space-x-4">
+              <ThemeToggle />
               <div className="text-sm text-muted-foreground">
                 <span className="font-medium">0%</span> Complete
               </div>
@@ -75,7 +77,7 @@ export default async function CourseLearningPage({ params }: CourseLearningPageP
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="sticky top-8">
+            <div className="sticky top-20">
               <div className="bg-card rounded-lg border p-4">
                 <h3 className="font-semibold mb-4">Course Content</h3>
                 

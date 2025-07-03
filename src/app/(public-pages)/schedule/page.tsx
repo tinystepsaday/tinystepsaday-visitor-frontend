@@ -114,7 +114,7 @@ export default function SchedulePage() {
       <div className="max-w-4xl mx-auto mt-16 md:mt-24">
         <div className="flex items-center gap-2 mb-8">
           <CalendarCheck className="h-6 w-6 text-primary" />
-          <h1 className="text-3xl font-bold">Schedule a Consultation</h1>
+          <h1 className="text-4xl md:text-5xl text-primary font-bold">Schedule a Consultation</h1>
         </div>
 
         <ScheduleForm />

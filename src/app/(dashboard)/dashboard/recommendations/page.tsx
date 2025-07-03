@@ -1,7 +1,5 @@
-import React from 'react'
+import QuizRecommendations from "@/components/dashboard/QuizRecommendations";
 
-export default function page() {
-  return (
-    <div>Recommendations</div>
-  )
+export default function RecommendationsPage() {
+  return <QuizRecommendations />;
 }

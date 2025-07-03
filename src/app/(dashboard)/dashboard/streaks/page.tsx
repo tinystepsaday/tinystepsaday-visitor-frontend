@@ -1,7 +1,5 @@
-import React from 'react'
+import { UserStreaks } from "@/components/dashboard/UserStreaks";
 
-export default function page() {
-  return (
-    <div>Streaks</div>
-  )
+export default function StreaksPage() {
+  return <UserStreaks />;
 }

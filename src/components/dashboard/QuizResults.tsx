@@ -1,11 +1,11 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SectionHeader } from "@/components/ui/section-header";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { format } from "date-fns";
 import Link from "next/link";
+import DashboardPageHeader from "./DashboardPageHeader";
 
 // Mock quiz result data - in a real app, you'd fetch this from localStorage or backend
 const quizResultsData = [
@@ -30,10 +30,7 @@ const quizResultsData = [
 const QuizResults = () => {
   return (
     <div>
-      <SectionHeader
-        title="Your Quiz Results"
-        subtitle="Review your assessment results and track your progress"
-      />
+      <DashboardPageHeader title="Your Quiz Results" subtitle="Review your assessment results and track your progress" />
       
       {quizResultsData.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2">

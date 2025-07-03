@@ -8,10 +8,15 @@ export default function ConditionalNavbar() {
   
   // Hide navbar on course learning pages
   const isCourseLearningPage = pathname?.includes("/courses/") && pathname?.includes("/learning");
+
   
   if (isCourseLearningPage) {
     return null;
   }
   
+  if (pathname?.includes("/quiz/")) {
+    return null;
+  }
+
   return <Navbar />;
 } 
