@@ -51,7 +51,7 @@ export default function ProgramsPage() {
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https://www.tinystepsaday.com/programs"
-        }
+        },
     };
 
     return (
@@ -166,7 +166,7 @@ export default function ProgramsPage() {
             </section>
 
             {/* Mental Health Support */}
-            <section id="mental-health" className="py-20 bg-muted">
+            <section id="mental-health" className="py-20 bg-muted w-full">
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         <div className="order-2 lg:order-1 relative">
@@ -255,7 +255,7 @@ export default function ProgramsPage() {
             </section>
 
             {/* Career Guidance */}
-            <section id="career" className="py-20 bg-background">
+            <section id="career" className="py-20 bg-background w-full">
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         <div>
@@ -344,7 +344,7 @@ export default function ProgramsPage() {
             </section>
 
             {/* Life Direction */}
-            <section id="life-direction" className="py-20 bg-muted">
+            <section id="life-direction" className="py-20 bg-muted w-full">
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         <div className="order-2 lg:order-1 relative">
@@ -630,7 +630,7 @@ export default function ProgramsPage() {
                 title="Begin Your Transformative Journey Today"
                 subtitle="Take the first step towards personal growth, clarity, and authentic living with our expert guidance"
                 buttonText="Schedule a Free Consultation"
-                buttonLink="/contact"
+                buttonLink="/schedule"
             />
         </>
     );
