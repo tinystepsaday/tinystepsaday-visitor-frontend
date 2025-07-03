@@ -1,0 +1,238 @@
+"use client"
+
+import type * as React from "react"
+import {
+  BarChart3,
+  BookOpen,
+  FileText,
+  GraduationCap,
+  Home,
+  ImageIcon,
+  Settings,
+  Users,
+  ChevronRight,
+  Bell,
+} from "lucide-react"
+
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+} from "@/components/ui/sidebar"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
+const data = {
+  user: {
+    name: "John Doe",
+    email: "john@example.com",
+    avatar: "/placeholder.svg?height=32&width=32",
+  },
+  navMain: [
+    {
+      title: "Dashboard",
+      url: "/management",
+      icon: Home,
+    },
+    {
+      title: "Analytics",
+      url: "/management/analytics",
+      icon: BarChart3,
+    },
+    {
+      title: "Notifications",
+      url: "/management/notifications",
+      icon: Bell,
+    },
+  ],
+  navContent: [
+    {
+      title: "Blog",
+      icon: FileText,
+      items: [
+        {
+          title: "All Posts",
+          url: "/management/blog",
+        },
+        {
+          title: "Create Post",
+          url: "/management/blog/create",
+        },
+        {
+          title: "Categories",
+          url: "/management/blog/categories",
+        },
+        {
+          title: "Tags",
+          url: "/management/blog/tags",
+        },
+      ],
+    },
+    {
+      title: "Courses",
+      icon: GraduationCap,
+      items: [
+        {
+          title: "All Courses",
+          url: "/management/courses",
+        },
+        {
+          title: "Create Course",
+          url: "/management/courses/create",
+        },
+        {
+          title: "Categories",
+          url: "/management/courses/categories",
+        },
+        {
+          title: "Students",
+          url: "/management/courses/students",
+        },
+      ],
+    },
+    {
+      title: "Media",
+      icon: ImageIcon,
+      items: [
+        {
+          title: "All Files",
+          url: "/management/media",
+        },
+        {
+          title: "Upload",
+          url: "/management/gallery",
+        },
+      ],
+    },
+  ],
+  navManagement: [
+    {
+      title: "Users",
+      url: "/management/users",
+      icon: Users,
+    },
+    {
+      title: "Settings",
+      url: "/management/settings",
+      icon: Settings,
+    },
+  ],
+}
+
+export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  return (
+    <Sidebar variant="inset" {...props}>
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <a href="/management">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <BookOpen className="size-4" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">Tiny Steps A Day</span>
+                  <span className="truncate text-xs">Dashboard</span>
+                </div>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Overview</SidebarGroupLabel>
+          <SidebarMenu>
+            {data.navMain.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild>
+                  <a href={item.url}>
+                    <item.icon />
+                    <span>{item.title}</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Content Management</SidebarGroupLabel>
+          <SidebarMenu>
+            {data.navContent.map((item) => (
+              <Collapsible key={item.title} asChild defaultOpen>
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton tooltip={item.title}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                      <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {item.items?.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.title}>
+                          <SidebarMenuSubButton asChild>
+                            <a href={subItem.url}>
+                              <span>{subItem.title}</span>
+                            </a>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Management</SidebarGroupLabel>
+          <SidebarMenu>
+            {data.navManagement.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild>
+                  <a href={item.url}>
+                    <item.icon />
+                    <span>{item.title}</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <div className="flex items-center gap-2">
+                <Avatar className="h-8 w-8 rounded-lg">
+                  <AvatarImage src={data.user.avatar || "/placeholder.svg"} alt={data.user.name} />
+                  <AvatarFallback className="rounded-lg">JD</AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">{data.user.name}</span>
+                  <span className="truncate text-xs">{data.user.email}</span>
+                </div>
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
+  )
+} 
