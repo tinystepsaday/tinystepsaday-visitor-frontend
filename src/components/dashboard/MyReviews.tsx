@@ -39,6 +39,7 @@ import StarRating from "@/components/ratings/StarRating";
 import ReviewForm from "@/components/ratings/ReviewForm";
 import { toast } from "sonner";
 import Image from "next/image";
+import Link from "next/link";
 
 const MyReviews = () => {
   const [isReviewSheetOpen, setIsReviewSheetOpen] = useState(false);
@@ -210,7 +211,7 @@ const MyReviews = () => {
                 You haven&apos;t purchased any products yet.
               </p>
               <Button asChild>
-                <a href="/shop">Browse Shop</a>
+                <Link href="/shop">Browse Shop</Link>
               </Button>
             </div>
           )}
