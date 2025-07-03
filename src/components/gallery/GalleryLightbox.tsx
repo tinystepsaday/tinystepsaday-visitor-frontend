@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -21,7 +21,27 @@ interface GalleryLightboxProps {
 export const GalleryLightbox = ({ images }: GalleryLightboxProps) => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
 
-  // Keyboard navigation
+  const closeLightbox = useCallback(() => {
+    setSelectedImage(null);
+    document.body.style.overflow = 'unset';
+  }, []);
+
+  const goToNext = useCallback(() => {
+    if (selectedImage !== null) {
+      const currentIndex = images.findIndex(img => img.id === selectedImage);
+      const nextIndex = (currentIndex + 1) % images.length;
+      setSelectedImage(images[nextIndex].id);
+    }
+  }, [selectedImage, images]);
+
+  const goToPrevious = useCallback(() => {
+    if (selectedImage !== null) {
+      const currentIndex = images.findIndex(img => img.id === selectedImage);
+      const prevIndex = (currentIndex - 1 + images.length) % images.length;
+      setSelectedImage(images[prevIndex].id);
+    }
+  }, [selectedImage, images]);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (selectedImage === null) return;
@@ -41,34 +61,11 @@ export const GalleryLightbox = ({ images }: GalleryLightboxProps) => {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [selectedImage, images]);
+  }, [selectedImage, images, goToNext, goToPrevious, closeLightbox]);  
 
   const openLightbox = (id: number) => {
     setSelectedImage(id);
-    // Prevent body scroll when lightbox is open
     document.body.style.overflow = 'hidden';
-  };
-
-  const closeLightbox = () => {
-    setSelectedImage(null);
-    // Restore body scroll
-    document.body.style.overflow = 'unset';
-  };
-
-  const goToNext = () => {
-    if (selectedImage !== null) {
-      const currentIndex = images.findIndex(img => img.id === selectedImage);
-      const nextIndex = (currentIndex + 1) % images.length;
-      setSelectedImage(images[nextIndex].id);
-    }
-  };
-
-  const goToPrevious = () => {
-    if (selectedImage !== null) {
-      const currentIndex = images.findIndex(img => img.id === selectedImage);
-      const prevIndex = (currentIndex - 1 + images.length) % images.length;
-      setSelectedImage(images[prevIndex].id);
-    }
   };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -97,7 +94,6 @@ export const GalleryLightbox = ({ images }: GalleryLightboxProps) => {
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
             
-            {/* Overlay with image info */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                 {image.title && (
@@ -109,7 +105,6 @@ export const GalleryLightbox = ({ images }: GalleryLightboxProps) => {
               </div>
             </div>
             
-            {/* Category badge */}
             {image.category && (
               <div className="absolute top-2 right-2">
                 <span className="px-2 py-1 text-xs bg-white/20 backdrop-blur-sm rounded-full text-white">
@@ -121,7 +116,6 @@ export const GalleryLightbox = ({ images }: GalleryLightboxProps) => {
         ))}
       </div>
 
-      {/* Lightbox */}
       {selectedImage !== null && selectedImageData && (
         <div 
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center"
