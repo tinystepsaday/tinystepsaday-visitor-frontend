@@ -17,6 +17,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 
+interface CourseInfo {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  image: string;
+}
+
 
 const getUserSubscriptionDiscount = () => {
   if (typeof window === 'undefined') return 0;
@@ -55,6 +64,9 @@ interface CourseInfo {
   averageRating: number;
   reviewCount: number;
   slug: string;
+  lessons: number;
+  faqs: string[];
+  requirements: string[];
 }
 
 interface CheckoutFormProps {
@@ -65,11 +77,12 @@ interface CheckoutFormProps {
   courseInfo?: CourseInfo | null;
 }
 
-export default function CheckoutForm({ tierInfo, courseInfo }: CheckoutFormProps) {
+export default function CheckoutForm({ tierInfo, courseInfo: propCourseInfo }: CheckoutFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [paymentStep, setPaymentStep] = useState(1);
+  const [courseInfo, setCourseInfo] = useState<CourseInfo | null>(propCourseInfo || null);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -90,7 +103,34 @@ export default function CheckoutForm({ tierInfo, courseInfo }: CheckoutFormProps
     if (searchParams.get('tier')) {
       setBillingCycle(searchParams.get('billingCycle') as "monthly" | "yearly" | "threeYear" || "monthly");
     }
-  }, [searchParams]);
+    
+    // Handle course enrollment from URL
+    const courseSlug = searchParams.get('course');
+    if (courseSlug && !courseInfo) {
+      // Fetch course data from the courses data
+      import('@/data/courses').then(({ getCourseBySlug }) => {
+        getCourseBySlug(courseSlug).then((course) => {
+          if (course) {
+            const courseInfo: CourseInfo = {
+              id: course.id,
+              name: course.title,
+              slug: course.slug,
+              description: course.description,
+              price: course.sale ? course.salePrice! : course.price,
+              image: course.image,
+              category: course.category,
+              averageRating: course.rating,
+              reviewCount: course.reviews,
+              lessons: course.curriculum.reduce((total, module) => total + module.lessons.length, 0),
+              faqs: course.faqs.map((faq) => faq.question),
+              requirements: course.requirements,
+            };
+            setCourseInfo(courseInfo);
+          }
+        });
+      });
+    }
+  }, [searchParams, courseInfo]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

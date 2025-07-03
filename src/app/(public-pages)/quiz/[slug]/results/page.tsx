@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import QuizResultsClient from "@/components/quiz/QuizResultsClient";
 import { getAllQuizzes, getQuizById } from "@/data/quizzes";
 
@@ -50,5 +51,9 @@ export default async function QuizResultsPage({ params }: QuizResultsPageProps) 
     notFound();
   }
 
-  return <QuizResultsClient quiz={quiz} />;
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading quiz results...</div>}>
+      <QuizResultsClient quiz={quiz} />
+    </Suspense>
+  );
 }
