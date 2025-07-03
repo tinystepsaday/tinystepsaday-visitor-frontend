@@ -32,7 +32,7 @@ const Hero = () => {
             
             <div className="flex flex-wrap gap-4 pt-2">
               <Button size="lg" asChild className="rounded-full">
-                <Link href="/assessment">
+                <Link href="/quiz">
                   Start Your Journey <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>

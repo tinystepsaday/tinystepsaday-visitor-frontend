@@ -181,7 +181,7 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
         </div>
 
         <Tabs defaultValue="details" className="mb-12">
-          <TabsList className="w-full justify-start">
+          <TabsList className="w-full justify-start flex-wrap md:flex-nowrap">
             <TabsTrigger value="details">Product Details</TabsTrigger>
             <TabsTrigger value="specifications">Specifications</TabsTrigger>
             <TabsTrigger value="shipping">Shipping & Returns</TabsTrigger>
