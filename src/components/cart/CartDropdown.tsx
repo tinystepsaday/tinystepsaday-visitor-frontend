@@ -15,6 +15,7 @@ import { useCartStore } from "@/store/cartStore";
 import type { CartItem as CartItemType } from "@/store/cartStore";
 import CartItem from "./CartItem";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface CartDropdownProps {
   open: boolean;
@@ -23,7 +24,7 @@ interface CartDropdownProps {
 
 const CartDropdown: React.FC<CartDropdownProps> = ({ open, onOpenChange }) => {
   const { items, totalItems, totalPrice, updateQuantity, removeItem, clearCart } = useCartStore();
-
+  const router = useRouter();
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-md">
@@ -64,8 +65,11 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ open, onOpenChange }) => {
                   Shipping and taxes calculated at checkout
                 </p>
                 <div className="flex flex-col gap-2">
-                  <Button asChild className="w-full">
-                    <Link href="/checkout">Checkout</Link>
+                  <Button className="w-full" onClick={() => {
+                    onOpenChange(false);
+                    router.push("/checkout");
+                  }}>
+                    Checkout
                   </Button>
                   <Button variant="outline" onClick={clearCart} className="w-full">
                     Clear Cart
