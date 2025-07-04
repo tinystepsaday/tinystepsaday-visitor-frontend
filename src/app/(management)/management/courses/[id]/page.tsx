@@ -24,6 +24,7 @@ import {
   ArrowLeft,
 } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 export default function CourseDetailPage() {
   const params = useParams()
@@ -65,7 +66,7 @@ export default function CourseDetailPage() {
         <div className="text-center">
           <h2 className="text-2xl font-bold">Course Not Found</h2>
           <p className="text-muted-foreground mb-4">The course you&apos;re looking for doesn&apos;t exist.</p>
-          <Link href="/courses">
+          <Link href="/management/courses">
             <Button>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Courses
@@ -86,7 +87,7 @@ export default function CourseDetailPage() {
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Link href="/courses">
+          <Link href="/management/courses">
             <Button variant="outline" size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back
@@ -98,7 +99,7 @@ export default function CourseDetailPage() {
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <Link href={`/courses/${course.id}/edit`}>
+          <Link href={`/management/courses/${course.id}/edit`}>
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />
               Edit Course
@@ -116,10 +117,12 @@ export default function CourseDetailPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               {course.thumbnail && (
-                <img
-                  src={course.thumbnail || "/placeholder.svg"}
-                  alt={course.title}
+                <Image
+                  src={course.thumbnail}
+                  alt={course.title }
                   className="w-full h-32 object-cover rounded-md"
+                  width={200}
+                  height={200}
                 />
               )}
 

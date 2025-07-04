@@ -18,6 +18,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { MediaSelector } from "@/components/media-selector"
+import Image from "next/image"
 
 const columns: ColumnDef<MediaFile>[] = [
   {
@@ -25,10 +26,12 @@ const columns: ColumnDef<MediaFile>[] = [
     header: "File",
     cell: ({ row }) => (
       <div className="flex items-center space-x-3">
-        <img
+        <Image
           src={row.original.url || "/placeholder.svg"}
           alt={row.original.alt || row.original.name}
           className="h-10 w-10 rounded object-cover"
+          width={40}
+          height={40}
         />
         <div>
           <div className="font-medium">{row.getValue("name")}</div>

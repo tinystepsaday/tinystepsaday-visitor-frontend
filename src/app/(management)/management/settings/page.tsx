@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator"
 import { Save, Upload, Trash2, Bell, Shield, Globe, Palette } from "lucide-react"
 import { MediaSelector } from "@/components/media-selector"
+import Image from "next/image"
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
@@ -178,12 +179,12 @@ export default function SettingsPage() {
               <CardDescription>Customize your site&apos;s visual identity</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-4">
+              <div className="space-y-4"> 
                 <div className="space-y-2">
                   <Label>Site Logo</Label>
                   {settings.logo ? (
                     <div className="flex items-center space-x-4">
-                      <img src={settings.logo || "/placeholder.svg"} alt="Site logo" className="h-12 w-auto" />
+                      <Image src={settings.logo || "/placeholder.svg"} alt="Site logo" className="h-12 w-auto" width={100} height={100} />
                       <Button variant="outline" size="sm" onClick={() => updateSetting("logo", "")}>
                         <Trash2 className="mr-2 h-4 w-4" />
                         Remove
@@ -205,7 +206,7 @@ export default function SettingsPage() {
                   <Label>Favicon</Label>
                   {settings.favicon ? (
                     <div className="flex items-center space-x-4">
-                      <img src={settings.favicon || "/placeholder.svg"} alt="Favicon" className="h-8 w-8" />
+                      <Image src={settings.favicon || "/placeholder.svg"} alt="Favicon" className="h-8 w-8" width={100} height={100} />
                       <Button variant="outline" size="sm" onClick={() => updateSetting("favicon", "")}>
                         <Trash2 className="mr-2 h-4 w-4" />
                         Remove
