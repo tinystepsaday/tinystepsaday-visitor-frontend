@@ -1,0 +1,8 @@
+export { CourseFormClient } from "./CourseFormClient"
+export { GeneralInfoTab } from "./GeneralInfoTab"
+export { ModulesTab } from "./ModulesTab"
+export { QuizzesTab } from "./QuizzesTab"
+export { NotesTab } from "./NotesTab"
+export { TasksTab } from "./TasksTab"
+export { SEOTab } from "./SEOTab"
+export { QuizBuilderModal } from "./QuizBuilderModal" 
