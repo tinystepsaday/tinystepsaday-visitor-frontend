@@ -1,5 +1,42 @@
 import { SectionHeader } from "@/components/ui/section-header";
 import CommunityCard from "@/components/community/CommunityCard";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Community | Tiny Steps A Day",
+  description: "Join our community of like-minded individuals on your journey of personal growth and transformation",
+  keywords: ["tiny steps a day", "tiny steps", "a day", "actionable steps", "improve your life", "personal growth", "self improvement", "daily habits", "tips", "strategies", "small changes", "big improvements", "start your journey to a better you today", "personal growth", "self improvement", "daily habits", "tips", "strategies", "meditation", "mindfulness", "mindfulness meditation", "mindfulness practice", "mindfulness exercises", "mindfulness techniques", "mindfulness tips", "mindfulness strategies", "spirituality", "community", "community engagement", "community support", "community growth", "community development", "community engagement", "community support", "community growth", "community development"],
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "Community | Tiny Steps A Day",
+    description: "Join our community of like-minded individuals on your journey of personal growth and transformation",
+    images: ["https://www.tinystepsaday.com/banner-image.jpg"],
+    url: "https://www.tinystepsaday.com",
+    siteName: "Tiny Steps A Day",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Community | Tiny Steps A Day",
+    description: "Join our community of like-minded individuals on your journey of personal growth and transformation",
+    images: ["https://www.tinystepsaday.com/banner-image.jpg"],
+  },
+  alternates: {
+    canonical: "https://www.tinystepsaday.com/community",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+  metadataBase: new URL("https://www.tinystepsaday.com"),
+};
 
 const Community = () => {
   const communities = [
@@ -29,8 +66,46 @@ const Community = () => {
     },
   ];
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Tiny Steps A Day",
+    url: "https://www.tinystepsaday.com",
+    description: "Join our community of like-minded individuals on your journey of personal growth and transformation",
+    image: "https://www.tinystepsaday.com/banner-image.jpg",
+    sameAs: [
+      "https://x.com/tiny_steps_aday",
+      "https://www.instagram.com/tiny_steps_aday/",
+      "https://www.facebook.com/tiny_steps_aday/",
+      "https://www.youtube.com/@tiny_steps_aday/",
+    ],
+    author: {
+      "@type": "Person",
+      name: "Tiny Steps A Day",
+      url: "https://www.tinystepsaday.com",
+    },
+    publisher: {
+      "@type": "Company",
+      name: "Tiny Steps A Day",
+      url: "https://www.tinystepsaday.com",
+    },
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Tiny Steps A Day",
+      url: "https://www.tinystepsaday.com",
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      url: "https://www.tinystepsaday.com/community",
+    }
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="container py-8 w-full flex flex-col gap-4 items-center mt-10 max-w-7xl mx-auto">
         <SectionHeader
           title="Our Communities"

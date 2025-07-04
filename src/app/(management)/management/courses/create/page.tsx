@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import type { Quiz, QuizSettings } from "@/lib/types"
+import Image from "next/image"
 
 type CourseFormData = z.infer<typeof courseSchema>
 
@@ -280,7 +281,7 @@ export default function CreateCoursePage() {
         description: "Course created successfully",
       })
 
-      router.push(`/courses/${savedCourse.id}`)
+      router.push(`/management/courses/${savedCourse.id}`)
     } catch (error) {
       console.error("Failed to create course:", error)
       toast({
@@ -518,10 +519,12 @@ export default function CreateCoursePage() {
                     <CardContent>
                       {thumbnail ? (
                         <div className="space-y-2">
-                          <img
+                          <Image
                             src={thumbnail || "/placeholder.svg"}
                             alt="Course thumbnail"
                             className="w-full h-32 object-cover rounded-md"
+                            width={200}
+                            height={200}
                           />
                           <Button type="button" variant="outline" size="sm" onClick={() => setThumbnail("")}>
                             Remove Image
