@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, Plus, Edit, Trash2, DollarSign, Eye } from "lucide-react"
+import { MoreHorizontal, Plus, Edit, Trash2, DollarSign, Eye, Users } from "lucide-react"
 import { storage } from "@/lib/storage"
 import type { Course } from "@/lib/types"
 import { DataTable } from "@/components/data-table"
@@ -151,8 +151,9 @@ export default function CoursesPage() {
                 <Edit className="mr-2 h-4 w-4" />
                 Edit
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push(`/management/courses/${course.id}/students`)}>
-                View Students
+              <DropdownMenuItem onClick={() => router.push(`/management/courses/${course.id}/learners`)}>
+                <Users className="mr-2 h-4 w-4" />
+                View Learners
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteCourse(course.id)}>

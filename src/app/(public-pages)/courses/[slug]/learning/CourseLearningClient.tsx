@@ -425,6 +425,7 @@ const CourseLearningClient = ({ course }: CourseLearningClientProps) => {
                     <TabsContent value="video" className="mt-6">
                       <CourseVideoPlayer 
                         lessonTitle={currentLesson.title}
+                        videoUrl={currentLesson.videoUrl}
                         onComplete={handleLessonComplete}
                       />
                     </TabsContent>

@@ -84,28 +84,34 @@ export default function CourseDetailPage() {
   )
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 w-full">
+      <div className="flex items-center flex-col w-full">
+        <div className="flex justify-between items-start space-y-4 w-full">
           <Link href="/management/courses">
             <Button variant="outline" size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back
             </Button>
           </Link>
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight">{course.title}</h2>
-            <p className="text-muted-foreground">{course.description}</p>
+          <div className="flex items-center space-x-2">
+            <Link href={`/management/courses/${course.id}/learners`}>
+              <Button variant="outline">
+                <Users className="mr-2 h-4 w-4" />
+                View Learners
+              </Button>
+            </Link>
+            <Link href={`/management/courses/${course.id}/edit`}>
+              <Button variant="outline">
+                <Edit className="mr-2 h-4 w-4" />
+                Edit Course
+              </Button>
+            </Link>
+            <Badge variant={course.status === "published" ? "default" : "secondary"}>{course.status}</Badge>
           </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <Link href={`/management/courses/${course.id}/edit`}>
-            <Button variant="outline">
-              <Edit className="mr-2 h-4 w-4" />
-              Edit Course
-            </Button>
-          </Link>
-          <Badge variant={course.status === "published" ? "default" : "secondary"}>{course.status}</Badge>
+        <div className="w-full mt-4">
+          <h2 className="text-3xl font-bold tracking-tight">{course.title}</h2>
+          <p className="text-muted-foreground">{course.description}</p>
         </div>
       </div>
 
@@ -119,7 +125,7 @@ export default function CourseDetailPage() {
               {course.thumbnail && (
                 <Image
                   src={course.thumbnail}
-                  alt={course.title }
+                  alt={course.title}
                   className="w-full h-32 object-cover rounded-md"
                   width={200}
                   height={200}
@@ -165,7 +171,7 @@ export default function CourseDetailPage() {
                   <span className="text-sm font-medium">Created</span>
                   <div className="flex items-center">
                     <Calendar className="mr-1 h-3 w-3" />
-                    <span>{course.createdAt.toLocaleDateString()}</span>
+                    <span>{new Date(course.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
               </div>
@@ -437,7 +443,7 @@ export default function CourseDetailPage() {
                           <Badge variant="outline">Task {index + 1}</Badge>
                           <CardTitle className="text-lg">{task.title}</CardTitle>
                         </div>
-                        {task.dueDate && <Badge variant="secondary">Due: {task.dueDate.toLocaleDateString()}</Badge>}
+                        {task.dueDate && <Badge variant="secondary">Due: {new Date(task.dueDate).toLocaleDateString()}</Badge>}
                       </div>
                       <CardDescription>{task.description}</CardDescription>
                     </CardHeader>

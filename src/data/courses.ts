@@ -1,8 +1,11 @@
 export interface Lesson {
   id: number;
   title: string;
-  type: "video" | "exercise" | "pdf" | "certificate";
+  type: "video" | "exercise" | "pdf" | "certificate" | "quiz" | "note";
   duration: string;
+  videoUrl?: string;
+  quizId?: string;
+  noteId?: string;
 }
 
 export interface Module {
@@ -114,19 +117,22 @@ export const courses: Course[] = [
             id: 1,
             title: "What is Mindfulness?",
             type: "video",
-            duration: "15:24"
+            duration: "15:24",
+            videoUrl: "https://www.youtube.com/watch?v=77-akvFPEdw&list=PLKiCse6nxKm_UP-RcdnBEpgawWRRr_tXE"
           },
           {
             id: 2,
             title: "The Science Behind Mindfulness",
             type: "video",
-            duration: "18:36"
+            duration: "18:36",
+            videoUrl: "https://www.youtube.com/watch?v=77-akvFPEdw&list=PLKiCse6nxKm_UP-RcdnBEpgawWRRr_tXE"
           },
           {
             id: 3,
             title: "Setting Up Your Practice",
             type: "video",
-            duration: "12:45"
+            duration: "12:45",
+            videoUrl: "https://www.youtube.com/watch?v=77-akvFPEdw&list=PLKiCse6nxKm_UP-RcdnBEpgawWRRr_tXE"
           },
           {
             id: 4,
