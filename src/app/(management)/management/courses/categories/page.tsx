@@ -3,7 +3,8 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { Plus, Edit, Trash2, Palette } from "lucide-react"
+import { Plus, Edit, Trash2, Palette, Check, ArrowLeft } from "lucide-react"
+import Link from "next/link"
 import { storage } from "@/lib/storage"
 import type { Category } from "@/lib/types"
 import { Button } from "@/components/ui/button"
@@ -21,7 +22,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 
 const colorOptions = [
   "#3b82f6",
@@ -45,7 +46,6 @@ export default function CourseCategoriesPage() {
     description: "",
     color: colorOptions[0],
   })
-  const { toast } = useToast()
 
   useEffect(() => {
     loadCategories()
@@ -69,11 +69,7 @@ export default function CourseCategoriesPage() {
     e.preventDefault()
 
     if (!formData.name.trim()) {
-      toast({
-        title: "Error",
-        description: "Category name is required",
-        variant: "destructive",
-      })
+      toast.error("Category name is required")
       return
     }
 
@@ -89,10 +85,7 @@ export default function CourseCategoriesPage() {
 
         if (updated) {
           setCategories(categories.map((cat) => (cat.id === editingCategory.id ? updated : cat)))
-          toast({
-            title: "Success",
-            description: "Category updated successfully",
-          })
+          toast("Category updated successfully");
         }
       } else {
         // Create new category
@@ -107,20 +100,13 @@ export default function CourseCategoriesPage() {
         })
 
         setCategories([...categories, newCategory])
-        toast({
-          title: "Success",
-          description: "Category created successfully",
-        })
+        toast("Category created successfully")
       }
 
       resetForm()
       setIsDialogOpen(false)
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to save category",
-        variant: "destructive",
-      })
+      toast("Failed to save category")
     }
   }
 
@@ -139,10 +125,7 @@ export default function CourseCategoriesPage() {
       const success = storage.deleteCategory(categoryId)
       if (success) {
         setCategories(categories.filter((cat) => cat.id !== categoryId))
-        toast({
-          title: "Success",
-          description: "Category deleted successfully",
-        })
+        toast("Category deleted successfully");
       }
     }
   }
@@ -153,78 +136,90 @@ export default function CourseCategoriesPage() {
       description: "",
       color: colorOptions[0],
     })
-    setEditingCategory(null)
+    setEditingCategory(null);
   }
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="flex items-center justify-between">
-        <div>
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 w-full">
+      <div className="flex items-start flex-col w-full">
+        <div className="flex items-center justify-between w-full">
+          <Link href="/management/courses">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+          </Link>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={resetForm}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Category
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{editingCategory ? "Edit Category" : "Create Category"}</DialogTitle>
+                <DialogDescription>
+                  {editingCategory ? "Update the category details" : "Add a new category for your courses"}
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Name</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="Category name"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      placeholder="Category description"
+                      rows={3}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Color</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {colorOptions.map((color) => (
+                        <Button
+                          key={color}
+                          type="button"
+                          className={`w-8 h-8 rounded-full border-2 relative ${formData.color === color ? "border-foreground" : "border-muted"
+                            }`}
+                          style={{ backgroundColor: color }}
+                          onClick={() => setFormData({ ...formData, color })}
+                          title={color}
+                        >
+                          {formData.color === color && (
+                            <Check className="h-4 w-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                          )}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <DialogFooter className="mt-6">
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit">{editingCategory ? "Update" : "Create"} Category</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+        <div className="w-full mt-4">
           <h2 className="text-3xl font-bold tracking-tight">Course Categories</h2>
           <p className="text-muted-foreground">Organize your courses into categories</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={resetForm}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Category
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{editingCategory ? "Edit Category" : "Create Category"}</DialogTitle>
-              <DialogDescription>
-                {editingCategory ? "Update the category details" : "Add a new category for your courses"}
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSubmit}>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="Category name"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Category description"
-                    rows={3}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Color</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {colorOptions.map((color) => (
-                      <button
-                        key={color}
-                        type="button"
-                        className={`w-8 h-8 rounded-full border-2 ${
-                          formData.color === color ? "border-foreground" : "border-muted"
-                        }`}
-                        style={{ backgroundColor: color }}
-                        onClick={() => setFormData({ ...formData, color })}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <DialogFooter className="mt-6">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit">{editingCategory ? "Update" : "Create"} Category</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
