@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 import { MediaSelector } from "@/components/media-selector"
 import Image from "next/image"
 import type { UseFormReturn } from "react-hook-form"
@@ -69,14 +71,33 @@ export function GeneralInfoTab({ form, thumbnail, onThumbnailChange, onTitleChan
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Short Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe what students will learn..."
+                      placeholder="Brief description for course listings..."
+                      className="min-h-[80px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="fullDescription"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Full Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Detailed description with HTML formatting..."
                       className="min-h-[120px]"
                       {...field}
                     />
                   </FormControl>
+                  <FormDescription>You can use HTML tags for formatting</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -96,10 +117,12 @@ export function GeneralInfoTab({ form, thumbnail, onThumbnailChange, onTitleChan
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="web-development">Web Development</SelectItem>
-                        <SelectItem value="mobile-development">Mobile Development</SelectItem>
-                        <SelectItem value="data-science">Data Science</SelectItem>
-                        <SelectItem value="design">Design</SelectItem>
+                        <SelectItem value="Mindfulness">Mindfulness</SelectItem>
+                        <SelectItem value="Personal Growth">Personal Growth</SelectItem>
+                        <SelectItem value="Mental Health">Mental Health</SelectItem>
+                        <SelectItem value="Career">Career</SelectItem>
+                        <SelectItem value="Relationships">Relationships</SelectItem>
+                        <SelectItem value="Spirituality">Spirituality</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -109,18 +132,23 @@ export function GeneralInfoTab({ form, thumbnail, onThumbnailChange, onTitleChan
 
               <FormField
                 control={form.control}
-                name="price"
+                name="level"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price ($)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="99.99"
-                        {...field}
-                        onChange={(e) => field.onChange(Number.parseFloat(e.target.value) || 0)}
-                      />
-                    </FormControl>
+                    <FormLabel>Level</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select level" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Beginner">Beginner</SelectItem>
+                        <SelectItem value="Intermediate">Intermediate</SelectItem>
+                        <SelectItem value="Advanced">Advanced</SelectItem>
+                        <SelectItem value="All Levels">All Levels</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -132,16 +160,14 @@ export function GeneralInfoTab({ form, thumbnail, onThumbnailChange, onTitleChan
               name="duration"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Duration (minutes)</FormLabel>
+                  <FormLabel>Duration</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
-                      placeholder="120"
+                      placeholder="e.g., 4 weeks, 6 hours"
                       {...field}
-                      onChange={(e) => field.onChange(Number.parseInt(e.target.value) || 0)}
                     />
                   </FormControl>
-                  <FormDescription>Total course duration in minutes</FormDescription>
+                  <FormDescription>How long the course takes to complete</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -155,7 +181,7 @@ export function GeneralInfoTab({ form, thumbnail, onThumbnailChange, onTitleChan
           <CardHeader>
             <CardTitle>Course Settings</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <FormField
               control={form.control}
               name="status"
@@ -178,6 +204,140 @@ export function GeneralInfoTab({ form, thumbnail, onThumbnailChange, onTitleChan
                 </FormItem>
               )}
             />
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Featured Course</Label>
+                  <p className="text-sm text-muted-foreground">Show on homepage</p>
+                </div>
+                <FormField
+                  control={form.control}
+                  name="featured"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Popular Course</Label>
+                  <p className="text-sm text-muted-foreground">Show in popular section</p>
+                </div>
+                <FormField
+                  control={form.control}
+                  name="popular"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Certificate</Label>
+                  <p className="text-sm text-muted-foreground">Offer completion certificate</p>
+                </div>
+                <FormField
+                  control={form.control}
+                  name="certification"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Pricing</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Regular Price ($)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="99.99"
+                      {...field}
+                      onChange={(e) => field.onChange(Number.parseFloat(e.target.value) || 0)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>On Sale</Label>
+                  <p className="text-sm text-muted-foreground">Offer discounted price</p>
+                </div>
+                <FormField
+                  control={form.control}
+                  name="sale"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="salePrice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sale Price ($)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="79.99"
+                        {...field}
+                        onChange={(e) => field.onChange(Number.parseFloat(e.target.value) || 0)}
+                        disabled={!form.watch("sale")}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </CardContent>
         </Card>
 

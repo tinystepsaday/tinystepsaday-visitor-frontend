@@ -1,16 +1,16 @@
 export interface Module {
-  id: string
+  id: number
   title: string
-  description: string
   lessons: Lesson[]
 }
 
 export interface Lesson {
-  id: string
+  id: number
   title: string
-  content: string
+  type: "video" | "exercise" | "pdf" | "certificate"
+  duration: string
+  content?: string
   videoUrl?: string
-  duration: number
 }
 
 export interface Note {
@@ -30,15 +30,41 @@ export interface Task {
   moduleId?: string
 }
 
+export interface Instructor {
+  id: number
+  name: string
+  title: string
+  bio: string
+  avatar: string
+  rating: number
+  students: number
+  courses: number
+}
+
+export interface FAQ {
+  id: number
+  question: string
+  answer: string
+}
+
 export interface CourseFormData {
   title: string
   slug: string
   description: string
+  fullDescription?: string
+  level: "Beginner" | "Intermediate" | "Advanced" | "All Levels"
+  duration: string
   thumbnail?: string
   price: number
+  sale?: boolean
+  salePrice?: number
   status: "draft" | "published" | "archived"
   category: string
-  duration: number
+  featured?: boolean
+  popular?: boolean
+  certification?: boolean
+  requirements?: string[]
+  instructor: Instructor
   seo?: {
     metaTitle?: string
     metaDescription?: string
@@ -57,4 +83,15 @@ export interface CourseCreationState {
   selectedQuiz: import("@/lib/types").Quiz | null
   isQuizBuilderOpen: boolean
   isLoading: boolean
+  faqs: FAQ[]
+  requirements: string[]
+  instructor: Instructor
+  fullDescription: string
+  level: "Beginner" | "Intermediate" | "Advanced" | "All Levels"
+  duration: string
+  featured: boolean
+  popular: boolean
+  certification: boolean
+  sale: boolean
+  salePrice?: number
 } 

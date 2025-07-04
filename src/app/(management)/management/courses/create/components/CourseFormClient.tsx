@@ -12,8 +12,8 @@ import { Save } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import type { Quiz } from "@/lib/types"
-import { generateSlug } from "../utils"
-import type { CourseFormData, Module, Note, Task } from "../types"
+import { generateSlug, createDefaultInstructor, calculateTotalDuration } from "../utils"
+import type { CourseFormData, Module, Note, Task, FAQ, Instructor } from "../types"
 import { GeneralInfoTab } from "./GeneralInfoTab"
 import { ModulesTab } from "./ModulesTab"
 import { QuizzesTab } from "./QuizzesTab"
@@ -21,6 +21,9 @@ import { NotesTab } from "./NotesTab"
 import { TasksTab } from "./TasksTab"
 import { SEOTab } from "./SEOTab"
 import { QuizBuilderModal } from "./QuizBuilderModal"
+import { FAQsTab } from "./FAQsTab"
+import { RequirementsTab } from "./RequirementsTab"
+import { InstructorTab } from "./InstructorTab"
 
 export function CourseFormClient() {
   const [thumbnail, setThumbnail] = useState<string>("")
@@ -28,6 +31,9 @@ export function CourseFormClient() {
   const [quizzes, setQuizzes] = useState<Quiz[]>([])
   const [notes, setNotes] = useState<Note[]>([])
   const [tasks, setTasks] = useState<Task[]>([])
+  const [faqs, setFaqs] = useState<FAQ[]>([])
+  const [requirements, setRequirements] = useState<string[]>([])
+  const [instructor, setInstructor] = useState<Instructor>(createDefaultInstructor())
   const [activeTab, setActiveTab] = useState("general")
   const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null)
   const [isQuizBuilderOpen, setIsQuizBuilderOpen] = useState(false)
@@ -42,11 +48,20 @@ export function CourseFormClient() {
       title: "",
       slug: "",
       description: "",
+      fullDescription: "",
+      level: "Beginner",
+      duration: "",
       thumbnail: "",
       price: 0,
+      sale: false,
+      salePrice: 0,
       status: "draft",
       category: "",
-      duration: 0,
+      featured: false,
+      popular: false,
+      certification: false,
+      requirements: [],
+      instructor: createDefaultInstructor(),
       seo: {
         metaTitle: "",
         metaDescription: "",
@@ -79,26 +94,41 @@ export function CourseFormClient() {
   const onSubmit = async (data: CourseFormData) => {
     setIsLoading(true)
     try {
+      // Calculate derived values
+      const totalDuration = calculateTotalDuration(modules)
+      
       const courseData = {
-        ...data,
+        title: data.title,
         slug: generateSlug(data.title),
-        thumbnail,
+        description: data.description,
+        thumbnail: thumbnail || data.thumbnail,
+        price: data.price,
+        status: data.status,
+        category: data.category,
         instructor: {
-          id: "1",
-          name: "John Doe",
-          email: "john@example.com",
+          id: instructor.id.toString(),
+          name: instructor.name,
+          email: "instructor@example.com", // Default email
+          avatar: instructor.avatar,
           role: "admin" as const,
-          createdAt: new Date(),
           isActive: true,
+          createdAt: new Date(),
         },
+        duration: parseInt(totalDuration) || 0,
         modules: modules.map((module, index) => ({
-          ...module,
+          id: module.id.toString(),
+          title: module.title,
+          description: "",
           order: index + 1,
           courseId: "",
           lessons: module.lessons.map((lesson, lessonIndex) => ({
-            ...lesson,
+            id: lesson.id.toString(),
+            title: lesson.title,
+            content: lesson.content || "",
+            videoUrl: lesson.videoUrl,
+            duration: parseInt(lesson.duration) || 0,
             order: lessonIndex + 1,
-            moduleId: module.id,
+            moduleId: module.id.toString(),
           })),
         })),
         quizzes: quizzes.map((quiz) => ({
@@ -164,10 +194,13 @@ export function CourseFormClient() {
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="general">General</TabsTrigger>
+          <TabsTrigger value="instructor">Instructor</TabsTrigger>
           <TabsTrigger value="modules">Modules</TabsTrigger>
           <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
+          <TabsTrigger value="requirements">Requirements</TabsTrigger>
+          <TabsTrigger value="faqs">FAQs</TabsTrigger>
           <TabsTrigger value="notes">Notes</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
           <TabsTrigger value="seo">SEO</TabsTrigger>
@@ -184,6 +217,13 @@ export function CourseFormClient() {
               />
             </TabsContent>
 
+            <TabsContent value="instructor" className="space-y-6">
+              <InstructorTab
+                instructor={instructor}
+                onInstructorChange={setInstructor}
+              />
+            </TabsContent>
+
             <TabsContent value="modules" className="space-y-6">
               <ModulesTab modules={modules} onModulesChange={setModules} />
             </TabsContent>
@@ -195,6 +235,17 @@ export function CourseFormClient() {
                 onQuizSelect={setSelectedQuiz}
                 onQuizBuilderOpen={() => setIsQuizBuilderOpen(true)}
               />
+            </TabsContent>
+
+            <TabsContent value="requirements" className="space-y-6">
+              <RequirementsTab
+                requirements={requirements}
+                onRequirementsChange={setRequirements}
+              />
+            </TabsContent>
+
+            <TabsContent value="faqs" className="space-y-6">
+              <FAQsTab faqs={faqs} onFAQsChange={setFaqs} />
             </TabsContent>
 
             <TabsContent value="notes" className="space-y-6">

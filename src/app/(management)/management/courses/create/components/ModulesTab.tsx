@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Plus, Trash2, GripVertical, Play } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Plus, Trash2, GripVertical, Play, FileText, BookOpen, Award } from "lucide-react"
 import type { Module, Lesson } from "../types"
+import { createDefaultModule, createDefaultLesson } from "../utils"
 
 interface ModulesTabProps {
   modules: Module[]
@@ -16,32 +18,22 @@ interface ModulesTabProps {
 
 export function ModulesTab({ modules, onModulesChange }: ModulesTabProps) {
   const addModule = () => {
-    const newModule: Module = {
-      id: Date.now().toString(),
-      title: "",
-      description: "",
-      lessons: [],
-    }
+    const newModule = createDefaultModule()
     onModulesChange([...modules, newModule])
   }
 
-  const updateModule = (moduleId: string, updates: Partial<Module>) => {
+  const updateModule = (moduleId: number, updates: Partial<Module>) => {
     onModulesChange(
       modules.map((module) => (module.id === moduleId ? { ...module, ...updates } : module))
     )
   }
 
-  const removeModule = (moduleId: string) => {
+  const removeModule = (moduleId: number) => {
     onModulesChange(modules.filter((module) => module.id !== moduleId))
   }
 
-  const addLesson = (moduleId: string) => {
-    const newLesson: Lesson = {
-      id: Date.now().toString(),
-      title: "",
-      content: "",
-      duration: 0,
-    }
+  const addLesson = (moduleId: number) => {
+    const newLesson = createDefaultLesson()
     onModulesChange(
       modules.map((module) =>
         module.id === moduleId ? { ...module, lessons: [...module.lessons, newLesson] } : module
@@ -49,7 +41,7 @@ export function ModulesTab({ modules, onModulesChange }: ModulesTabProps) {
     )
   }
 
-  const updateLesson = (moduleId: string, lessonId: string, updates: Partial<Lesson>) => {
+  const updateLesson = (moduleId: number, lessonId: number, updates: Partial<Lesson>) => {
     onModulesChange(
       modules.map((module) =>
         module.id === moduleId
@@ -64,7 +56,7 @@ export function ModulesTab({ modules, onModulesChange }: ModulesTabProps) {
     )
   }
 
-  const removeLesson = (moduleId: string, lessonId: string) => {
+  const removeLesson = (moduleId: number, lessonId: number) => {
     onModulesChange(
       modules.map((module) =>
         module.id === moduleId
@@ -72,6 +64,21 @@ export function ModulesTab({ modules, onModulesChange }: ModulesTabProps) {
           : module
       )
     )
+  }
+
+  const getLessonIcon = (type: Lesson["type"]) => {
+    switch (type) {
+      case "video":
+        return <Play className="h-3 w-3" />
+      case "exercise":
+        return <FileText className="h-3 w-3" />
+      case "pdf":
+        return <BookOpen className="h-3 w-3" />
+      case "certificate":
+        return <Award className="h-3 w-3" />
+      default:
+        return <Play className="h-3 w-3" />
+    }
   }
 
   return (
@@ -114,11 +121,6 @@ export function ModulesTab({ modules, onModulesChange }: ModulesTabProps) {
                 value={module.title}
                 onChange={(e) => updateModule(module.id, { title: e.target.value })}
               />
-              <Textarea
-                placeholder="Module description..."
-                value={module.description}
-                onChange={(e) => updateModule(module.id, { description: e.target.value })}
-              />
 
               <Separator />
 
@@ -137,10 +139,10 @@ export function ModulesTab({ modules, onModulesChange }: ModulesTabProps) {
                 </div>
 
                 {module.lessons.map((lesson, lessonIndex) => (
-                  <div key={lesson.id} className="border rounded-lg p-3 space-y-2">
+                  <div key={lesson.id} className="border rounded-lg p-3 space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <Play className="h-3 w-3" />
+                        {getLessonIcon(lesson.type)}
                         <span className="text-xs text-muted-foreground">
                           Lesson {lessonIndex + 1}
                         </span>
@@ -154,6 +156,7 @@ export function ModulesTab({ modules, onModulesChange }: ModulesTabProps) {
                         <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
+                    
                     <Input
                       placeholder="Lesson title..."
                       value={lesson.title}
@@ -161,7 +164,35 @@ export function ModulesTab({ modules, onModulesChange }: ModulesTabProps) {
                         updateLesson(module.id, lesson.id, { title: e.target.value })
                       }
                     />
+                    
                     <div className="grid grid-cols-2 gap-2">
+                      <Select
+                        value={lesson.type}
+                        onValueChange={(value: Lesson["type"]) =>
+                          updateLesson(module.id, lesson.id, { type: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Lesson type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="video">Video</SelectItem>
+                          <SelectItem value="exercise">Exercise</SelectItem>
+                          <SelectItem value="pdf">PDF/Resource</SelectItem>
+                          <SelectItem value="certificate">Certificate</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      
+                      <Input
+                        placeholder="Duration (MM:SS)"
+                        value={lesson.duration}
+                        onChange={(e) =>
+                          updateLesson(module.id, lesson.id, { duration: e.target.value })
+                        }
+                      />
+                    </div>
+                    
+                    {lesson.type === "video" && (
                       <Input
                         placeholder="Video URL (optional)"
                         value={lesson.videoUrl || ""}
@@ -169,22 +200,11 @@ export function ModulesTab({ modules, onModulesChange }: ModulesTabProps) {
                           updateLesson(module.id, lesson.id, { videoUrl: e.target.value })
                         }
                       />
-                      <Input
-                        type="number"
-                        placeholder="Duration (min)"
-                        value={lesson.duration}
-                        onChange={(e) =>
-                          updateLesson(
-                            module.id,
-                            lesson.id,
-                            { duration: Number.parseInt(e.target.value) || 0 }
-                          )
-                        }
-                      />
-                    </div>
+                    )}
+                    
                     <Textarea
-                      placeholder="Lesson content..."
-                      value={lesson.content}
+                      placeholder="Lesson content or description..."
+                      value={lesson.content || ""}
                       onChange={(e) =>
                         updateLesson(module.id, lesson.id, { content: e.target.value })
                       }
