@@ -12,6 +12,12 @@ import {
   Users,
   ChevronRight,
   Bell,
+  Briefcase,
+  Calendar,
+  MessageCircle,
+  ShoppingBag,
+  Star,
+  Group,
 } from "lucide-react"
 
 import {
@@ -113,8 +119,144 @@ const data = {
         },
       ],
     },
+    {
+      title: "Careers",
+      icon: Briefcase,
+      items: [
+        {
+          title: "All Careers",
+          url: "/management/careers",
+        },
+        {
+          title: "Create Career",
+          url: "/management/careers/create",
+        },
+      ],
+    },
+    {
+      title: "Quizzes",
+      icon: BookOpen,
+      items: [
+        {
+          title: "All Quizzes",
+          url: "/management/quizzes",
+        },
+        {
+          title: "Create Quiz",
+          url: "/management/quizzes/create",
+        },
+      ],
+    },
+    {
+      title: 'Communities',
+      icon: Users,
+      items: [
+        {
+          title: 'All Communities',
+          url: '/management/communities',
+        },
+        {
+          title: 'Create Community',
+          url: '/management/communities/create',
+        }
+      ]
+    },
+    {
+      title: 'Events',
+      icon: Calendar,
+      items: [
+        {
+          title: 'All Events',
+          url: '/management/events',
+        },
+        {
+          title: 'Create Event',
+          url: '/management/events/create',
+        }
+      ]
+    },
+    {
+      title: 'Messages',
+      icon: MessageCircle,
+      items: [
+        {
+          title: 'All Messages',
+          url: '/management/messages',
+        },
+        {
+          title: 'Create Message',
+          url: '/management/messages/create',
+        }
+      ],
+    },
+    {
+      title: 'Products',
+      icon: ShoppingBag,
+      items: [
+        {
+          title: 'All Products',
+          url: '/management/products',
+        },
+        {
+          title: 'Create Product',
+          url: '/management/products/create',
+        }
+      ]
+    },
+    {
+      title: 'Orders',
+      icon: ShoppingBag,
+      items: [
+        {
+          title: 'All Orders',
+          url: '/management/orders',
+        },
+        {
+          title: 'Create Order',
+          url: '/management/orders/create',
+        }
+      ]
+    },
+    {
+      title: 'Team',
+      icon: Users,
+      items: [
+        {
+          title: 'All Team',
+          url: '/management/team',
+        },
+        {
+          title: 'Add Team Member',
+          url: '/management/team/create',
+        } 
+      ]
+    },
+    {
+      title: 'Sessions',
+      icon: Calendar,
+      items: [
+        {
+          title: 'All Sessions',
+          url: '/management/sessions',
+        },
+        {
+          title: 'Create Session',
+          url: '/management/sessions/create',
+        }
+      ]
+    }
   ],
   navManagement: [
+    {
+      title: 'Team Members',
+      icon: Group,
+      url: '/management/team',
+    },
+    {
+      title: 'Reviews',
+      icon: Star,
+      url: '/management/reviews',
+    },
     {
       title: "Users",
       url: "/management/users",
@@ -125,7 +267,7 @@ const data = {
       url: "/management/settings",
       icon: Settings,
     },
-  ],
+  ],  
 }
 
 export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
