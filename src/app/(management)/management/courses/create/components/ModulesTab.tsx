@@ -7,16 +7,20 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Trash2, GripVertical, Play, FileText, BookOpen, Award } from "lucide-react"
+import { Plus, Trash2, GripVertical, Play, FileText, BookOpen, Award, HelpCircle, StickyNote } from "lucide-react"
 import type { Module, Lesson } from "../types"
+import type { Quiz } from "@/lib/types"
+import type { Note } from "../types"
 import { createDefaultModule, createDefaultLesson } from "../utils"
 
 interface ModulesTabProps {
   modules: Module[]
   onModulesChange: (modules: Module[]) => void
+  quizzes: Quiz[]
+  notes: Note[]
 }
 
-export function ModulesTab({ modules, onModulesChange }: ModulesTabProps) {
+export function ModulesTab({ modules, onModulesChange, quizzes, notes }: ModulesTabProps) {
   const addModule = () => {
     const newModule = createDefaultModule()
     onModulesChange([...modules, newModule])
@@ -76,6 +80,10 @@ export function ModulesTab({ modules, onModulesChange }: ModulesTabProps) {
         return <BookOpen className="h-3 w-3" />
       case "certificate":
         return <Award className="h-3 w-3" />
+      case "quiz":
+        return <HelpCircle className="h-3 w-3" />
+      case "note":
+        return <StickyNote className="h-3 w-3" />
       default:
         return <Play className="h-3 w-3" />
     }
@@ -180,6 +188,8 @@ export function ModulesTab({ modules, onModulesChange }: ModulesTabProps) {
                           <SelectItem value="exercise">Exercise</SelectItem>
                           <SelectItem value="pdf">PDF/Resource</SelectItem>
                           <SelectItem value="certificate">Certificate</SelectItem>
+                          <SelectItem value="quiz">Quiz</SelectItem>
+                          <SelectItem value="note">Note</SelectItem>
                         </SelectContent>
                       </Select>
                       
@@ -194,12 +204,62 @@ export function ModulesTab({ modules, onModulesChange }: ModulesTabProps) {
                     
                     {lesson.type === "video" && (
                       <Input
-                        placeholder="Video URL (optional)"
+                        placeholder="Video URL (YouTube, Vimeo, etc.)"
                         value={lesson.videoUrl || ""}
                         onChange={(e) =>
                           updateLesson(module.id, lesson.id, { videoUrl: e.target.value })
                         }
                       />
+                    )}
+
+                    {lesson.type === "quiz" && (
+                      <Select
+                        value={lesson.quizId || ""}
+                        onValueChange={(value) =>
+                          updateLesson(module.id, lesson.id, { quizId: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a quiz" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {quizzes.map((quiz) => (
+                            <SelectItem key={quiz.id} value={quiz.id}>
+                              {quiz.title}
+                            </SelectItem>
+                          ))}
+                          {quizzes.length === 0 && (
+                            <SelectItem value="" disabled>
+                              No quizzes available
+                            </SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    )}
+
+                    {lesson.type === "note" && (
+                      <Select
+                        value={lesson.noteId || ""}
+                        onValueChange={(value) =>
+                          updateLesson(module.id, lesson.id, { noteId: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a note" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {notes.map((note) => (
+                            <SelectItem key={note.id} value={note.id}>
+                              {note.title}
+                            </SelectItem>
+                          ))}
+                          {notes.length === 0 && (
+                            <SelectItem value="" disabled>
+                              No notes available
+                            </SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
                     )}
                     
                     <Textarea

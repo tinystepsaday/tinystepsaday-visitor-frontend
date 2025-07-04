@@ -165,7 +165,7 @@ export default function CourseDetailPage() {
                   <span className="text-sm font-medium">Created</span>
                   <div className="flex items-center">
                     <Calendar className="mr-1 h-3 w-3" />
-                    <span>{course.createdAt.toLocaleDateString()}</span>
+                    <span>{new Date(course.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
               </div>
@@ -437,7 +437,7 @@ export default function CourseDetailPage() {
                           <Badge variant="outline">Task {index + 1}</Badge>
                           <CardTitle className="text-lg">{task.title}</CardTitle>
                         </div>
-                        {task.dueDate && <Badge variant="secondary">Due: {task.dueDate.toLocaleDateString()}</Badge>}
+                        {task.dueDate && <Badge variant="secondary">Due: {new Date(task.dueDate).toLocaleDateString()}</Badge>}
                       </div>
                       <CardDescription>{task.description}</CardDescription>
                     </CardHeader>

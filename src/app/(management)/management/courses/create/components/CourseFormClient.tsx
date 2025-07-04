@@ -225,7 +225,12 @@ export function CourseFormClient() {
             </TabsContent>
 
             <TabsContent value="modules" className="space-y-6">
-              <ModulesTab modules={modules} onModulesChange={setModules} />
+              <ModulesTab 
+                modules={modules} 
+                onModulesChange={setModules}
+                quizzes={quizzes}
+                notes={notes}
+              />
             </TabsContent>
 
             <TabsContent value="quizzes" className="space-y-6">

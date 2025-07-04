@@ -7,10 +7,12 @@ export interface Module {
 export interface Lesson {
   id: number
   title: string
-  type: "video" | "exercise" | "pdf" | "certificate"
+  type: "video" | "exercise" | "pdf" | "certificate" | "quiz" | "note"
   duration: string
   content?: string
   videoUrl?: string
+  quizId?: string
+  noteId?: string
 }
 
 export interface Note {

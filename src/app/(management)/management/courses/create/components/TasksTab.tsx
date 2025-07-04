@@ -35,6 +35,14 @@ export function TasksTab({ tasks, onTasksChange }: TasksTabProps) {
     onTasksChange(tasks.filter((task) => task.id !== taskId))
   }
 
+  const formatDateForInput = (date: Date | string | undefined): string => {
+    if (!date) return ""
+    const dateObj = date instanceof Date ? date : new Date(date)
+    return new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 16)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -88,13 +96,7 @@ export function TasksTab({ tasks, onTasksChange }: TasksTabProps) {
                 <Label>Due Date (Optional)</Label>
                 <Input
                   type="datetime-local"
-                  value={
-                    task.dueDate
-                      ? new Date(task.dueDate.getTime() - task.dueDate.getTimezoneOffset() * 60000)
-                          .toISOString()
-                          .slice(0, 16)
-                      : ""
-                  }
+                  value={formatDateForInput(task.dueDate)}
                   onChange={(e) =>
                     updateTask(task.id, {
                       dueDate: e.target.value ? new Date(e.target.value) : undefined,
