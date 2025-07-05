@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { mockBlogPosts, mockCourses, mockMediaFiles, mockNotifications, mockAnalytics } from "@/data/mock-data"
+import { finalMockBlogPosts, mockCourses, mockMediaFiles, mockNotifications, mockAnalytics } from "@/data/mock-data"
 import type { BlogPost, MediaFile } from "@/lib/types"
 
 // Simulate API delays
@@ -15,7 +15,7 @@ export const useBlogPosts = (filters?: {
     queryKey: ["blogPosts", filters],
     queryFn: async () => {
       await delay(500)
-      let posts = [...mockBlogPosts]
+      let posts = [...finalMockBlogPosts]
 
       if (filters?.search) {
         posts = posts.filter(
@@ -45,7 +45,7 @@ export const useBlogPost = (id: string) => {
     queryKey: ["blogPost", id],
     queryFn: async () => {
       await delay(300)
-      return mockBlogPosts.find((post) => post.id === id)
+      return finalMockBlogPosts.find((post) => post.id === id)
     },
   })
 }
@@ -76,7 +76,7 @@ export const useCreateBlogPost = () => {
         updatedAt: new Date(),
         ...data,
       }
-      mockBlogPosts.push(newPost)
+      finalMockBlogPosts.push(newPost)
       return newPost
     },
     onSuccess: () => {
@@ -193,7 +193,7 @@ export const useGlobalSearch = (query: string) => {
       await delay(400)
       if (!query) return { posts: [], courses: [], media: [] }
 
-      const posts = mockBlogPosts.filter(
+      const posts = finalMockBlogPosts.filter(
         (post) =>
           post.title.toLowerCase().includes(query.toLowerCase()) ||
           post.content.toLowerCase().includes(query.toLowerCase()),

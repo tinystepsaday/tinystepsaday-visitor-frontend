@@ -1,10 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useParams, useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { blogPostSchema } from "@/lib/schemas"
 import type { z } from "zod"
+import { useBlogPost } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -12,29 +14,32 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { X, Plus, Save, Eye } from "lucide-react"
+import { X, Plus, Save, Eye, ArrowLeft } from "lucide-react"
 import { MediaSelector } from "@/components/media-selector"
 import { BlogPreview } from "@/components/blog-preview"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { SharingSettingsModal, type SharingOption } from "@/components/blog/SharingSettingsModal"
 import { useToast } from "@/hooks/use-toast"
-import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { mockCategories } from "@/data/mock-data"
+import { DetailPageLoader } from "@/components/ui/loaders"
 
 type BlogPostFormData = z.infer<typeof blogPostSchema>
 
-export default function CreateBlogPostPage() {
+export default function EditBlogPostPage() {
+  const params = useParams()
+  const router = useRouter()
+  const { data: post, isLoading } = useBlogPost(params.id as string)
+  
   const [tags, setTags] = useState<string[]>([])
   const [newTag, setNewTag] = useState("")
   const [featuredImage, setFeaturedImage] = useState<string>("")
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const [isSharingModalOpen, setIsSharingModalOpen] = useState(false)
   const [previousStatus, setPreviousStatus] = useState<string>("draft")
 
   const { toast } = useToast()
-  const router = useRouter()
 
   const form = useForm<BlogPostFormData>({
     resolver: zodResolver(blogPostSchema),
@@ -55,6 +60,26 @@ export default function CreateBlogPostPage() {
       },
     },
   })
+
+  // Update form when post data is loaded
+  useEffect(() => {
+    if (post) {
+      form.reset({
+        title: post.title,
+        slug: post.slug,
+        content: post.content,
+        excerpt: post.excerpt,
+        status: post.status,
+        category: post.category,
+        tags: post.tags,
+        featuredImage: post.thumbnail || "",
+        seo: post.seo,
+      })
+      setTags(post.tags)
+      setFeaturedImage(post.thumbnail || "")
+      setPreviousStatus(post.status)
+    }
+  }, [post, form])
 
   const watchedValues = form.watch()
 
@@ -95,28 +120,28 @@ export default function CreateBlogPostPage() {
     // Here you would typically send the sharing option to your API
     console.log("Sharing option selected:", sharingOption)
     
-    // Continue with the actual post creation
-    await createPost()
+    // Continue with the actual post update
+    await updatePost()
   }
 
-  const createPost = async () => {
-    setIsLoading(true)
+  const updatePost = async () => {
+    setIsSaving(true)
     try {
       toast({
         title: "Success",
-        description: "Blog post created successfully",
+        description: "Blog post updated successfully",
       })
 
       router.push("/management/blog")
     } catch (error) {
-      console.error("Failed to create post:", error)
+      console.error("Failed to update post:", error)
       toast({
         title: "Error",
-        description: "Failed to create blog post",
+        description: "Failed to update blog post",
         variant: "destructive",
       })
     } finally {
-      setIsLoading(false)
+      setIsSaving(false)
     }
   }
 
@@ -130,7 +155,7 @@ export default function CreateBlogPostPage() {
     }
     
     // For other status changes or if already published, proceed normally
-    await createPost()
+    await updatePost()
   }
 
   // Update previous status when form status changes
@@ -139,12 +164,38 @@ export default function CreateBlogPostPage() {
     form.setValue("status", newStatus as "draft" | "published" | "archived")
   }
 
+  if (isLoading) {
+    return (
+      <DetailPageLoader 
+        title="Edit Blog Post"
+        subtitle="Update your blog post content and settings"
+      />
+    )
+  }
+
+  if (!post) {
+    return (
+      <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">Blog Post Not Found</h2>
+            <p className="text-muted-foreground">The requested blog post could not be found.</p>
+          </div>
+          <Button onClick={() => router.push("/management/blog")}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Posts
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Create Blog Post</h2>
-          <p className="text-muted-foreground">Write and publish a new blog post</p>
+          <h2 className="text-3xl font-bold tracking-tight">Edit Blog Post</h2>
+          <p className="text-muted-foreground">Update your blog post content and settings</p>
         </div>
         <div className="flex items-center space-x-2">
           <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
@@ -165,14 +216,18 @@ export default function CreateBlogPostPage() {
                 thumbnail={featuredImage}
                 category={watchedValues.category}
                 tags={tags}
-                author={{ name: "John Doe" }}
+                author={{ name: post.author.name }}
                 seo={watchedValues.seo || { metaTitle: "", metaDescription: "", altText: "", caption: "" }}
               />
             </DialogContent>
           </Dialog>
-          <Button type="submit" form="blog-post-form" disabled={isLoading}>
+          <Button variant="outline" onClick={() => router.push("/management/blog")}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Cancel
+          </Button>
+          <Button type="submit" form="blog-post-form" disabled={isSaving}>
             <Save className="mr-2 h-4 w-4" />
-            {isLoading ? "Saving..." : "Save Post"}
+            {isSaving ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </div>

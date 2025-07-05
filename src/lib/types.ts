@@ -199,6 +199,10 @@ export interface Student {
 }
 
 export interface AnalyticsData {
+  totalRevenue: number
+  totalOrders: number
+  totalCustomers: number
+  conversionRate: number
   pageViews: number
   uniqueVisitors: number
   bounceRate: number
