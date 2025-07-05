@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import { ArrowLeft, Save, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Save, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,9 +11,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { getCareerById } from '@/data/careers';
 
 interface CareerFormData {
   title: string;
@@ -28,22 +30,10 @@ interface CareerFormData {
   allowApplications: boolean;
   applicationDeadline?: string;
   maxApplications?: number;
+  requirements: string[];
+  benefits: string[];
   tags: string[];
 }
-
-const initialFormData: CareerFormData = {
-  title: '',
-  department: '',
-  location: '',
-  type: '',
-  salary: '',
-  summary: '',
-  content: '',
-  status: 'draft',
-  isPublic: false,
-  allowApplications: true,
-  tags: []
-};
 
 const departments = [
   'Coaching',
@@ -79,11 +69,64 @@ const locations = [
   'Miami, FL'
 ];
 
-export default function CreateCareerPage() {
+interface EditCareerPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default function EditCareerPage({ params }: EditCareerPageProps) {
   const router = useRouter();
-  const [formData, setFormData] = useState<CareerFormData>(initialFormData);
+  const [formData, setFormData] = useState<CareerFormData>({
+    title: '',
+    department: '',
+    location: '',
+    type: '',
+    salary: '',
+    summary: '',
+    content: '',
+    status: 'draft',
+    isPublic: false,
+    allowApplications: true,
+    requirements: [],
+    benefits: [],
+    tags: []
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadCareer = async () => {
+      try {
+        const { id } = await params;
+
+        const career = getCareerById(id);
+        if (career) {
+          setFormData({
+            title: career.title,
+            department: career.department,
+            location: career.location,
+            type: career.type,
+            salary: career.salary,
+            summary: career.summary,
+            content: career.content,
+            status: 'active', // Default status for existing careers
+            isPublic: true, // Default to public for existing careers
+            allowApplications: true,
+            requirements: [],
+            benefits: [],
+            tags: []
+          });
+        }
+      } catch {
+        toast.error('Failed to load career position');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadCareer();
+  }, [params]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -111,12 +154,27 @@ export default function CreateCareerPage() {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      toast.success('Career position created successfully!');
+      toast.success('Career position updated successfully!');
       router.push('/management/careers');
     } catch {
-      toast.error('Failed to create career position. Please try again.');
+      toast.error('Failed to update career position. Please try again.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      toast.success('Career position deleted successfully!');
+      router.push('/management/careers');
+    } catch {
+      toast.error('Failed to delete career position. Please try again.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -126,18 +184,26 @@ export default function CreateCareerPage() {
       .replace(/(^-|-$)/g, '');
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between w-full">
-        <div className="flex flex-col items-center gap-4 w-full">
-          <div className="flex items-center gap-4 w-full justify-between">
-            <Link href="/management/careers">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Careers
-              </Button>
-            </Link>
+      <div className="flex items-center flex-col justify-between">
+        <div className="flex items-center gap-4 w-full justify-between">
+          <Link href="/management/careers">
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Careers
+            </Button>
+          </Link>
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               onClick={() => setShowPreview(!showPreview)}
@@ -145,13 +211,39 @@ export default function CreateCareerPage() {
               {showPreview ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
               {showPreview ? 'Hide Preview' : 'Show Preview'}
             </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Position</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to delete this position? This action cannot be undone and will remove all associated applications.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {isDeleting ? 'Deleting...' : 'Delete'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
-          <div className="flex flex-col items-start justify-start w-full gap-2">
-            <h1 className="text-3xl font-bold tracking-tight">Create New Position</h1>
-            <p className="text-muted-foreground">
-              Add a new job position to your careers page
-            </p>
-          </div>
+        </div>
+        <div className="flex flex-col items-start justify-start w-full gap-2">
+          <h1 className="text-3xl font-bold tracking-tight">Edit Position</h1>
+          <p className="text-muted-foreground">
+            Update job position details and settings
+          </p>
         </div>
       </div>
 
@@ -288,6 +380,28 @@ export default function CreateCareerPage() {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="requirements">Requirements (comma-separated)</Label>
+                  <Input
+                    id="requirements"
+                    name="requirements"
+                    value={formData.requirements.join(', ')}
+                    onChange={(e) => handleArrayInput('requirements', e.target.value)}
+                    placeholder="e.g., 3+ years experience, React knowledge, Team collaboration"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="benefits">Benefits (comma-separated)</Label>
+                  <Input
+                    id="benefits"
+                    name="benefits"
+                    value={formData.benefits.join(', ')}
+                    onChange={(e) => handleArrayInput('benefits', e.target.value)}
+                    placeholder="e.g., Health insurance, Remote work, Professional development"
+                  />
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="tags">Tags (comma-separated)</Label>
                   <Input
                     id="tags"
@@ -402,12 +516,12 @@ export default function CreateCareerPage() {
                 {isSubmitting ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Creating...
+                    Updating...
                   </>
                 ) : (
                   <>
                     <Save className="h-4 w-4 mr-2" />
-                    Create Position
+                    Update Position
                   </>
                 )}
               </Button>
@@ -470,14 +584,12 @@ export default function CreateCareerPage() {
                   </div>
                 </div>
 
-                {formData.title && (
-                  <div className="space-y-2">
-                    <h4 className="font-medium">URL Slug</h4>
-                    <p className="text-sm text-muted-foreground font-mono">
-                      /careers/{generateSlug(formData.title)}
-                    </p>
-                  </div>
-                )}
+                <div className="space-y-2">
+                  <h4 className="font-medium">URL Slug</h4>
+                  <p className="text-sm text-muted-foreground font-mono">
+                    /careers/{generateSlug(formData.title)}
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -485,4 +597,4 @@ export default function CreateCareerPage() {
       </div>
     </div>
   );
-}
+} 
