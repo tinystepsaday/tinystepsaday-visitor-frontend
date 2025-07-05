@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getAllQuizzes, getQuizById } from '@/data/quizzes'
-import QuizDetailsClient from '@/components/quiz/QuizDetailsClient'
+import QuizDetailsClientManagement from '@/components/quiz/QuizDetailsClientManagement'
 
 interface QuizDetailsPageProps {
   params: Promise<{ id: string }>
@@ -21,7 +21,7 @@ export default async function QuizDetailsPage({ params }: QuizDetailsPageProps) 
       notFound()
     }
 
-    return <QuizDetailsClient quiz={quiz} />
+    return <QuizDetailsClientManagement quiz={quiz} />
   } catch (error) {
     console.error('Error fetching quiz:', error)
     notFound()

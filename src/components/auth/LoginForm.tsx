@@ -249,7 +249,7 @@ export default function LoginForm() {
       <div className="text-center mt-6">
         <p className="text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}
-          <Link href="/auth/signup" className="text-primary hover:underline font-medium">
+          <Link href={`/auth/signup?returnUrl=${encodeURIComponent(returnUrl)}`} className="text-primary hover:underline font-medium">
             Sign up
           </Link>
         </p>

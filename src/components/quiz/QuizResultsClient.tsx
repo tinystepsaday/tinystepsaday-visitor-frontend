@@ -137,14 +137,14 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
           </CardContent>
         </Card>
 
-        {/* Feedback Card */}
+        {/* Analysis Card */}
         <Card>
           <CardHeader>
             <CardTitle>Analysis</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground leading-relaxed">
-              {result.feedback}
+              {getCriteriaForLevel(result.level)?.description || result.feedback}
             </p>
           </CardContent>
         </Card>
@@ -166,18 +166,72 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
           </CardContent>
         </Card>
 
-        {/* Action Cards */}
+        {/* Recommended Courses */}
+        {getCriteriaForLevel(result.level)?.proposedCourses && getCriteriaForLevel(result.level)!.proposedCourses.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Book className="h-5 w-5" />
+                <span>Recommended Courses</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {getCriteriaForLevel(result.level)!.proposedCourses.map((courseId, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <span className="text-sm font-medium">{courseId}</span>
+                    <Link href="/courses">
+                      <Button variant="outline" size="sm">
+                        View Course
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Recommended Products */}
+        {getCriteriaForLevel(result.level)?.proposedProducts && getCriteriaForLevel(result.level)!.proposedProducts.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Calendar className="h-5 w-5" />
+                <span>Recommended Resources</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {getCriteriaForLevel(result.level)!.proposedProducts.map((productId, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <span className="text-sm font-medium">{productId}</span>
+                    <Link href="/shop">
+                      <Button variant="outline" size="sm">
+                        View Product
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Additional Action Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Book className="h-5 w-5" />
-                <span>Related Courses</span>
+                <span>Browse All Courses</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">
-                Explore courses to improve your skills in this area.
+                Explore our full course catalog to find the perfect learning path.
               </p>
             </CardContent>
             <CardFooter>

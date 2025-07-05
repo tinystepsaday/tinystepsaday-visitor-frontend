@@ -1,401 +1,211 @@
 "use client"
 
-import React, { useState } from 'react'
-import { ArrowLeft, Edit, BarChart3, Users, Clock, Target, Calendar, Book, Package, Lightbulb, ChevronDown, ChevronUp } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { ArrowLeft, Users, Clock, Target, Book, Package, Lightbulb, Play } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { useAuthStore } from '@/store/authStore'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { type Quiz } from '@/data/quizzes'
+import AuthPrompt from './AuthPrompt'
 
 interface QuizDetailsClientProps {
   quiz: Quiz
 }
 
 export default function QuizDetailsClient({ quiz }: QuizDetailsClientProps) {
-  const completionRate = quiz.totalAttempts > 0 ? (quiz.completedAttempts / quiz.totalAttempts) * 100 : 0
-  const [expandedCriteria, setExpandedCriteria] = useState<string | null>(null)
+  const { isLoggedIn } = useAuthStore()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
 
-  // Mock data for courses and products - in real app, these would come from API
-  const availableCourses = [
-    { id: 'course-1', title: 'Mindful Living Essentials' },
-    { id: 'course-2', title: 'Emotional Intelligence Mastery' },
-    { id: 'course-3', title: 'Stress Management Techniques' },
-    { id: 'course-4', title: 'Meditation for Modern Life' },
-    { id: 'Habit Mastery Course', title: 'Habit Mastery Course' },
-    { id: 'Habit Building Course', title: 'Habit Building Course' },
-    { id: 'Habit Learning Course', title: 'Habit Learning Course' },
-    { id: 'Habit Starting Course', title: 'Habit Starting Course' },
-    { id: 'Freedom Mastery Course', title: 'Freedom Mastery Course' },
-    { id: 'Freedom Seeking Course', title: 'Freedom Seeking Course' },
-    { id: 'Freedom Learning Course', title: 'Freedom Learning Course' },
-    { id: 'Freedom Starting Course', title: 'Freedom Starting Course' },
-    { id: 'Purpose Mastery Course', title: 'Purpose Mastery Course' },
-    { id: 'Purpose Seeking Course', title: 'Purpose Seeking Course' },
-    { id: 'Purpose Exploring Course', title: 'Purpose Exploring Course' },
-    { id: 'Purpose Starting Course', title: 'Purpose Starting Course' },
-    { id: 'Healing Mastery Course', title: 'Healing Mastery Course' },
-    { id: 'Healing Journey Course', title: 'Healing Journey Course' },
-    { id: 'Healing Exploring Course', title: 'Healing Exploring Course' },
-    { id: 'Healing Starting Course', title: 'Healing Starting Course' },
-    { id: 'Mindfulness Mastery Course', title: 'Mindfulness Mastery Course' },
-    { id: 'Mindfulness Practitioner Course', title: 'Mindfulness Practitioner Course' },
-    { id: 'Mindfulness Exploring Course', title: 'Mindfulness Exploring Course' },
-    { id: 'Mindfulness Starting Course', title: 'Mindfulness Starting Course' }
-  ]
+  // Check authentication status on mount
+  useEffect(() => {
+    // Check if user is returning from auth flow
+    const returnUrl = searchParams.get('returnUrl')
+    if (returnUrl && isLoggedIn) {
+      // User just logged in and is being redirected back
+      router.push(returnUrl)
+      return
+    }
 
-  const availableProducts = [
-    { id: 'product-1', title: 'Mindfulness Journal' },
-    { id: 'product-2', title: 'Meditation Cushion' },
-    { id: 'product-3', title: 'Essential Oil Set' },
-    { id: 'product-4', title: 'Self-Improvement Handbook' },
-    { id: 'Habit Mastery Book', title: 'Habit Mastery Book' },
-    { id: 'Habit Building Book', title: 'Habit Building Book' },
-    { id: 'Habit Learning Book', title: 'Habit Learning Book' },
-    { id: 'Habit Starting Book', title: 'Habit Starting Book' },
-    { id: 'Freedom Mastery Book', title: 'Freedom Mastery Book' },
-    { id: 'Freedom Seeking Book', title: 'Freedom Seeking Book' },
-    { id: 'Freedom Learning Book', title: 'Freedom Learning Book' },
-    { id: 'Freedom Starting Book', title: 'Freedom Starting Book' },
-    { id: 'Purpose Mastery Book', title: 'Purpose Mastery Book' },
-    { id: 'Purpose Seeking Book', title: 'Purpose Seeking Book' },
-    { id: 'Purpose Exploring Book', title: 'Purpose Exploring Book' },
-    { id: 'Purpose Starting Book', title: 'Purpose Starting Book' },
-    { id: 'Healing Mastery Book', title: 'Healing Mastery Book' },
-    { id: 'Healing Journey Book', title: 'Healing Journey Book' },
-    { id: 'Healing Exploring Book', title: 'Healing Exploring Book' },
-    { id: 'Healing Starting Book', title: 'Healing Starting Book' },
-    { id: 'Mindfulness Mastery Book', title: 'Mindfulness Mastery Book' },
-    { id: 'Mindfulness Practitioner Book', title: 'Mindfulness Practitioner Book' },
-    { id: 'Mindfulness Exploring Book', title: 'Mindfulness Exploring Book' },
-    { id: 'Mindfulness Starting Book', title: 'Mindfulness Starting Book' }
-  ]
+    // If not logged in, show auth prompt
+    if (!isLoggedIn) {
+      setShowAuthPrompt(true)
+    }
+    setIsCheckingAuth(false)
+  }, [isLoggedIn, searchParams, router])
 
-  const getCourseTitle = (courseId: string) => {
-    const course = availableCourses.find(c => c.id === courseId)
-    return course?.title || courseId
+  // Show loading while checking auth
+  if (isCheckingAuth) {
+    return (
+      <div className="container max-w-7xl mx-auto px-4 py-12 space-y-8 mt-16">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Checking authentication...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
-  const getProductTitle = (productId: string) => {
-    const product = availableProducts.find(p => p.id === productId)
-    return product?.title || productId
+  // Show auth prompt if not logged in
+  if (showAuthPrompt) {
+    return (
+      <AuthPrompt 
+        quiz={quiz} 
+        onAuthenticated={() => setShowAuthPrompt(false)} 
+      />
+    )
   }
-
   return (
-    <div className="space-y-6">
+    <div className="container max-w-7xl mx-auto px-4 py-12 space-y-8 mt-16">
       {/* Header */}
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center flex-col gap-4 w-full">
           <div className="flex items-start justify-between w-full gap-2">
-            <Link href="/management/quizzes">
+            <Link href="/quiz">
               <Button variant="outline" size="sm">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Quizzes
               </Button>
             </Link>
-            <div className="flex items-center justify-end gap-2">
-              <Link href={`/management/quizzes/${quiz.id}/analytics`}>
-                <Button variant="outline">
-                  <BarChart3 className="mr-2 h-4 w-4" />
-                  Analytics
-                </Button>
-              </Link>
-              <Link href={`/management/quizzes/${quiz.id}/edit`}>
-                <Button>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit Quiz
-                </Button>
-              </Link>
-            </div>
           </div>
           <div className="flex flex-col items-start justify-start w-full gap-2">
-            <h1 className="text-3xl font-bold tracking-tight">{quiz.title}</h1>
-            <p className="text-muted-foreground">{quiz.description}</p>
+            <h1 className="text-4xl font-bold tracking-tight">{quiz.title}</h1>
+            <p className="text-xl text-muted-foreground max-w-3xl">{quiz.subtitle}</p>
           </div>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Attempts</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{quiz.totalAttempts.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              {quiz.completedAttempts} completed ({completionRate.toFixed(1)}%)
-            </p>
-          </CardContent>
-        </Card>
+      {/* Hero Section with CTA */}
+      <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+        <CardHeader>
+          <div className="flex items-center gap-4">
+            <Badge variant="secondary" className="text-sm">
+              {quiz.category}
+            </Badge>
+            <Badge variant="outline" className="text-sm">
+              {quiz.difficulty} level
+            </Badge>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Clock className="h-4 w-4" />
+              <span>{quiz.estimatedTime}</span>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="px-8">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+            <div className="flex-1 space-y-4">
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Score</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{quiz.averageScore.toFixed(1)}%</div>
-            <p className="text-xs text-muted-foreground">
-              Across all completed attempts
-            </p>
-          </CardContent>
-        </Card>
+              <div className="space-y-2">
+                <h2 className="text-2xl font-semibold">Ready to discover your personalized path?</h2>
+                <p className="text-muted-foreground">
+                  This {quiz.questions.length}-question assessment will help you understand your current state
+                  and provide tailored recommendations for courses, products, and resources that match your unique needs.
+                </p>
+              </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Time</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{quiz.averageCompletionTime.toFixed(1)} min</div>
-            <p className="text-xs text-muted-foreground">
-              Estimated: {quiz.estimatedTime}
-            </p>
-          </CardContent>
-        </Card>
+              <div className="flex items-center gap-6 text-sm">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-primary" />
+                  <span>{quiz.totalAttempts.toLocaleString()} people have taken this quiz</span>
+                </div>
+              </div>
+            </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Questions</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{quiz.questions.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Multiple choice format
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+            <div className="flex flex-col items-center gap-4">
+              <div className="text-center space-y-2">
+                <div className="text-3xl font-bold text-primary">{quiz.questions.length}</div>
+                <div className="text-sm text-muted-foreground">Questions</div>
+              </div>
+              <Button size="lg" className="px-8 py-6 text-lg" asChild>
+                <Link href={`/quiz/${quiz.id}/answering`}>
+                  <Play className="mr-2 h-5 w-5" />
+                  Start Quiz Now
+                </Link>
+              </Button>
+              <p className="text-xs text-muted-foreground text-center">
+                No registration required • Free • Instant results
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Quiz Information */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Basic Information */}
+          {/* Detailed Description */}
           <Card>
             <CardHeader>
-              <CardTitle>Quiz Information</CardTitle>
+              <CardTitle>About This Quiz</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Category</label>
-                  <p className="text-sm">{quiz.category}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Difficulty</label>
-                  <Badge className={
-                    quiz.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
-                      quiz.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                  }>
-                    {quiz.difficulty}
-                  </Badge>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Status</label>
-                  <Badge className={
-                    quiz.status === 'active' ? 'bg-green-100 text-green-800' :
-                      quiz.status === 'draft' ? 'bg-gray-100 text-gray-800' :
-                        'bg-red-100 text-red-800'
-                  }>
-                    {quiz.status}
-                  </Badge>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Visibility</label>
-                  <Badge className={quiz.isPublic ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                    {quiz.isPublic ? 'Public' : 'Private'}
-                  </Badge>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Calendar className="h-4 w-4" />
-                <span>Created: {new Date(quiz.createdAt).toLocaleDateString()}</span>
-                <span>•</span>
-                <span>Updated: {new Date(quiz.updatedAt).toLocaleDateString()}</span>
-              </div>
-
-              {quiz.tags.length > 0 && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Tags</label>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {quiz.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
+            <CardContent>
+              <p className="text-muted-foreground leading-relaxed">
+                {quiz.description}
+              </p>
             </CardContent>
           </Card>
 
-          {/* Grading Criteria */}
+          {/* What You'll Learn */}
           <Card>
             <CardHeader>
-              <CardTitle>Grading Criteria</CardTitle>
+              <CardTitle>What You&apos;ll Discover</CardTitle>
               <CardDescription>
-                Score ranges, classifications, and recommendations for this quiz
+                This quiz will help you understand your current situation and provide personalized recommendations
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {quiz.gradingCriteria.map((criteria) => (
-                  <Collapsible
-                    key={criteria.id}
-                    open={expandedCriteria === criteria.id}
-                    onOpenChange={(open) => setExpandedCriteria(open ? criteria.id : null)}
-                  >
-                    <div className="border rounded-lg">
-                      <CollapsibleTrigger asChild>
-                        <div className="flex items-center justify-between p-4 hover:bg-muted/50 cursor-pointer transition-colors">
-                          <div className="flex items-center gap-3">
-                            <div 
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: criteria.color }}
-                            />
-                            <div className="text-left">
-                              <p className="font-medium">{criteria.name}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {criteria.minScore}-{criteria.maxScore} points
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge 
-                              style={{ 
-                                backgroundColor: criteria.color,
-                                color: 'white'
-                              }}
-                            >
-                              {criteria.label}
-                            </Badge>
-                            {expandedCriteria === criteria.id ? (
-                              <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                            )}
-                          </div>
-                        </div>
-                      </CollapsibleTrigger>
-                      
-                      <CollapsibleContent>
-                        <div className="px-4 pb-4 space-y-4">
-                          <Separator />
-                          
-                          {/* Description */}
-                          {criteria.description && (
-                            <div>
-                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                <Lightbulb className="h-4 w-4" />
-                                Description
-                              </h4>
-                              <p className="text-sm text-muted-foreground">{criteria.description}</p>
-                            </div>
-                          )}
-
-                          {/* Recommendations */}
-                          {criteria.recommendations.length > 0 && (
-                            <div>
-                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                <Lightbulb className="h-4 w-4" />
-                                Recommendations ({criteria.recommendations.length})
-                              </h4>
-                              <ul className="space-y-1">
-                                {criteria.recommendations.map((recommendation, index) => (
-                                  <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
-                                    {recommendation}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-
-                          {/* Proposed Courses */}
-                          {criteria.proposedCourses.length > 0 && (
-                            <div>
-                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                <Book className="h-4 w-4" />
-                                Recommended Courses ({criteria.proposedCourses.length})
-                              </h4>
-                              <div className="flex flex-wrap gap-2">
-                                {criteria.proposedCourses.map((courseId) => (
-                                  <Badge key={courseId} variant="outline" className="text-xs">
-                                    {getCourseTitle(courseId)}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Proposed Products */}
-                          {criteria.proposedProducts.length > 0 && (
-                            <div>
-                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                <Package className="h-4 w-4" />
-                                Recommended Products ({criteria.proposedProducts.length})
-                              </h4>
-                              <div className="flex flex-wrap gap-2">
-                                {criteria.proposedProducts.map((productId) => (
-                                  <Badge key={productId} variant="outline" className="text-xs">
-                                    {getProductTitle(productId)}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </CollapsibleContent>
-                    </div>
-                  </Collapsible>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Questions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Questions ({quiz.questions.length})</CardTitle>
-              <CardDescription>
-                All questions and their answer options
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {quiz.questions.map((question, index) => (
-                  <div key={question.id} className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                        {index + 1}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium">{question.text}</p>
-                        <div className="mt-3 space-y-2">
-                          {question.options.map((option) => (
-                            <div key={option.id} className="flex items-center gap-3 p-2 border rounded">
-                              <div className="w-4 h-4 border rounded flex items-center justify-center text-xs">
-                                {String.fromCharCode(65 + question.options.indexOf(option))}
-                              </div>
-                              <span className="text-sm">{option.text}</span>
-                              <Badge variant="outline" className="ml-auto">
-                                {option.value} pts
-                              </Badge>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    {index < quiz.questions.length - 1 && <Separator />}
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Target className="h-4 w-4 text-primary" />
                   </div>
-                ))}
+                  <div>
+                    <h4 className="font-medium">Current Assessment</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Understand where you are in your journey
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Lightbulb className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium">Personalized Insights</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Get specific recommendations for your situation
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Book className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium">Course Recommendations</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Find the best courses for your learning style
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Package className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium">Product Suggestions</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Discover tools and resources that can help
+                    </p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -403,61 +213,60 @@ export default function QuizDetailsClient({ quiz }: QuizDetailsClientProps) {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Quick Actions */}
+          {/* Quiz Stats */}
           <Card>
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
+              <CardTitle>Quiz Statistics</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              <Link href={`/management/quizzes/${quiz.id}/edit`} className="w-full">
-                <Button variant="outline" className="w-full justify-start">
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit Quiz
-                </Button>
-              </Link>
-              <Link href={`/management/quizzes/${quiz.id}/analytics`} className="w-full">
-                <Button variant="outline" className="w-full justify-start">
-                  <BarChart3 className="mr-2 h-4 w-4" />
-                  View Analytics
-                </Button>
-              </Link>
-              <Link href={`/management/quizzes/${quiz.id}/results`} className="w-full">
-                <Button variant="outline" className="w-full justify-start">
-                  <Users className="mr-2 h-4 w-4" />
-                  View Results
-                </Button>
-              </Link>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Total Attempts</span>
+                <span className="font-medium">{quiz.totalAttempts.toLocaleString()}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Avg Time</span>
+                <span className="font-medium">{quiz.averageCompletionTime.toFixed(1)} min</span>
+              </div>
             </CardContent>
           </Card>
 
-          {/* Quiz Preview */}
+          {/* Tags */}
+          {quiz.tags.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Related Topics</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {quiz.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Quick Start */}
           <Card>
             <CardHeader>
-              <CardTitle>Quiz Preview</CardTitle>
+              <CardTitle>Ready to Start?</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="text-sm">
-                <span className="font-medium">Public URL:</span>
-                <p className="text-muted-foreground break-all">
-                  {quiz.isPublic ? `/quiz/${quiz.id}` : 'Not publicly accessible'}
-                </p>
-              </div>
-              <div className="text-sm">
-                <span className="font-medium">Max Score:</span>
-                <p className="text-muted-foreground">
-                  {quiz.questions.length * 4} points
-                </p>
-              </div>
-              <div className="text-sm">
-                <span className="font-medium">Passing Score:</span>
-                <p className="text-muted-foreground">
-                  {quiz.gradingCriteria.find(c => c.name.toLowerCase().includes('good'))?.minScore || 60} points (Good level)
-                </p>
-              </div>
+              <Button className="w-full" size="lg" asChild>
+                <Link href={`/quiz/${quiz.id}/answering`}>
+                  <Play className="mr-2 h-4 w-4" />
+                  Begin Quiz
+                </Link>
+              </Button>
+              <p className="text-xs text-muted-foreground text-center">
+                Takes about {quiz.estimatedTime} • No registration needed
+              </p>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
+  );
 } 

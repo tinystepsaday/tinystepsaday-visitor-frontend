@@ -24,7 +24,6 @@ export default function QuizTakingClient({ quiz }: QuizTakingClientProps) {
     return (
       <QuizLayout
         title="Quiz Error"
-        subtitle="This quiz is not available or has no questions."
         showBackButton={true}
         onBackClick={() => router.push("/quiz")}
       >
@@ -81,7 +80,6 @@ export default function QuizTakingClient({ quiz }: QuizTakingClientProps) {
   return (
     <QuizLayout
       title={quiz.title}
-      subtitle={quiz.description}
       showBackButton={!isFirstQuestion}
       onBackClick={handleBackClick}
     >

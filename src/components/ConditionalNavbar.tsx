@@ -14,7 +14,7 @@ export default function ConditionalNavbar() {
     return null;
   }
   
-  if (pathname?.includes("/quiz/")) {
+  if (pathname?.includes("answering") || pathname?.includes("results")) {
     return null;
   }
 

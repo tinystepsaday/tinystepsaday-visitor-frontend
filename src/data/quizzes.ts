@@ -26,6 +26,7 @@ export interface GradingCriteria {
 export interface Quiz {
   id: string;
   title: string;
+  subtitle: string;
   description: string;
   questions: QuizQuestion[];
   category: string;
@@ -98,7 +99,8 @@ export const quizzes: Record<string, Quiz> = {
   "self-mastery": {
     id: "self-mastery",
     title: "Master Your Habits",
-    description: "Assess your self-discipline, routines, and habits",
+    subtitle: "Assess your self-discipline, routines, and habits",
+    description: "This comprehensive assessment evaluates your current habit formation practices, self-discipline levels, and routine consistency. It provides personalized insights into your strengths and areas for improvement in building sustainable habits that lead to long-term success.",
     category: "Personal Development",
     estimatedTime: "10-15 minutes",
     difficulty: "intermediate",
@@ -283,7 +285,8 @@ export const quizzes: Record<string, Quiz> = {
   "addictions": {
     id: "addictions",
     title: "Break Free From Addictions",
-    description: "Assess your relationship with habits and dependencies",
+    subtitle: "Assess your relationship with habits and dependencies",
+    description: "This assessment helps you understand your relationship with various habits and dependencies, including digital consumption, substances, or behavioral patterns. It provides insights into your current level of awareness and control, offering personalized strategies for building healthier relationships with potentially problematic behaviors.",
     category: "Mental Health",
     estimatedTime: "5-10 minutes",
     difficulty: "beginner",
@@ -398,7 +401,8 @@ export const quizzes: Record<string, Quiz> = {
   "purpose": {
     id: "purpose",
     title: "Find Your Purpose",
-    description: "Explore your life direction and meaning",
+    subtitle: "Explore your life direction and meaning",
+    description: "This assessment explores your current understanding of life purpose, values alignment, and career satisfaction. It helps identify areas where you feel fulfilled versus areas that may need more attention, providing guidance for aligning your daily activities with your deeper sense of meaning and purpose.",
     category: "Life Purpose",
     estimatedTime: "5-10 minutes",
     difficulty: "intermediate",
@@ -513,7 +517,8 @@ export const quizzes: Record<string, Quiz> = {
   "trauma": {
     id: "trauma",
     title: "Heal Your Past",
-    description: "Process and integrate past experiences",
+    subtitle: "Process and integrate past experiences",
+    description: "This assessment evaluates your relationship with past experiences and current emotional well-being. It helps identify areas where past events may be affecting your present life and provides guidance for developing healthy coping mechanisms and healing practices.",
     category: "Mental Health",
     estimatedTime: "10-15 minutes",
     difficulty: "advanced",
@@ -628,7 +633,8 @@ export const quizzes: Record<string, Quiz> = {
   "mindfulness": {
     id: "mindfulness",
     title: "Mindfulness Assessment",
-    description: "Evaluate your mindfulness practice and awareness",
+    subtitle: "Evaluate your mindfulness practice and awareness",
+    description: "This assessment measures your current mindfulness practice, awareness levels, and ability to stay present. It evaluates your meditation habits, stress management techniques, and overall mental clarity, providing personalized recommendations for deepening your mindfulness practice.",
     category: "Wellness",
     estimatedTime: "8-12 minutes",
     difficulty: "intermediate",

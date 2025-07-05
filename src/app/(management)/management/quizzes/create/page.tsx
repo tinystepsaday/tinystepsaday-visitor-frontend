@@ -107,6 +107,7 @@ export default function CreateQuizPage() {
 
   const [formData, setFormData] = useState({
     title: '',
+    subtitle: '',
     description: '',
     category: '',
     estimatedTime: '',
@@ -296,12 +297,22 @@ export default function CreateQuizPage() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="subtitle">Subtitle</Label>
+              <Input
+                id="subtitle"
+                value={formData.subtitle}
+                onChange={(e) => handleInputChange('subtitle', e.target.value)}
+                placeholder="Enter a brief subtitle for the quiz"
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="Enter quiz description"
+                placeholder="Enter detailed quiz description"
                 rows={3}
               />
             </div>

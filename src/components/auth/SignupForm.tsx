@@ -11,7 +11,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { User, Mail, Lock, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
 
 const signupSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -35,6 +36,11 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 export default function SignupForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { login } = useAuthStore();
+  
+  // Get return URL from search params
+  const returnUrl = searchParams.get('returnUrl') || '/dashboard';
   
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -52,11 +58,22 @@ export default function SignupForm() {
     
     setTimeout(() => {
       console.log("Signup form submitted:", data);
+      
+      // Create a user object and log them in
+      const user = {
+        id: "user-" + Date.now(),
+        name: data.name,
+        email: data.email
+      };
+      
+      // Log the user in
+      login(user);
+      
       toast.success("Account created successfully!", {
-        description: "Redirecting to login page...",
+        description: "Redirecting...",
       });
       setIsLoading(false);
-      router.push("/auth/login");
+      router.push(returnUrl);
     }, 1500);
   };
 
@@ -65,11 +82,22 @@ export default function SignupForm() {
     
     setTimeout(() => {
       console.log(`Signing up with ${provider}`);
+      
+      // Create a user object and log them in
+      const user = {
+        id: "user-" + Date.now(),
+        name: `User from ${provider}`,
+        email: `user@${provider.toLowerCase()}.com`
+      };
+      
+      // Log the user in
+      login(user);
+      
       toast.success("Account created successfully!", {
-        description: "Redirecting to your dashboard...",
+        description: "Redirecting...",
       });
       setIsLoading(false);
-      router.push("/dashboard");
+      router.push(returnUrl);
     }, 1500);
   };
 
@@ -258,7 +286,7 @@ export default function SignupForm() {
       <div className="text-center mt-6">
         <p className="text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link href="/auth/login" className="text-primary hover:underline font-medium">
+          <Link href={`/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`} className="text-primary hover:underline font-medium">
             Sign in
           </Link>
         </p>
