@@ -922,6 +922,125 @@ export const quizResults: QuizResult[] = [
   }
 ];
 
+// Sample user quiz results for dashboard display
+export const userQuizResults: QuizResult[] = [
+  {
+    id: "user-result-1",
+    quizId: "self-mastery",
+    userId: "current-user",
+    userName: "Current User",
+    userEmail: "user@example.com",
+    score: 78,
+    maxScore: 100,
+    percentage: 78,
+    level: "good",
+    feedback: "Good! You have a solid foundation with room for improvement.",
+    recommendations: [
+      "Focus on consistency in your routines",
+      "Identify and work on your weakest areas",
+      "Set specific, measurable goals"
+    ],
+    completedAt: "2025-01-15T10:30:00Z",
+    timeSpent: 12,
+    answers: {
+      "q1": "q1-b",
+      "q2": "q2-b",
+      "q3": "q3-a",
+      "q4": "q4-b",
+      "q5": "q5-b",
+      "q6": "q6-a",
+      "q7": "q7-b",
+      "q8": "q8-b",
+      "q9": "q9-b",
+      "q10": "q10-b"
+    },
+    classification: "Habit Builder",
+    areasOfImprovement: ["Consistency", "Goal setting"],
+    supportNeeded: ["Habit tracking tools", "Accountability partner"]
+  },
+  {
+    id: "user-result-2",
+    quizId: "purpose",
+    userId: "current-user",
+    userName: "Current User",
+    userEmail: "user@example.com",
+    score: 35,
+    maxScore: 60,
+    percentage: 58,
+    level: "fair",
+    feedback: "Fair. You're exploring your purpose but need more clarity.",
+    recommendations: [
+      "Reflect on your core values",
+      "Explore different career paths",
+      "Seek guidance from mentors or coaches"
+    ],
+    completedAt: "2025-01-10T14:20:00Z",
+    timeSpent: 9,
+    answers: {
+      "q1": "q1-c",
+      "q2": "q2-c",
+      "q3": "q3-c"
+    },
+    classification: "Purpose Explorer",
+    areasOfImprovement: ["Career clarity", "Value identification"],
+    supportNeeded: ["Career counseling", "Purpose coaching"]
+  },
+  {
+    id: "user-result-3",
+    quizId: "mindfulness",
+    userId: "current-user",
+    userName: "Current User",
+    userEmail: "user@example.com",
+    score: 65,
+    maxScore: 100,
+    percentage: 65,
+    level: "good",
+    feedback: "Good! You have a developing mindfulness practice.",
+    recommendations: [
+      "Continue your daily practice",
+      "Explore advanced meditation techniques",
+      "Share your wisdom with others"
+    ],
+    completedAt: "2025-01-05T16:45:00Z",
+    timeSpent: 10,
+    answers: {
+      "q1": "q1-b",
+      "q2": "q2-b",
+      "q3": "q3-b"
+    },
+    classification: "Mindfulness Practitioner",
+    areasOfImprovement: ["Consistency", "Advanced techniques"],
+    supportNeeded: ["Practice tools", "Accountability partner"]
+  },
+  {
+    id: "user-result-4",
+    quizId: "addictions",
+    userId: "current-user",
+    userName: "Current User",
+    userEmail: "user@example.com",
+    score: 42,
+    maxScore: 60,
+    percentage: 70,
+    level: "good",
+    feedback: "Good! You show awareness of your habits and dependencies.",
+    recommendations: [
+      "Continue monitoring your social media usage",
+      "Set specific boundaries for digital consumption",
+      "Consider digital detox periods"
+    ],
+    completedAt: "2024-12-28T09:15:00Z",
+    timeSpent: 8,
+    answers: {
+      "q1": "q1-b",
+      "q2": "q2-b",
+      "q3": "q3-b"
+    },
+    classification: "Freedom Seeker",
+    areasOfImprovement: ["Digital boundaries", "Social media usage"],
+    supportNeeded: ["Digital wellness tools", "Screen time management"]
+  }
+];
+
 export function calculateQuizResult(answers: Record<string, string>, quizId: string): QuizResult {
   const quiz = quizzes[quizId];
   if (!quiz) {
@@ -1069,6 +1188,12 @@ export async function getAllQuizResults(): Promise<QuizResult[]> {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 200));
   return quizResults;
+}
+
+export async function getUserQuizResults(userId: string = "current-user"): Promise<QuizResult[]> {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 150));
+  return userQuizResults.filter(result => result.userId === userId);
 }
 
 export async function getQuizAnalytics(quizId: string): Promise<QuizAnalytics> {

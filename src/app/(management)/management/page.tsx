@@ -4,6 +4,7 @@ import { useState } from "react"
 import type { DateRange } from "react-day-picker"
 import { useAnalytics } from "@/lib/api"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { AnalyticsDashboardLoader } from "@/components/ui/loaders"
 import DateRangePicker from "@/components/date-range-picker"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
 import { Users, FileText, GraduationCap, Eye } from "lucide-react"
@@ -15,11 +16,7 @@ export default function DashboardPage() {
   const { data: analytics, isLoading } = useAnalytics(dateRange ? { from: dateRange.from!, to: dateRange.to! } : undefined)
 
   if (isLoading) {
-    return (
-      <div className="flex h-[200px] items-center justify-center">
-        <div className="text-muted-foreground">Loading analytics...</div>
-      </div>
-    )
+    return <AnalyticsDashboardLoader title="Loading Dashboard..." subtitle="Please wait while we load the dashboard data" />
   }
 
   const stats = [

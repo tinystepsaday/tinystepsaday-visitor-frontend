@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ListPageLoader } from "@/components/ui/loaders"
 import { Bell, CheckCircle, AlertCircle, Info, AlertTriangle, Eye, Check } from "lucide-react"
 import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
@@ -82,11 +83,7 @@ export default function NotificationsPage() {
   const unreadCount = notifications.filter((n) => !n.read).length
 
   if (isLoading) {
-    return (
-      <div className="flex h-[200px] items-center justify-center">
-        <div className="text-muted-foreground">Loading notifications...</div>
-      </div>
-    )
+    return <ListPageLoader title="Loading Notifications..." subtitle="Please wait while we load your notifications" />
   }
 
   return (

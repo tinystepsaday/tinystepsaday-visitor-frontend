@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
+import { ListPageLoader } from "@/components/ui/loaders"
 import { Save, Upload, Trash2, Bell, Shield, Globe, Palette } from "lucide-react"
 import { MediaSelector } from "@/components/media-selector"
 import Image from "next/image"
@@ -33,6 +34,15 @@ export default function SettingsPage() {
     maxFileSize: 10,
     allowedFileTypes: "jpg,jpeg,png,gif,pdf,doc,docx",
   })
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Simulate loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 1000)
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleSave = () => {
     console.log("Saving settings:", settings)
@@ -41,6 +51,10 @@ export default function SettingsPage() {
 
   const updateSetting = (key: string, value: string | boolean | number) => {
     setSettings((prev) => ({ ...prev, [key]: value }))
+  }
+
+  if (isLoading) {
+    return <ListPageLoader title="Loading Settings..." subtitle="Please wait while we load the settings" />
   }
 
   return (
