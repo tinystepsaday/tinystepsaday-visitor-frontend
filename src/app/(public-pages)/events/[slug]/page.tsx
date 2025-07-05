@@ -5,7 +5,9 @@ import {
     Calendar,
     MapPin,
     Clock,
-    ChevronLeft
+    ChevronLeft,
+    Package,
+    FileText
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
@@ -171,6 +173,51 @@ export default async function EventPage({ params }: EventPageProps) {
                                 </p>
                             </CardContent>
                         </Card>
+
+                        {/* Requirements and Materials */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {event.requirements && event.requirements.length > 0 && (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Package className="h-5 w-5" />
+                                            Requirements
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <ul className="space-y-2">
+                                            {event.requirements.map((requirement, index) => (
+                                                <li key={index} className="flex items-start gap-2">
+                                                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
+                                                    <span className="text-sm text-muted-foreground">{requirement}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </CardContent>
+                                </Card>
+                            )}
+
+                            {event.materials && event.materials.length > 0 && (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <FileText className="h-5 w-5" />
+                                            Materials
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <ul className="space-y-2">
+                                            {event.materials.map((material, index) => (
+                                                <li key={index} className="flex items-start gap-2">
+                                                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
+                                                    <span className="text-sm text-muted-foreground">{material}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </div>
 
                         <Card>
                             <CardHeader>
