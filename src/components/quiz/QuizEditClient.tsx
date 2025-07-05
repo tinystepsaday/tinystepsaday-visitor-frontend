@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -12,8 +12,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
-import { type GradingCriteria } from '@/data/quizzes'
-import { GradingCriteriaEditor } from '@/components/quiz/GradingCriteriaEditor'
+import { type Quiz, type GradingCriteria } from '@/data/quizzes'
+import { GradingCriteriaEditor } from './GradingCriteriaEditor'
+import { DetailPageLoader } from '../ui/loaders'
+
+interface QuizEditClientProps {
+  quiz: Quiz
+}
 
 interface Question {
   id: string
@@ -25,86 +30,14 @@ interface Question {
   }>
 }
 
-export default function CreateQuizPage() {
+export default function QuizEditClient({ quiz }: QuizEditClientProps) {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false)
   const [tags, setTags] = useState<string[]>([])
   const [newTag, setNewTag] = useState('')
-  const [questions, setQuestions] = useState<Question[]>([
-    {
-      id: 'q1',
-      text: '',
-      options: [
-        { id: 'q1-a', text: '', value: 1 },
-        { id: 'q1-b', text: '', value: 2 },
-        { id: 'q1-c', text: '', value: 3 },
-        { id: 'q1-d', text: '', value: 4 }
-      ]
-    }
-  ])
-  const [gradingCriteria, setGradingCriteria] = useState<GradingCriteria[]>([
-    {
-      id: 'gc-1',
-      name: 'Excellent',
-      minScore: 80,
-      maxScore: 100,
-      label: 'Master',
-      color: '#10b981',
-      recommendations: [
-        'Continue building on your strong foundation',
-        'Share your knowledge with others'
-      ],
-      proposedCourses: [],
-      proposedProducts: [],
-      description: 'Exceptional performance in this area'
-    },
-    {
-      id: 'gc-2',
-      name: 'Good',
-      minScore: 60,
-      maxScore: 79,
-      label: 'Builder',
-      color: '#3b82f6',
-      recommendations: [
-        'Focus on consistency in your practice',
-        'Identify areas for improvement'
-      ],
-      proposedCourses: [],
-      proposedProducts: [],
-      description: 'Solid foundation with room for growth'
-    },
-    {
-      id: 'gc-3',
-      name: 'Fair',
-      minScore: 40,
-      maxScore: 59,
-      label: 'Learner',
-      color: '#f59e0b',
-      recommendations: [
-        'Start with small, manageable changes',
-        'Seek guidance and support'
-      ],
-      proposedCourses: [],
-      proposedProducts: [],
-      description: 'Potential but needs development'
-    },
-    {
-      id: 'gc-4',
-      name: 'Needs Improvement',
-      minScore: 0,
-      maxScore: 39,
-      label: 'Starter',
-      color: '#ef4444',
-      recommendations: [
-        'Begin with basic fundamentals',
-        'Consider working with a mentor'
-      ],
-      proposedCourses: [],
-      proposedProducts: [],
-      description: 'Significant room for improvement'
-    }
-  ])
-
+  const [questions, setQuestions] = useState<Question[]>([])
+  const [gradingCriteria, setGradingCriteria] = useState<GradingCriteria[]>([])
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -130,116 +63,108 @@ export default function CreateQuizPage() {
     { id: 'product-4', title: 'Self-Improvement Handbook' }
   ]
 
-  const addQuestion = () => {
-    const newId = `q${questions.length + 1}`
-    setQuestions([...questions, {
-      id: newId,
-      text: '',
-      options: [
-        { id: `${newId}-a`, text: '', value: 1 },
-        { id: `${newId}-b`, text: '', value: 2 },
-        { id: `${newId}-c`, text: '', value: 3 },
-        { id: `${newId}-d`, text: '', value: 4 }
-      ]
-    }])
-  }
-
-  const removeQuestion = (index: number) => {
-    if (questions.length > 1) {
-      setQuestions(questions.filter((_, i) => i !== index))
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      try {
+        if (quiz) {
+          setFormData({
+            title: quiz.title,
+            description: quiz.description,
+            category: quiz.category,
+            estimatedTime: quiz.estimatedTime,
+            difficulty: quiz.difficulty,
+            status: quiz.status,
+            isPublic: quiz.isPublic
+          })
+          setTags(quiz.tags)
+          setQuestions(quiz.questions)
+          setGradingCriteria(quiz.gradingCriteria)
+          setIsInitialized(true)
+        }
+      } catch (err) {
+        console.error('Error fetching quiz:', err)
+      }
     }
-  }
-
-  const updateQuestion = (index: number, field: 'text' | 'options', value: string | Question['options']) => {
-    const updatedQuestions = [...questions]
-    if (field === 'text') {
-      updatedQuestions[index].text = value as string
-    } else if (field === 'options') {
-      updatedQuestions[index].options = value as Question['options']
+    if (!isInitialized) {
+      fetchQuiz()
     }
-    setQuestions(updatedQuestions)
-  }
+  }, [quiz, isInitialized])
 
-  const updateOption = (questionIndex: number, optionIndex: number, field: 'text' | 'value', value: string | number) => {
-    const updatedQuestions = [...questions]
-    if (field === 'text') {
-      updatedQuestions[questionIndex].options[optionIndex].text = value as string
-    } else if (field === 'value') {
-      updatedQuestions[questionIndex].options[optionIndex].value = parseInt(value as string)
-    }
-    setQuestions(updatedQuestions)
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
   }
 
   const addTag = () => {
     if (newTag.trim() && !tags.includes(newTag.trim())) {
-      setTags([...tags, newTag.trim()])
+      setTags(prev => [...prev, newTag.trim()])
       setNewTag('')
     }
   }
 
   const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter(tag => tag !== tagToRemove))
+    setTags(prev => prev.filter(tag => tag !== tagToRemove))
   }
 
-  const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+  const addQuestion = () => {
+    const newQuestion: Question = {
+      id: `q${questions.length + 1}`,
+      text: '',
+      options: [
+        { id: '1', text: '', value: 1 },
+        { id: '2', text: '', value: 2 },
+        { id: '3', text: '', value: 3 },
+        { id: '4', text: '', value: 4 }
+      ]
+    }
+    setQuestions(prev => [...prev, newQuestion])
+  }
+
+  const updateQuestion = (questionId: string, field: string, value: string) => {
+    setQuestions(prev => prev.map(q =>
+      q.id === questionId ? { ...q, [field]: value } : q
+    ))
+  }
+
+  const updateOption = (questionId: string, optionId: string, field: string, value: string | number) => {
+    setQuestions(prev => prev.map(q =>
+      q.id === questionId ? {
+        ...q,
+        options: q.options.map(opt =>
+          opt.id === optionId ? { ...opt, [field]: value } : opt
+        )
+      } : q
+    ))
+  }
+
+  const removeQuestion = (questionId: string) => {
+    setQuestions(prev => prev.filter(q => q.id !== questionId))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
-    // Validation
-    if (!formData.title.trim()) {
-      toast({
-        title: "Error",
-        description: "Quiz title is required",
-        variant: "destructive"
-      })
-      setIsLoading(false)
-      return
-    }
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
 
-    if (questions.some(q => !q.text.trim())) {
       toast({
-        title: "Error",
-        description: "All questions must have text",
-        variant: "destructive"
+        title: "Quiz updated successfully",
+        description: "Your quiz has been updated and saved.",
       })
+    } catch {
+      toast({
+        title: "Error updating quiz",
+        description: "There was an error updating your quiz. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
       setIsLoading(false)
-      return
     }
+  }
 
-    if (questions.some(q => q.options.some(o => !o.text.trim()))) {
-      toast({
-        title: "Error",
-        description: "All answer options must have text",
-        variant: "destructive"
-      })
-      setIsLoading(false)
-      return
-    }
-
-    if (gradingCriteria.length === 0) {
-      toast({
-        title: "Error",
-        description: "At least one grading criteria is required",
-        variant: "destructive"
-      })
-      setIsLoading(false)
-      return
-    }
-
-    // Simulate API call
-    setTimeout(() => {
-      toast({
-        title: "Success",
-        description: "Quiz created successfully",
-      })
-      setIsLoading(false)
-      // Redirect to quizzes list
-      window.location.href = '/management/quizzes'
-    }, 1000)
+  if (!isInitialized) {
+    return <DetailPageLoader />
   }
 
   return (
@@ -248,20 +173,20 @@ export default function CreateQuizPage() {
       <div className="flex items-center justify-between">
         <div className="flex flex-col items-start gap-4 w-full justify-between">
           <div className="flex items-center justify-between w-full">
-            <Link href="/management/quizzes">
+            <Link href={`/management/quizzes/${quiz.id}`}>
               <Button variant="ghost" size="sm">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Quizzes
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Quiz
               </Button>
             </Link>
             <Button onClick={handleSubmit} disabled={isLoading}>
               <Save className="h-4 w-4 mr-2" />
-              {isLoading ? 'Creating...' : 'Create Quiz'}
+              {isLoading ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
           <div className="flex flex-col items-start w-full">
-            <h1 className="text-2xl font-bold">Create New Quiz</h1>
-            <p className="text-muted-foreground">Build a comprehensive assessment quiz</p>
+            <h1 className="text-2xl font-bold">Edit Quiz</h1>
+            <p className="text-muted-foreground">Update quiz details and questions</p>
           </div>
         </div>
       </div>
@@ -271,7 +196,7 @@ export default function CreateQuizPage() {
         <Card>
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
-            <CardDescription>Set up the basic details of your quiz</CardDescription>
+            <CardDescription>Update the basic details of your quiz</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -412,15 +337,9 @@ export default function CreateQuizPage() {
         {/* Questions */}
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Questions</CardTitle>
-                <CardDescription>Add and edit quiz questions</CardDescription>
-              </div>
-              <Button type="button" onClick={addQuestion} variant="outline">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Question
-              </Button>
+            <div className="flex flex-col items-start w-full gap-2">
+              <CardTitle>Questions</CardTitle>
+              <CardDescription>Add and edit quiz questions</CardDescription>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -430,11 +349,10 @@ export default function CreateQuizPage() {
                   <h4 className="font-medium">Question {index + 1}</h4>
                   <Button
                     type="button"
-                    onClick={() => removeQuestion(index)}
+                    onClick={() => removeQuestion(question.id)}
                     variant="ghost"
                     size="sm"
                     className="text-destructive hover:text-destructive"
-                    disabled={questions.length === 1}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -444,7 +362,7 @@ export default function CreateQuizPage() {
                   <Label>Question Text</Label>
                   <Textarea
                     value={question.text}
-                    onChange={(e) => updateQuestion(index, 'text', e.target.value)}
+                    onChange={(e) => updateQuestion(question.id, 'text', e.target.value)}
                     placeholder="Enter your question here"
                     rows={2}
                   />
@@ -452,18 +370,18 @@ export default function CreateQuizPage() {
 
                 <div className="space-y-3">
                   <Label>Options</Label>
-                  {question.options.map((option, optionIndex) => (
+                  {question.options.map((option) => (
                     <div key={option.id} className="flex items-center space-x-2">
                       <Input
                         value={option.text}
-                        onChange={(e) => updateOption(index, optionIndex, 'text', e.target.value)}
+                        onChange={(e) => updateOption(question.id, option.id, 'text', e.target.value)}
                         placeholder={`Option ${option.value}`}
                         className="flex-1"
                       />
                       <Input
                         type="number"
                         value={option.value}
-                        onChange={(e) => updateOption(index, optionIndex, 'value', parseInt(e.target.value))}
+                        onChange={(e) => updateOption(question.id, option.id, 'value', parseInt(e.target.value))}
                         placeholder="Value"
                         className="w-20"
                       />
@@ -472,9 +390,18 @@ export default function CreateQuizPage() {
                 </div>
               </div>
             ))}
+            <Button type="button" onClick={addQuestion} variant="outline">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Question
+            </Button>
+            {questions.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                No questions added yet. Click &quot;Add Question&quot; to get started.
+              </div>
+            )}
           </CardContent>
         </Card>
       </form>
     </div>
   )
-}
+} 

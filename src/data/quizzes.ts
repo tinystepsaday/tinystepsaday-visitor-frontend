@@ -10,6 +10,19 @@ export interface QuizQuestion {
   options: QuizOption[];
 }
 
+export interface GradingCriteria {
+  id: string;
+  name: string;
+  minScore: number;
+  maxScore: number;
+  label: string;
+  color: string;
+  recommendations: string[];
+  proposedCourses: string[];
+  proposedProducts: string[];
+  description?: string;
+}
+
 export interface Quiz {
   id: string;
   title: string;
@@ -18,17 +31,69 @@ export interface Quiz {
   category: string;
   estimatedTime: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
+  // Management fields
+  status: 'draft' | 'active' | 'archived';
+  isPublic: boolean;
+  createdAt: string;
+  updatedAt: string;
+  totalAttempts: number;
+  completedAttempts: number;
+  averageScore: number;
+  averageCompletionTime: number; // in minutes
+  tags: string[];
+  gradingCriteria: GradingCriteria[];
 }
 
 export interface QuizResult {
+  id: string;
+  quizId: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
   score: number;
   maxScore: number;
   percentage: number;
   level: 'excellent' | 'good' | 'fair' | 'needs-improvement';
   feedback: string;
   recommendations: string[];
+  completedAt: string;
+  timeSpent: number; // in minutes
+  answers: Record<string, string>;
+  classification: string;
+  areasOfImprovement: string[];
+  supportNeeded: string[];
 }
 
+export interface QuizAnalytics {
+  totalAttempts: number;
+  completedAttempts: number;
+  completionRate: number;
+  averageScore: number;
+  averageTimeSpent: number;
+  levelDistribution: {
+    excellent: number;
+    good: number;
+    fair: number;
+    needsImprovement: number;
+  };
+  dropoffPoints: Array<{
+    questionNumber: number;
+    dropoffCount: number;
+    dropoffRate: number;
+  }>;
+  popularClassifications: Array<{
+    classification: string;
+    count: number;
+    percentage: number;
+  }>;
+  timeDistribution: {
+    fast: number; // < 5 minutes
+    normal: number; // 5-15 minutes
+    slow: number; // > 15 minutes
+  };
+}
+
+// Enhanced quiz data with management fields
 export const quizzes: Record<string, Quiz> = {
   "self-mastery": {
     id: "self-mastery",
@@ -37,6 +102,81 @@ export const quizzes: Record<string, Quiz> = {
     category: "Personal Development",
     estimatedTime: "10-15 minutes",
     difficulty: "intermediate",
+    status: "active",
+    isPublic: true,
+    createdAt: "2025-01-01",
+    updatedAt: "2025-01-15",
+    totalAttempts: 1247,
+    completedAttempts: 1189,
+    averageScore: 72.5,
+    averageCompletionTime: 12.3,
+    tags: ["habits", "self-discipline", "productivity", "routines"],
+    gradingCriteria: [
+      {
+        id: "gc1",
+        name: "Habit Master",
+        minScore: 80,
+        maxScore: 100,
+        label: "Habit Master",
+        color: "bg-green-100 text-green-800",
+        recommendations: [
+          "Continue building on your strong foundation",
+          "Share your knowledge with others",
+          "Consider mentoring or coaching others"
+        ],
+        proposedCourses: ["Habit Mastery Course"],
+        proposedProducts: ["Habit Mastery Book"],
+        description: "Excellent mastery of habits"
+      },
+      {
+        id: "gc2",
+        name: "Habit Builder",
+        minScore: 60,
+        maxScore: 79,
+        label: "Habit Builder",
+        color: "bg-blue-100 text-blue-800",
+        recommendations: [
+          "Focus on consistency in your routines",
+          "Identify and work on your weakest areas",
+          "Set specific, measurable goals"
+        ],
+        proposedCourses: ["Habit Building Course"],
+        proposedProducts: ["Habit Building Book"],
+        description: "Good foundation with room for improvement"
+      },
+      {
+        id: "gc3",
+        name: "Habit Learner",
+        minScore: 40,
+        maxScore: 59,
+        label: "Habit Learner",
+        color: "bg-yellow-100 text-yellow-800",
+        recommendations: [
+          "Start with one small change",
+          "Create a structured practice routine",
+          "Seek accountability from friends or family"
+        ],
+        proposedCourses: ["Habit Learning Course"],
+        proposedProducts: ["Habit Learning Book"],
+        description: "Potential but needs better practices"
+      },
+      {
+        id: "gc4",
+        name: "Habit Starter",
+        minScore: 0,
+        maxScore: 39,
+        label: "Habit Starter",
+        color: "bg-red-100 text-red-800",
+        recommendations: [
+          "Start with very small, manageable changes",
+          "Consider working with a coach or mentor",
+          "Focus on building one practice at a time"
+        ],
+        proposedCourses: ["Habit Starting Course"],
+        proposedProducts: ["Habit Starting Book"],
+        description: "Significant room for improvement"
+      }
+    ],
     questions: [
       {
         id: "q1",
@@ -147,6 +287,81 @@ export const quizzes: Record<string, Quiz> = {
     category: "Mental Health",
     estimatedTime: "5-10 minutes",
     difficulty: "beginner",
+    status: "active",
+    isPublic: true,
+    createdAt: "2025-01-05",
+    updatedAt: "2025-01-12",
+    totalAttempts: 892,
+    completedAttempts: 756,
+    averageScore: 65.2,
+    averageCompletionTime: 8.7,
+    tags: ["addictions", "mental-health", "habits", "dependencies"],
+    gradingCriteria: [
+      {
+        id: "gc1",
+        name: "Freedom Master",
+        minScore: 80,
+        maxScore: 100,
+        label: "Freedom Master",
+        color: "bg-green-100 text-green-800",
+        recommendations: [
+          "Continue building on your strong foundation",
+          "Share your knowledge with others",
+          "Consider mentoring or coaching others"
+        ],
+        proposedCourses: ["Freedom Mastery Course"],
+        proposedProducts: ["Freedom Mastery Book"],
+        description: "Excellent mastery of habits"
+      },
+      {
+        id: "gc2",
+        name: "Freedom Seeker",
+        minScore: 60,
+        maxScore: 79,
+        label: "Freedom Seeker",
+        color: "bg-blue-100 text-blue-800",
+        recommendations: [
+          "Continue monitoring your social media usage",
+          "Set specific boundaries for digital consumption",
+          "Consider digital detox periods"
+        ],
+        proposedCourses: ["Freedom Seeking Course"],
+        proposedProducts: ["Freedom Seeking Book"],
+        description: "Good awareness of habits and dependencies"
+      },
+      {
+        id: "gc3",
+        name: "Freedom Learner",
+        minScore: 40,
+        maxScore: 59,
+        label: "Freedom Learner",
+        color: "bg-yellow-100 text-yellow-800",
+        recommendations: [
+          "Continue monitoring your social media usage",
+          "Set specific boundaries for digital consumption",
+          "Consider digital detox periods"
+        ],
+        proposedCourses: ["Freedom Learning Course"],
+        proposedProducts: ["Freedom Learning Book"],
+        description: "Awareness of habits and dependencies"
+      },
+      {
+        id: "gc4",
+        name: "Freedom Starter",
+        minScore: 0,
+        maxScore: 39,
+        label: "Freedom Starter",
+        color: "bg-red-100 text-red-800",
+        recommendations: [
+          "Start with one small change",
+          "Create a structured practice routine",
+          "Seek accountability from friends or family"
+        ],
+        proposedCourses: ["Freedom Starting Course"],
+        proposedProducts: ["Freedom Starting Book"],
+        description: "Significant room for improvement"
+      }
+    ],
     questions: [
       {
         id: "q1",
@@ -187,6 +402,81 @@ export const quizzes: Record<string, Quiz> = {
     category: "Life Purpose",
     estimatedTime: "5-10 minutes",
     difficulty: "intermediate",
+    status: "active",
+    isPublic: true,
+    createdAt: "2025-01-10",
+    updatedAt: "2025-01-18",
+    totalAttempts: 567,
+    completedAttempts: 523,
+    averageScore: 58.9,
+    averageCompletionTime: 9.2,
+    tags: ["purpose", "meaning", "life-direction", "values"],
+    gradingCriteria: [
+      {
+        id: "gc1",
+        name: "Purpose Master",
+        minScore: 80,
+        maxScore: 100,
+        label: "Purpose Master",
+        color: "bg-green-100 text-green-800",
+        recommendations: [
+          "Continue building on your strong foundation",
+          "Share your knowledge with others",
+          "Consider mentoring or coaching others"
+        ],
+        proposedCourses: ["Purpose Mastery Course"],
+        proposedProducts: ["Purpose Mastery Book"],
+        description: "Excellent mastery of purpose"
+      },
+      {
+        id: "gc2",
+        name: "Purpose Seeker",
+        minScore: 60,
+        maxScore: 79,
+        label: "Purpose Seeker",
+        color: "bg-blue-100 text-blue-800",
+        recommendations: [
+          "Reflect on your core values",
+          "Explore different career paths",
+          "Seek guidance from mentors or coaches"
+        ],
+        proposedCourses: ["Purpose Seeking Course"],
+        proposedProducts: ["Purpose Seeking Book"],
+        description: "Good exploration of purpose"
+      },
+      {
+        id: "gc3",
+        name: "Purpose Explorer",
+        minScore: 40,
+        maxScore: 59,
+        label: "Purpose Explorer",
+        color: "bg-yellow-100 text-yellow-800",
+        recommendations: [
+          "Reflect on your core values",
+          "Explore different career paths",
+          "Seek guidance from mentors or coaches"
+        ],
+        proposedCourses: ["Purpose Exploring Course"],
+        proposedProducts: ["Purpose Exploring Book"],
+        description: "Good exploration of purpose"
+      },
+      {
+        id: "gc4",
+        name: "Purpose Beginner",
+        minScore: 0,
+        maxScore: 39,
+        label: "Purpose Beginner",
+        color: "bg-red-100 text-red-800",
+        recommendations: [
+          "Reflect on your core values",
+          "Explore different career paths",
+          "Seek guidance from mentors or coaches"
+        ],
+        proposedCourses: ["Purpose Starting Course"],
+        proposedProducts: ["Purpose Starting Book"],
+        description: "Significant room for improvement"
+      }
+    ],
     questions: [
       {
         id: "q1",
@@ -227,6 +517,81 @@ export const quizzes: Record<string, Quiz> = {
     category: "Mental Health",
     estimatedTime: "10-15 minutes",
     difficulty: "advanced",
+    status: "draft",
+    isPublic: false,
+    createdAt: "2025-01-15",
+    updatedAt: "2025-01-15",
+    totalAttempts: 0,
+    completedAttempts: 0,
+    averageScore: 0,
+    averageCompletionTime: 0,
+    tags: ["trauma", "healing", "mental-health", "past"],
+    gradingCriteria: [
+      {
+        id: "gc1",
+        name: "Healing Master",
+        minScore: 80,
+        maxScore: 100,
+        label: "Healing Master",
+        color: "bg-green-100 text-green-800",
+        recommendations: [
+          "Continue building on your strong foundation",
+          "Share your knowledge with others",
+          "Consider mentoring or coaching others"
+        ],
+        proposedCourses: ["Healing Mastery Course"],
+        proposedProducts: ["Healing Mastery Book"],
+        description: "Excellent mastery of healing"
+      },
+      {
+        id: "gc2",
+        name: "Healing Journey",
+        minScore: 60,
+        maxScore: 79,
+        label: "Healing Journey",
+        color: "bg-blue-100 text-blue-800",
+        recommendations: [
+          "Focus on consistency in your practice",
+          "Identify and work on your weakest areas",
+          "Set specific, measurable goals"
+        ],
+        proposedCourses: ["Healing Journey Course"],
+        proposedProducts: ["Healing Journey Book"],
+        description: "Good progress in healing"
+      },
+      {
+        id: "gc3",
+        name: "Healing Explorer",
+        minScore: 40,
+        maxScore: 59,
+        label: "Healing Explorer",
+        color: "bg-yellow-100 text-yellow-800",
+        recommendations: [
+          "Reflect on your past experiences",
+          "Explore different healing methods",
+          "Seek guidance from professionals"
+        ],
+        proposedCourses: ["Healing Exploring Course"],
+        proposedProducts: ["Healing Exploring Book"],
+        description: "Good exploration of healing"
+      },
+      {
+        id: "gc4",
+        name: "Healing Starter",
+        minScore: 0,
+        maxScore: 39,
+        label: "Healing Starter",
+        color: "bg-red-100 text-red-800",
+        recommendations: [
+          "Start with one small change",
+          "Consider working with a therapist or counselor",
+          "Focus on building one healing practice at a time"
+        ],
+        proposedCourses: ["Healing Starting Course"],
+        proposedProducts: ["Healing Starting Book"],
+        description: "Significant room for improvement"
+      }
+    ],
     questions: [
       {
         id: "q1",
@@ -259,80 +624,494 @@ export const quizzes: Record<string, Quiz> = {
         ]
       }
     ]
+  },
+  "mindfulness": {
+    id: "mindfulness",
+    title: "Mindfulness Assessment",
+    description: "Evaluate your mindfulness practice and awareness",
+    category: "Wellness",
+    estimatedTime: "8-12 minutes",
+    difficulty: "intermediate",
+    status: "active",
+    isPublic: true,
+    createdAt: "2025-01-20",
+    updatedAt: "2025-01-25",
+    totalAttempts: 445,
+    completedAttempts: 398,
+    averageScore: 69.8,
+    averageCompletionTime: 10.1,
+    tags: ["mindfulness", "meditation", "awareness", "wellness"],
+    gradingCriteria: [
+      {
+        id: "gc1",
+        name: "Mindfulness Master",
+        minScore: 80,
+        maxScore: 100,
+        label: "Mindfulness Master",
+        color: "bg-green-100 text-green-800",
+        recommendations: [
+          "Continue your daily practice",
+          "Explore advanced meditation techniques",
+          "Share your wisdom with others"
+        ],
+        proposedCourses: ["Mindfulness Mastery Course"],
+        proposedProducts: ["Mindfulness Mastery Book"],
+        description: "Excellent mindfulness practice"
+      },
+      {
+        id: "gc2",
+        name: "Mindfulness Practitioner",
+        minScore: 60,
+        maxScore: 79,
+        label: "Mindfulness Practitioner",
+        color: "bg-blue-100 text-blue-800",
+        recommendations: [
+          "Continue your daily practice",
+          "Explore advanced meditation techniques",
+          "Share your wisdom with others"
+        ],
+        proposedCourses: ["Mindfulness Practitioner Course"],
+        proposedProducts: ["Mindfulness Practitioner Book"],
+        description: "Good mindfulness practice"
+      },
+      {
+        id: "gc3",
+        name: "Mindfulness Explorer",
+        minScore: 40,
+        maxScore: 59,
+        label: "Mindfulness Explorer",
+        color: "bg-yellow-100 text-yellow-800",
+        recommendations: [
+          "Start with one small change",
+          "Create a structured practice routine",
+          "Seek accountability from friends or family"
+        ],
+        proposedCourses: ["Mindfulness Exploring Course"],
+        proposedProducts: ["Mindfulness Exploring Book"],
+        description: "Good mindfulness practice"
+      },
+      {
+        id: "gc4",
+        name: "Mindfulness Beginner",
+        minScore: 0,
+        maxScore: 39,
+        label: "Mindfulness Beginner",
+        color: "bg-red-100 text-red-800",
+        recommendations: [
+          "Start with one small change",
+          "Create a structured practice routine",
+          "Seek accountability from friends or family"
+        ],
+        proposedCourses: ["Mindfulness Starting Course"],
+        proposedProducts: ["Mindfulness Starting Book"],
+        description: "Significant room for improvement"
+      }
+    ],
+    questions: [
+      {
+        id: "q1",
+        text: "How often do you practice mindfulness or meditation?",
+        options: [
+          { id: "q1-a", text: "Daily - I have a consistent practice", value: 1 },
+          { id: "q1-b", text: "Several times per week", value: 2 },
+          { id: "q1-c", text: "Occasionally - once or twice per week", value: 3 },
+          { id: "q1-d", text: "Rarely or never", value: 4 }
+        ]
+      },
+      {
+        id: "q2",
+        text: "How aware are you of your thoughts and emotions throughout the day?",
+        options: [
+          { id: "q2-a", text: "Very aware - I notice most thoughts and emotions", value: 1 },
+          { id: "q2-b", text: "Somewhat aware - I notice them when I pay attention", value: 2 },
+          { id: "q2-c", text: "Occasionally aware - I notice them sometimes", value: 3 },
+          { id: "q2-d", text: "Rarely aware - I'm usually caught up in thoughts", value: 4 }
+        ]
+      },
+      {
+        id: "q3",
+        text: "How do you typically respond to stress or difficult emotions?",
+        options: [
+          { id: "q3-a", text: "I observe them mindfully and respond skillfully", value: 1 },
+          { id: "q3-b", text: "I usually manage them well with some mindfulness", value: 2 },
+          { id: "q3-c", text: "I sometimes get overwhelmed but can calm down", value: 3 },
+          { id: "q3-d", text: "I often get caught up in them and react impulsively", value: 4 }
+        ]
+      }
+    ]
   }
 };
 
-export function calculateQuizResult(answers: Record<string, string>): QuizResult {
+// Mock quiz results data
+export const quizResults: QuizResult[] = [
+  {
+    id: "result-1",
+    quizId: "self-mastery",
+    userId: "user-1",
+    userName: "Sarah Johnson",
+    userEmail: "sarah.johnson@email.com",
+    score: 85,
+    maxScore: 100,
+    percentage: 85,
+    level: "excellent",
+    feedback: "Excellent! You demonstrate strong self-mastery and healthy habits.",
+    recommendations: [
+      "Continue building on your strong foundation",
+      "Share your knowledge with others",
+      "Consider mentoring or coaching others"
+    ],
+    completedAt: "2025-01-15T10:30:00Z",
+    timeSpent: 11,
+    answers: {
+      "q1": "q1-a",
+      "q2": "q2-a",
+      "q3": "q3-a",
+      "q4": "q4-a",
+      "q5": "q5-b",
+      "q6": "q6-a",
+      "q7": "q7-a",
+      "q8": "q8-a",
+      "q9": "q9-a",
+      "q10": "q10-a"
+    },
+    classification: "Habit Master",
+    areasOfImprovement: ["Focus management"],
+    supportNeeded: ["Advanced habit optimization"]
+  },
+  {
+    id: "result-2",
+    quizId: "self-mastery",
+    userId: "user-2",
+    userName: "Michael Chen",
+    userEmail: "michael.chen@email.com",
+    score: 72,
+    maxScore: 100,
+    percentage: 72,
+    level: "good",
+    feedback: "Good! You have a solid foundation with room for improvement.",
+    recommendations: [
+      "Focus on consistency in your routines",
+      "Identify and work on your weakest areas",
+      "Set specific, measurable goals"
+    ],
+    completedAt: "2025-01-16T14:20:00Z",
+    timeSpent: 13,
+    answers: {
+      "q1": "q1-b",
+      "q2": "q2-b",
+      "q3": "q3-b",
+      "q4": "q4-b",
+      "q5": "q5-b",
+      "q6": "q6-b",
+      "q7": "q7-b",
+      "q8": "q8-b",
+      "q9": "q9-b",
+      "q10": "q10-b"
+    },
+    classification: "Habit Builder",
+    areasOfImprovement: ["Consistency", "Goal setting"],
+    supportNeeded: ["Habit tracking tools", "Accountability partner"]
+  },
+  {
+    id: "result-3",
+    quizId: "addictions",
+    userId: "user-3",
+    userName: "Emily Rodriguez",
+    userEmail: "emily.rodriguez@email.com",
+    score: 45,
+    maxScore: 60,
+    percentage: 75,
+    level: "good",
+    feedback: "Good! You show awareness of your habits and dependencies.",
+    recommendations: [
+      "Continue monitoring your social media usage",
+      "Set specific boundaries for digital consumption",
+      "Consider digital detox periods"
+    ],
+    completedAt: "2025-01-17T09:15:00Z",
+    timeSpent: 7,
+    answers: {
+      "q1": "q1-c",
+      "q2": "q2-b",
+      "q3": "q3-b"
+    },
+    classification: "Freedom Seeker",
+    areasOfImprovement: ["Digital boundaries", "Social media usage"],
+    supportNeeded: ["Digital wellness tools", "Screen time management"]
+  },
+  {
+    id: "result-4",
+    quizId: "purpose",
+    userId: "user-4",
+    userName: "David Thompson",
+    userEmail: "david.thompson@email.com",
+    score: 35,
+    maxScore: 60,
+    percentage: 58,
+    level: "fair",
+    feedback: "Fair. You're exploring your purpose but need more clarity.",
+    recommendations: [
+      "Reflect on your core values",
+      "Explore different career paths",
+      "Seek guidance from mentors or coaches"
+    ],
+    completedAt: "2025-01-18T16:45:00Z",
+    timeSpent: 9,
+    answers: {
+      "q1": "q1-c",
+      "q2": "q2-c",
+      "q3": "q3-c"
+    },
+    classification: "Purpose Explorer",
+    areasOfImprovement: ["Career clarity", "Value identification"],
+    supportNeeded: ["Career counseling", "Purpose coaching"]
+  },
+  {
+    id: "result-5",
+    quizId: "mindfulness",
+    userId: "user-5",
+    userName: "Lisa Wang",
+    userEmail: "lisa.wang@email.com",
+    score: 88,
+    maxScore: 100,
+    percentage: 88,
+    level: "excellent",
+    feedback: "Excellent! You have a strong mindfulness practice.",
+    recommendations: [
+      "Continue your daily practice",
+      "Explore advanced meditation techniques",
+      "Share your wisdom with others"
+    ],
+    completedAt: "2025-01-19T11:30:00Z",
+    timeSpent: 8,
+    answers: {
+      "q1": "q1-a",
+      "q2": "q2-a",
+      "q3": "q3-a"
+    },
+    classification: "Mindfulness Master",
+    areasOfImprovement: [],
+    supportNeeded: ["Advanced meditation resources"]
+  }
+];
+
+export function calculateQuizResult(answers: Record<string, string>, quizId: string): QuizResult {
+  const quiz = quizzes[quizId];
+  if (!quiz) {
+    throw new Error(`Quiz not found: ${quizId}`);
+  }
+
   const totalScore = Object.values(answers).reduce((sum, answerId) => {
-    for (const quiz of Object.values(quizzes)) {
-      for (const question of quiz.questions) {
-        const option = question.options.find(opt => opt.id === answerId);
-        if (option) {
-          return sum + option.value;
-        }
+    for (const question of quiz.questions) {
+      const option = question.options.find(opt => opt.id === answerId);
+      if (option) {
+        return sum + option.value;
       }
     }
     return sum;
   }, 0);
 
-  const maxScore = Object.values(quizzes).reduce((sum, quiz) => {
-    return sum + quiz.questions.length * 4;
-  }, 0);
-
+  const maxScore = quiz.questions.length * 4;
   const percentage = Math.round((totalScore / maxScore) * 100);
 
   let level: QuizResult['level'];
   let feedback: string;
   let recommendations: string[];
+  let classification: string;
+  let areasOfImprovement: string[];
+  let supportNeeded: string[];
 
-  if (percentage >= 80) {
-    level = 'excellent';
-    feedback = "Excellent! You demonstrate strong self-mastery and healthy habits.";
-    recommendations = [
-      "Continue building on your strong foundation",
-      "Share your knowledge with others",
-      "Consider mentoring or coaching others"
-    ];
-  } else if (percentage >= 60) {
-    level = 'good';
-    feedback = "Good! You have a solid foundation with room for improvement.";
-    recommendations = [
-      "Focus on consistency in your routines",
-      "Identify and work on your weakest areas",
-      "Set specific, measurable goals"
-    ];
-  } else if (percentage >= 40) {
-    level = 'fair';
-    feedback = "Fair. You have potential but need to develop better habits and routines.";
-    recommendations = [
-      "Start with one small habit change",
-      "Create a structured daily routine",
-      "Seek accountability from friends or family"
-    ];
+  // Find the appropriate grading criteria based on percentage
+  const matchingCriteria = quiz.gradingCriteria.find(criteria => 
+    percentage >= criteria.minScore && percentage <= criteria.maxScore
+  );
+
+  if (matchingCriteria) {
+    // Map criteria name to level
+    const nameLower = matchingCriteria.name.toLowerCase();
+    if (nameLower.includes('excellent') || nameLower.includes('master')) {
+      level = 'excellent';
+    } else if (nameLower.includes('good') || nameLower.includes('builder')) {
+      level = 'good';
+    } else if (nameLower.includes('fair') || nameLower.includes('learner')) {
+      level = 'fair';
+    } else {
+      level = 'needs-improvement';
+    }
+
+    feedback = matchingCriteria.description || `You scored in the ${matchingCriteria.name} range.`;
+    recommendations = matchingCriteria.recommendations;
+    classification = matchingCriteria.label;
+    areasOfImprovement = ["Focus on areas for improvement"];
+    supportNeeded = ["Consider the recommended courses and products"];
   } else {
-    level = 'needs-improvement';
-    feedback = "You have significant room for improvement in self-mastery and habit formation.";
-    recommendations = [
-      "Start with very small, manageable changes",
-      "Consider working with a coach or mentor",
-      "Focus on building one habit at a time"
-    ];
+    // Fallback to default logic
+    if (percentage >= 80) {
+      level = 'excellent';
+      feedback = "Excellent! You demonstrate mastery in this area.";
+      recommendations = [
+        "Continue building on your strong foundation",
+        "Share your knowledge with others",
+        "Consider mentoring or coaching others"
+      ];
+      classification = "Master";
+      areasOfImprovement = [];
+      supportNeeded = ["Advanced resources", "Mentorship opportunities"];
+    } else if (percentage >= 60) {
+      level = 'good';
+      feedback = "Good! You have a solid foundation with room for improvement.";
+      recommendations = [
+        "Focus on consistency in your practice",
+        "Identify and work on your weakest areas",
+        "Set specific, measurable goals"
+      ];
+      classification = "Builder";
+      areasOfImprovement = ["Consistency", "Advanced techniques"];
+      supportNeeded = ["Practice tools", "Accountability partner"];
+    } else if (percentage >= 40) {
+      level = 'fair';
+      feedback = "Fair. You have potential but need to develop better practices.";
+      recommendations = [
+        "Start with one small change",
+        "Create a structured practice routine",
+        "Seek accountability from friends or family"
+      ];
+      classification = "Learner";
+      areasOfImprovement = ["Basic practices", "Consistency", "Understanding"];
+      supportNeeded = ["Beginner resources", "Practice guidance", "Community support"];
+    } else {
+      level = 'needs-improvement';
+      feedback = "You have significant room for improvement in this area.";
+      recommendations = [
+        "Start with very small, manageable changes",
+        "Consider working with a coach or mentor",
+        "Focus on building one practice at a time"
+      ];
+      classification = "Starter";
+      areasOfImprovement = ["Basic understanding", "Practice habits", "Consistency"];
+      supportNeeded = ["Professional guidance", "Structured programs", "Regular check-ins"];
+    }
   }
 
   return {
+    id: `result-${Date.now()}`,
+    quizId,
+    userId: "current-user",
+    userName: "Current User",
+    userEmail: "user@example.com",
     score: totalScore,
     maxScore,
     percentage,
     level,
     feedback,
-    recommendations
+    recommendations,
+    completedAt: new Date().toISOString(),
+    timeSpent: 0,
+    answers,
+    classification,
+    areasOfImprovement,
+    supportNeeded
   };
 }
 
-export function getQuizById(id: string): Quiz | null {
+export async function getQuizById(id: string): Promise<Quiz | null> {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 100));
   return quizzes[id] || null;
 }
 
-export function getAllQuizzes(): Quiz[] {
+export async function getAllQuizzes(): Promise<Quiz[]> {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 200));
   return Object.values(quizzes);
+}
+
+export async function getQuizResultsByQuizId(quizId: string): Promise<QuizResult[]> {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 150));
+  return quizResults.filter(result => result.quizId === quizId);
+}
+
+export async function getQuizResultById(resultId: string): Promise<QuizResult | undefined> {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 100));
+  return quizResults.find(result => result.id === resultId);
+}
+
+export async function getAllQuizResults(): Promise<QuizResult[]> {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 200));
+  return quizResults;
+}
+
+export async function getQuizAnalytics(quizId: string): Promise<QuizAnalytics> {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  const quiz = quizzes[quizId];
+  const results = await getQuizResultsByQuizId(quizId);
+  
+  if (!quiz || results.length === 0) {
+    return {
+      totalAttempts: 0,
+      completedAttempts: 0,
+      completionRate: 0,
+      averageScore: 0,
+      averageTimeSpent: 0,
+      levelDistribution: { excellent: 0, good: 0, fair: 0, needsImprovement: 0 },
+      dropoffPoints: [],
+      popularClassifications: [],
+      timeDistribution: { fast: 0, normal: 0, slow: 0 }
+    };
+  }
+
+  const completedResults = results.filter((r: QuizResult) => r.completedAt);
+  const completionRate = (completedResults.length / quiz.totalAttempts) * 100;
+  const averageScore = completedResults.reduce((sum: number, r: QuizResult) => sum + r.percentage, 0) / completedResults.length;
+  const averageTimeSpent = completedResults.reduce((sum: number, r: QuizResult) => sum + r.timeSpent, 0) / completedResults.length;
+
+  const levelDistribution = {
+    excellent: completedResults.filter((r: QuizResult) => r.level === 'excellent').length,
+    good: completedResults.filter((r: QuizResult) => r.level === 'good').length,
+    fair: completedResults.filter((r: QuizResult) => r.level === 'fair').length,
+    needsImprovement: completedResults.filter((r: QuizResult) => r.level === 'needs-improvement').length
+  };
+
+  const classificationCounts = completedResults.reduce((acc: Record<string, number>, result: QuizResult) => {
+    acc[result.classification] = (acc[result.classification] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const popularClassifications = Object.entries(classificationCounts)
+    .map(([classification, count]) => ({
+      classification,
+      count,
+      percentage: (count / completedResults.length) * 100
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  const timeDistribution = {
+    fast: completedResults.filter((r: QuizResult) => r.timeSpent < 5).length,
+    normal: completedResults.filter((r: QuizResult) => r.timeSpent >= 5 && r.timeSpent <= 15).length,
+    slow: completedResults.filter((r: QuizResult) => r.timeSpent > 15).length
+  };
+
+  // Mock dropoff points (in real app, this would be calculated from actual data)
+  const dropoffPoints = [
+    { questionNumber: 1, dropoffCount: 12, dropoffRate: 1.2 },
+    { questionNumber: 5, dropoffCount: 8, dropoffRate: 0.8 },
+    { questionNumber: 8, dropoffCount: 15, dropoffRate: 1.5 }
+  ];
+
+  return {
+    totalAttempts: quiz.totalAttempts,
+    completedAttempts: completedResults.length,
+    completionRate,
+    averageScore,
+    averageTimeSpent,
+    levelDistribution,
+    dropoffPoints,
+    popularClassifications,
+    timeDistribution
+  };
 } 

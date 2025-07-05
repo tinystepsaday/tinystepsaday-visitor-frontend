@@ -21,11 +21,13 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    if (!quiz) return;
+    
     const answersParam = searchParams.get('answers');
     if (answersParam) {
       try {
         const answers = JSON.parse(decodeURIComponent(answersParam));
-        const calculatedResult = calculateQuizResult(answers);
+        const calculatedResult = calculateQuizResult(answers, quiz.id);
         setResult(calculatedResult);
       } catch (error) {
         console.error('Error parsing answers:', error);
@@ -35,7 +37,21 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
       router.push(`/quiz/${quiz.id}`);
     }
     setIsLoading(false);
-  }, [searchParams, quiz.id, router]);
+  }, [searchParams, quiz?.id, router, quiz]);
+
+  // Safety check
+  if (!quiz) {
+    return (
+      <QuizLayout title="Quiz Error" subtitle="Quiz not found">
+        <div className="text-center py-12">
+          <p className="text-muted-foreground mb-4">This quiz could not be found.</p>
+          <Button onClick={() => router.push("/quiz")}>
+            Back to Quizzes
+          </Button>
+        </div>
+      </QuizLayout>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -63,15 +79,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
     );
   }
 
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case 'excellent': return 'text-green-600 bg-green-100';
-      case 'good': return 'text-blue-600 bg-blue-100';
-      case 'fair': return 'text-yellow-600 bg-yellow-100';
-      case 'needs-improvement': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
-    }
-  };
+
 
   const getLevelIcon = (level: string) => {
     switch (level) {
@@ -82,6 +90,10 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
       default: return <Book className="h-5 w-5" />;
     }
   };
+
+  const getCriteriaForLevel = (level: string) => {
+    return quiz.gradingCriteria.find(c => c.name.toLowerCase().includes(level) || c.label.toLowerCase().includes(level))
+  }
 
   return (
     <QuizLayout
@@ -104,8 +116,14 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
               <div className="text-4xl font-bold text-primary mb-2">
                 {result.percentage}%
               </div>
-              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getLevelColor(result.level)}`}>
-                {result.level.replace('-', ' ').toUpperCase()}
+              <div 
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                style={{ 
+                  backgroundColor: getCriteriaForLevel(result.level)?.color || '#6b7280',
+                  color: 'white'
+                }}
+              >
+                {getCriteriaForLevel(result.level)?.label || result.level.replace('-', ' ').toUpperCase()}
               </div>
             </div>
             
@@ -138,7 +156,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
           </CardHeader>
           <CardContent>
             <ul className="space-y-3">
-              {result.recommendations.map((recommendation, index) => (
+              {(getCriteriaForLevel(result.level)?.recommendations || result.recommendations).map((recommendation, index) => (
                 <li key={index} className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
                   <span className="text-sm text-muted-foreground">{recommendation}</span>

@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { MediaSelector } from "@/components/media-selector"
 import Image from "next/image"
+import { ListPageLoader } from "@/components/ui/loaders"
 
 const columns: ColumnDef<MediaFile>[] = [
   {
@@ -110,9 +111,11 @@ export default function MediaPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[200px] items-center justify-center">
-        <div className="text-muted-foreground">Loading media files...</div>
-      </div>
+      <ListPageLoader 
+        title="Media Library"
+        subtitle="Manage your images, videos, and documents"
+        createButtonText="Upload Media"
+      />
     )
   }
 

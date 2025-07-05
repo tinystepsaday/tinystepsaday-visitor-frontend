@@ -9,7 +9,7 @@ interface QuizResultsPageProps {
 }
 
 export async function generateStaticParams() {
-  const quizzes = getAllQuizzes();
+  const quizzes = await getAllQuizzes();
   return quizzes.map((quiz) => ({
     slug: quiz.id,
   }));
@@ -17,7 +17,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: QuizResultsPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const quiz = getQuizById(slug);
+  const quiz = await getQuizById(slug);
   
   if (!quiz) {
     return {
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: QuizResultsPageProps): Promis
 
 export default async function QuizResultsPage({ params }: QuizResultsPageProps) {
   const { slug } = await params;
-  const quiz = getQuizById(slug);
+  const quiz = await getQuizById(slug);
   
   if (!quiz) {
     notFound();

@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { ListPageLoader } from "@/components/ui/loaders"
 
 export default function CoursesPage() {
   const [status, setStatus] = useState<string>("all")
@@ -169,9 +170,12 @@ export default function CoursesPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[200px] items-center justify-center">
-        <div className="text-muted-foreground">Loading courses...</div>
-      </div>
+      <ListPageLoader 
+        title="Courses"
+        subtitle="Manage your online courses and lessons"
+        createButtonText="New Course"
+        createHref="/management/courses/create"
+      />
     )
   }
 

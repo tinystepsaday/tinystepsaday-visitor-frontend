@@ -19,6 +19,27 @@ export default function QuizTakingClient({ quiz }: QuizTakingClientProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
+  // Safety checks
+  if (!quiz || !quiz.questions || quiz.questions.length === 0) {
+    return (
+      <QuizLayout
+        title="Quiz Error"
+        subtitle="This quiz is not available or has no questions."
+        showBackButton={true}
+        onBackClick={() => router.push("/quiz")}
+      >
+        <div className="text-center py-8">
+          <p className="text-muted-foreground mb-4">
+            This quiz is not available or has no questions.
+          </p>
+          <Button onClick={() => router.push("/quiz")}>
+            Back to Quizzes
+          </Button>
+        </div>
+      </QuizLayout>
+    );
+  }
+
   const currentQuestion = quiz.questions[currentQuestionIndex];
   const totalQuestions = quiz.questions.length;
   const isLastQuestion = currentQuestionIndex === totalQuestions - 1;

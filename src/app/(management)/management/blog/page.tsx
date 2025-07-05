@@ -20,6 +20,7 @@ import DateRangePicker from "@/components/date-range-picker"
 import type { DateRange } from "react-day-picker"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useRouter } from "next/navigation"
+import { ListPageLoader } from "@/components/ui/loaders"
 
 const columns: ColumnDef<BlogPost>[] = [
   {
@@ -125,9 +126,12 @@ export default function BlogPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[200px] items-center justify-center">
-        <div className="text-muted-foreground">Loading posts...</div>
-      </div>
+      <ListPageLoader 
+        title="Blog Posts"
+        subtitle="Manage your blog posts and articles"
+        createButtonText="New Post"
+        createHref="/management/blog/create"
+      />
     )
   }
 
