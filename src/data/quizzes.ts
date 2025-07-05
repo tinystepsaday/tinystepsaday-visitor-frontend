@@ -18,8 +18,9 @@ export interface GradingCriteria {
   label: string;
   color: string;
   recommendations: string[];
-  proposedCourses: string[];
-  proposedProducts: string[];
+  proposedCourses: Array<{ id: string; name: string; slug: string }>;
+  proposedProducts: Array<{ id: string; name: string; slug: string }>;
+  proposedStreaks: Array<{ id: string; name: string; slug: string }>;
   description?: string;
 }
 
@@ -126,8 +127,9 @@ export const quizzes: Record<string, Quiz> = {
           "Share your knowledge with others",
           "Consider mentoring or coaching others"
         ],
-        proposedCourses: ["Habit Mastery Course"],
-        proposedProducts: ["Habit Mastery Book"],
+        proposedCourses: [{ id: "1", name: "Habit Mastery Course", slug: "habit-mastery-course" }],
+        proposedProducts: [{ id: "1", name: "Habit Mastery Book", slug: "habit-mastery-book" }],
+        proposedStreaks: [{ id: "1", name: "Meditation Streak", slug: "meditation-streak" }],
         description: "Excellent mastery of habits"
       },
       {
@@ -142,8 +144,9 @@ export const quizzes: Record<string, Quiz> = {
           "Identify and work on your weakest areas",
           "Set specific, measurable goals"
         ],
-        proposedCourses: ["Habit Building Course"],
-        proposedProducts: ["Habit Building Book"],
+        proposedCourses: [{ id: "2", name: "Habit Building Course", slug: "habit-building-course" }],
+        proposedProducts: [{ id: "2", name: "Habit Building Book", slug: "habit-building-book" }],
+        proposedStreaks: [{ id: "2", name: "Reading Streak", slug: "reading-streak" }],
         description: "Good foundation with room for improvement"
       },
       {
@@ -158,8 +161,9 @@ export const quizzes: Record<string, Quiz> = {
           "Create a structured practice routine",
           "Seek accountability from friends or family"
         ],
-        proposedCourses: ["Habit Learning Course"],
-        proposedProducts: ["Habit Learning Book"],
+        proposedCourses: [{ id: "3", name: "Habit Learning Course", slug: "habit-learning-course" }],
+        proposedProducts: [{ id: "3", name: "Habit Learning Book", slug: "habit-learning-book" }],
+        proposedStreaks: [{ id: "3", name: "Gratitude Streak", slug: "gratitude-streak" }],
         description: "Potential but needs better practices"
       },
       {
@@ -174,8 +178,9 @@ export const quizzes: Record<string, Quiz> = {
           "Consider working with a coach or mentor",
           "Focus on building one practice at a time"
         ],
-        proposedCourses: ["Habit Starting Course"],
-        proposedProducts: ["Habit Starting Book"],
+        proposedCourses: [{ id: "4", name: "Habit Starting Course", slug: "habit-starting-course" }],
+        proposedProducts: [{ id: "4", name: "Habit Starting Book", slug: "habit-starting-book" }],
+        proposedStreaks: [{ id: "1", name: "Meditation Streak", slug: "meditation-streak" }],
         description: "Significant room for improvement"
       }
     ],
@@ -312,8 +317,9 @@ export const quizzes: Record<string, Quiz> = {
           "Share your knowledge with others",
           "Consider mentoring or coaching others"
         ],
-        proposedCourses: ["Freedom Mastery Course"],
-        proposedProducts: ["Freedom Mastery Book"],
+        proposedCourses: [{ id: "5", name: "Freedom Mastery Course", slug: "freedom-mastery-course" }],
+        proposedProducts: [{ id: "5", name: "Freedom Mastery Book", slug: "freedom-mastery-book" }],
+        proposedStreaks: [{ id: "1", name: "Meditation Streak", slug: "meditation-streak" }],
         description: "Excellent mastery of habits"
       },
       {
@@ -328,8 +334,9 @@ export const quizzes: Record<string, Quiz> = {
           "Set specific boundaries for digital consumption",
           "Consider digital detox periods"
         ],
-        proposedCourses: ["Freedom Seeking Course"],
-        proposedProducts: ["Freedom Seeking Book"],
+        proposedCourses: [{ id: "6", name: "Freedom Seeking Course", slug: "freedom-seeking-course" }],
+        proposedProducts: [{ id: "6", name: "Freedom Seeking Book", slug: "freedom-seeking-book" }],
+        proposedStreaks: [{ id: "2", name: "Reading Streak", slug: "reading-streak" }],
         description: "Good awareness of habits and dependencies"
       },
       {
@@ -344,8 +351,9 @@ export const quizzes: Record<string, Quiz> = {
           "Set specific boundaries for digital consumption",
           "Consider digital detox periods"
         ],
-        proposedCourses: ["Freedom Learning Course"],
-        proposedProducts: ["Freedom Learning Book"],
+        proposedCourses: [{ id: "7", name: "Freedom Learning Course", slug: "freedom-learning-course" }],
+        proposedProducts: [{ id: "7", name: "Freedom Learning Book", slug: "freedom-learning-book" }],
+        proposedStreaks: [{ id: "3", name: "Gratitude Streak", slug: "gratitude-streak" }],
         description: "Awareness of habits and dependencies"
       },
       {
@@ -360,8 +368,9 @@ export const quizzes: Record<string, Quiz> = {
           "Create a structured practice routine",
           "Seek accountability from friends or family"
         ],
-        proposedCourses: ["Freedom Starting Course"],
-        proposedProducts: ["Freedom Starting Book"],
+        proposedCourses: [{ id: "8", name: "Freedom Starting Course", slug: "freedom-starting-course" }],
+        proposedProducts: [{ id: "8", name: "Freedom Starting Book", slug: "freedom-starting-book" }],
+        proposedStreaks: [{ id: "1", name: "Meditation Streak", slug: "meditation-streak" }],
         description: "Significant room for improvement"
       }
     ],
@@ -428,8 +437,9 @@ export const quizzes: Record<string, Quiz> = {
           "Share your knowledge with others",
           "Consider mentoring or coaching others"
         ],
-        proposedCourses: ["Purpose Mastery Course"],
-        proposedProducts: ["Purpose Mastery Book"],
+        proposedCourses: [{ id: "9", name: "Purpose Mastery Course", slug: "purpose-mastery-course" }],
+        proposedProducts: [{ id: "9", name: "Purpose Mastery Book", slug: "purpose-mastery-book" }],
+        proposedStreaks: [{ id: "1", name: "Meditation Streak", slug: "meditation-streak" }],
         description: "Excellent mastery of purpose"
       },
       {
@@ -444,8 +454,9 @@ export const quizzes: Record<string, Quiz> = {
           "Explore different career paths",
           "Seek guidance from mentors or coaches"
         ],
-        proposedCourses: ["Purpose Seeking Course"],
-        proposedProducts: ["Purpose Seeking Book"],
+        proposedCourses: [{ id: "10", name: "Purpose Seeking Course", slug: "purpose-seeking-course" }],
+        proposedProducts: [{ id: "10", name: "Purpose Seeking Book", slug: "purpose-seeking-book" }],
+        proposedStreaks: [{ id: "2", name: "Reading Streak", slug: "reading-streak" }],
         description: "Good exploration of purpose"
       },
       {
@@ -460,8 +471,9 @@ export const quizzes: Record<string, Quiz> = {
           "Explore different career paths",
           "Seek guidance from mentors or coaches"
         ],
-        proposedCourses: ["Purpose Exploring Course"],
-        proposedProducts: ["Purpose Exploring Book"],
+        proposedCourses: [{ id: "11", name: "Purpose Exploring Course", slug: "purpose-exploring-course" }],
+        proposedProducts: [{ id: "11", name: "Purpose Exploring Book", slug: "purpose-exploring-book" }],
+        proposedStreaks: [{ id: "3", name: "Gratitude Streak", slug: "gratitude-streak" }],
         description: "Good exploration of purpose"
       },
       {
@@ -476,8 +488,9 @@ export const quizzes: Record<string, Quiz> = {
           "Explore different career paths",
           "Seek guidance from mentors or coaches"
         ],
-        proposedCourses: ["Purpose Starting Course"],
-        proposedProducts: ["Purpose Starting Book"],
+        proposedCourses: [{ id: "12", name: "Purpose Starting Course", slug: "purpose-starting-course" }],
+        proposedProducts: [{ id: "12", name: "Purpose Starting Book", slug: "purpose-starting-book" }],
+        proposedStreaks: [{ id: "1", name: "Meditation Streak", slug: "meditation-streak" }],
         description: "Significant room for improvement"
       }
     ],
@@ -544,8 +557,9 @@ export const quizzes: Record<string, Quiz> = {
           "Share your knowledge with others",
           "Consider mentoring or coaching others"
         ],
-        proposedCourses: ["Healing Mastery Course"],
-        proposedProducts: ["Healing Mastery Book"],
+        proposedCourses: [{ id: "13", name: "Healing Mastery Course", slug: "healing-mastery-course" }],
+        proposedProducts: [{ id: "13", name: "Healing Mastery Book", slug: "healing-mastery-book" }],
+        proposedStreaks: [{ id: "1", name: "Meditation Streak", slug: "meditation-streak" }],
         description: "Excellent mastery of healing"
       },
       {
@@ -560,8 +574,9 @@ export const quizzes: Record<string, Quiz> = {
           "Identify and work on your weakest areas",
           "Set specific, measurable goals"
         ],
-        proposedCourses: ["Healing Journey Course"],
-        proposedProducts: ["Healing Journey Book"],
+        proposedCourses: [{ id: "14", name: "Healing Journey Course", slug: "healing-journey-course" }],
+        proposedProducts: [{ id: "14", name: "Healing Journey Book", slug: "healing-journey-book" }],
+        proposedStreaks: [{ id: "2", name: "Reading Streak", slug: "reading-streak" }],
         description: "Good progress in healing"
       },
       {
@@ -576,8 +591,9 @@ export const quizzes: Record<string, Quiz> = {
           "Explore different healing methods",
           "Seek guidance from professionals"
         ],
-        proposedCourses: ["Healing Exploring Course"],
-        proposedProducts: ["Healing Exploring Book"],
+        proposedCourses: [{ id: "15", name: "Healing Exploring Course", slug: "healing-exploring-course" }],
+        proposedProducts: [{ id: "15", name: "Healing Exploring Book", slug: "healing-exploring-book" }],
+        proposedStreaks: [{ id: "3", name: "Gratitude Streak", slug: "gratitude-streak" }],
         description: "Good exploration of healing"
       },
       {
@@ -592,8 +608,9 @@ export const quizzes: Record<string, Quiz> = {
           "Consider working with a therapist or counselor",
           "Focus on building one healing practice at a time"
         ],
-        proposedCourses: ["Healing Starting Course"],
-        proposedProducts: ["Healing Starting Book"],
+        proposedCourses: [{ id: "16", name: "Healing Starting Course", slug: "healing-starting-course" }],
+        proposedProducts: [{ id: "16", name: "Healing Starting Book", slug: "healing-starting-book" }],
+        proposedStreaks: [{ id: "1", name: "Meditation Streak", slug: "meditation-streak" }],
         description: "Significant room for improvement"
       }
     ],
@@ -660,8 +677,9 @@ export const quizzes: Record<string, Quiz> = {
           "Explore advanced meditation techniques",
           "Share your wisdom with others"
         ],
-        proposedCourses: ["Mindfulness Mastery Course"],
-        proposedProducts: ["Mindfulness Mastery Book"],
+        proposedCourses: [{ id: "17", name: "Mindfulness Mastery Course", slug: "mindfulness-mastery-course" }],
+        proposedProducts: [{ id: "17", name: "Mindfulness Mastery Book", slug: "mindfulness-mastery-book" }],
+        proposedStreaks: [{ id: "1", name: "Meditation Streak", slug: "meditation-streak" }],
         description: "Excellent mindfulness practice"
       },
       {
@@ -676,8 +694,9 @@ export const quizzes: Record<string, Quiz> = {
           "Explore advanced meditation techniques",
           "Share your wisdom with others"
         ],
-        proposedCourses: ["Mindfulness Practitioner Course"],
-        proposedProducts: ["Mindfulness Practitioner Book"],
+        proposedCourses: [{ id: "18", name: "Mindfulness Practitioner Course", slug: "mindfulness-practitioner-course" }],
+        proposedProducts: [{ id: "18", name: "Mindfulness Practitioner Book", slug: "mindfulness-practitioner-book" }],
+        proposedStreaks: [{ id: "2", name: "Reading Streak", slug: "reading-streak" }],
         description: "Good mindfulness practice"
       },
       {
@@ -692,8 +711,9 @@ export const quizzes: Record<string, Quiz> = {
           "Create a structured practice routine",
           "Seek accountability from friends or family"
         ],
-        proposedCourses: ["Mindfulness Exploring Course"],
-        proposedProducts: ["Mindfulness Exploring Book"],
+        proposedCourses: [{ id: "19", name: "Mindfulness Exploring Course", slug: "mindfulness-exploring-course" }],
+        proposedProducts: [{ id: "19", name: "Mindfulness Exploring Book", slug: "mindfulness-exploring-book" }],
+        proposedStreaks: [{ id: "3", name: "Gratitude Streak", slug: "gratitude-streak" }],
         description: "Good mindfulness practice"
       },
       {
@@ -708,8 +728,9 @@ export const quizzes: Record<string, Quiz> = {
           "Create a structured practice routine",
           "Seek accountability from friends or family"
         ],
-        proposedCourses: ["Mindfulness Starting Course"],
-        proposedProducts: ["Mindfulness Starting Book"],
+        proposedCourses: [{ id: "20", name: "Mindfulness Starting Course", slug: "mindfulness-starting-course" }],
+        proposedProducts: [{ id: "20", name: "Mindfulness Starting Book", slug: "mindfulness-starting-book" }],
+        proposedStreaks: [{ id: "1", name: "Meditation Streak", slug: "meditation-streak" }],
         description: "Significant room for improvement"
       }
     ],
@@ -908,10 +929,10 @@ export function calculateQuizResult(answers: Record<string, string>, quizId: str
   }
 
   const totalScore = Object.values(answers).reduce((sum, answerId) => {
-    for (const question of quiz.questions) {
-      const option = question.options.find(opt => opt.id === answerId);
-      if (option) {
-        return sum + option.value;
+      for (const question of quiz.questions) {
+        const option = question.options.find(opt => opt.id === answerId);
+        if (option) {
+          return sum + option.value;
       }
     }
     return sum;
@@ -952,47 +973,47 @@ export function calculateQuizResult(answers: Record<string, string>, quizId: str
     supportNeeded = ["Consider the recommended courses and products"];
   } else {
     // Fallback to default logic
-    if (percentage >= 80) {
-      level = 'excellent';
+  if (percentage >= 80) {
+    level = 'excellent';
       feedback = "Excellent! You demonstrate mastery in this area.";
-      recommendations = [
-        "Continue building on your strong foundation",
-        "Share your knowledge with others",
-        "Consider mentoring or coaching others"
-      ];
+    recommendations = [
+      "Continue building on your strong foundation",
+      "Share your knowledge with others",
+      "Consider mentoring or coaching others"
+    ];
       classification = "Master";
       areasOfImprovement = [];
       supportNeeded = ["Advanced resources", "Mentorship opportunities"];
-    } else if (percentage >= 60) {
-      level = 'good';
-      feedback = "Good! You have a solid foundation with room for improvement.";
-      recommendations = [
+  } else if (percentage >= 60) {
+    level = 'good';
+    feedback = "Good! You have a solid foundation with room for improvement.";
+    recommendations = [
         "Focus on consistency in your practice",
-        "Identify and work on your weakest areas",
-        "Set specific, measurable goals"
-      ];
+      "Identify and work on your weakest areas",
+      "Set specific, measurable goals"
+    ];
       classification = "Builder";
       areasOfImprovement = ["Consistency", "Advanced techniques"];
       supportNeeded = ["Practice tools", "Accountability partner"];
-    } else if (percentage >= 40) {
-      level = 'fair';
+  } else if (percentage >= 40) {
+    level = 'fair';
       feedback = "Fair. You have potential but need to develop better practices.";
-      recommendations = [
+    recommendations = [
         "Start with one small change",
         "Create a structured practice routine",
-        "Seek accountability from friends or family"
-      ];
+      "Seek accountability from friends or family"
+    ];
       classification = "Learner";
       areasOfImprovement = ["Basic practices", "Consistency", "Understanding"];
       supportNeeded = ["Beginner resources", "Practice guidance", "Community support"];
-    } else {
-      level = 'needs-improvement';
+  } else {
+    level = 'needs-improvement';
       feedback = "You have significant room for improvement in this area.";
-      recommendations = [
-        "Start with very small, manageable changes",
-        "Consider working with a coach or mentor",
+    recommendations = [
+      "Start with very small, manageable changes",
+      "Consider working with a coach or mentor",
         "Focus on building one practice at a time"
-      ];
+    ];
       classification = "Starter";
       areasOfImprovement = ["Basic understanding", "Practice habits", "Consistency"];
       supportNeeded = ["Professional guidance", "Structured programs", "Regular check-ins"];

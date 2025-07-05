@@ -18,71 +18,6 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
   const completionRate = quiz.totalAttempts > 0 ? (quiz.completedAttempts / quiz.totalAttempts) * 100 : 0
   const [expandedCriteria, setExpandedCriteria] = useState<string | null>(null)
 
-  // Mock data for courses and products - in real app, these would come from API
-  const availableCourses = [
-    { id: 'course-1', title: 'Mindful Living Essentials' },
-    { id: 'course-2', title: 'Emotional Intelligence Mastery' },
-    { id: 'course-3', title: 'Stress Management Techniques' },
-    { id: 'course-4', title: 'Meditation for Modern Life' },
-    { id: 'Habit Mastery Course', title: 'Habit Mastery Course' },
-    { id: 'Habit Building Course', title: 'Habit Building Course' },
-    { id: 'Habit Learning Course', title: 'Habit Learning Course' },
-    { id: 'Habit Starting Course', title: 'Habit Starting Course' },
-    { id: 'Freedom Mastery Course', title: 'Freedom Mastery Course' },
-    { id: 'Freedom Seeking Course', title: 'Freedom Seeking Course' },
-    { id: 'Freedom Learning Course', title: 'Freedom Learning Course' },
-    { id: 'Freedom Starting Course', title: 'Freedom Starting Course' },
-    { id: 'Purpose Mastery Course', title: 'Purpose Mastery Course' },
-    { id: 'Purpose Seeking Course', title: 'Purpose Seeking Course' },
-    { id: 'Purpose Exploring Course', title: 'Purpose Exploring Course' },
-    { id: 'Purpose Starting Course', title: 'Purpose Starting Course' },
-    { id: 'Healing Mastery Course', title: 'Healing Mastery Course' },
-    { id: 'Healing Journey Course', title: 'Healing Journey Course' },
-    { id: 'Healing Exploring Course', title: 'Healing Exploring Course' },
-    { id: 'Healing Starting Course', title: 'Healing Starting Course' },
-    { id: 'Mindfulness Mastery Course', title: 'Mindfulness Mastery Course' },
-    { id: 'Mindfulness Practitioner Course', title: 'Mindfulness Practitioner Course' },
-    { id: 'Mindfulness Exploring Course', title: 'Mindfulness Exploring Course' },
-    { id: 'Mindfulness Starting Course', title: 'Mindfulness Starting Course' }
-  ]
-
-  const availableProducts = [
-    { id: 'product-1', title: 'Mindfulness Journal' },
-    { id: 'product-2', title: 'Meditation Cushion' },
-    { id: 'product-3', title: 'Essential Oil Set' },
-    { id: 'product-4', title: 'Self-Improvement Handbook' },
-    { id: 'Habit Mastery Book', title: 'Habit Mastery Book' },
-    { id: 'Habit Building Book', title: 'Habit Building Book' },
-    { id: 'Habit Learning Book', title: 'Habit Learning Book' },
-    { id: 'Habit Starting Book', title: 'Habit Starting Book' },
-    { id: 'Freedom Mastery Book', title: 'Freedom Mastery Book' },
-    { id: 'Freedom Seeking Book', title: 'Freedom Seeking Book' },
-    { id: 'Freedom Learning Book', title: 'Freedom Learning Book' },
-    { id: 'Freedom Starting Book', title: 'Freedom Starting Book' },
-    { id: 'Purpose Mastery Book', title: 'Purpose Mastery Book' },
-    { id: 'Purpose Seeking Book', title: 'Purpose Seeking Book' },
-    { id: 'Purpose Exploring Book', title: 'Purpose Exploring Book' },
-    { id: 'Purpose Starting Book', title: 'Purpose Starting Book' },
-    { id: 'Healing Mastery Book', title: 'Healing Mastery Book' },
-    { id: 'Healing Journey Book', title: 'Healing Journey Book' },
-    { id: 'Healing Exploring Book', title: 'Healing Exploring Book' },
-    { id: 'Healing Starting Book', title: 'Healing Starting Book' },
-    { id: 'Mindfulness Mastery Book', title: 'Mindfulness Mastery Book' },
-    { id: 'Mindfulness Practitioner Book', title: 'Mindfulness Practitioner Book' },
-    { id: 'Mindfulness Exploring Book', title: 'Mindfulness Exploring Book' },
-    { id: 'Mindfulness Starting Book', title: 'Mindfulness Starting Book' }
-  ]
-
-  const getCourseTitle = (courseId: string) => {
-    const course = availableCourses.find(c => c.id === courseId)
-    return course?.title || courseId
-  }
-
-  const getProductTitle = (productId: string) => {
-    const product = availableProducts.find(p => p.id === productId)
-    return product?.title || productId
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -331,9 +266,9 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
                                 Recommended Courses ({criteria.proposedCourses.length})
                               </h4>
                               <div className="flex flex-wrap gap-2">
-                                {criteria.proposedCourses.map((courseId) => (
-                                  <Badge key={courseId} variant="outline" className="text-xs">
-                                    {getCourseTitle(courseId)}
+                                {criteria.proposedCourses.map((course) => (
+                                  <Badge key={course.id} variant="outline" className="text-xs">
+                                    {course.name}
                                   </Badge>
                                 ))}
                               </div>
@@ -348,9 +283,26 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
                                 Recommended Products ({criteria.proposedProducts.length})
                               </h4>
                               <div className="flex flex-wrap gap-2">
-                                {criteria.proposedProducts.map((productId) => (
-                                  <Badge key={productId} variant="outline" className="text-xs">
-                                    {getProductTitle(productId)}
+                                {criteria.proposedProducts.map((product) => (
+                                  <Badge key={product.id} variant="outline" className="text-xs">
+                                    {product.name}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Proposed Streaks */}
+                          {criteria.proposedStreaks.length > 0 && (
+                            <div>
+                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                <Target className="h-4 w-4" />
+                                Recommended Streaks ({criteria.proposedStreaks.length})
+                              </h4>
+                              <div className="flex flex-wrap gap-2">
+                                {criteria.proposedStreaks.map((streak) => (
+                                  <Badge key={streak.id} variant="outline" className="text-xs">
+                                    {streak.name}
                                   </Badge>
                                 ))}
                               </div>

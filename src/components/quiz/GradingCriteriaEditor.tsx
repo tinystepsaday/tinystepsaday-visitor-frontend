@@ -15,15 +15,17 @@ import { type GradingCriteria } from '@/data/quizzes'
 interface GradingCriteriaEditorProps {
   criteria: GradingCriteria[]
   onChange: (criteria: GradingCriteria[]) => void
-  availableCourses?: Array<{ id: string; title: string }>
-  availableProducts?: Array<{ id: string; title: string }>
+  availableCourses?: Array<{ id: string; name: string; slug: string }>
+  availableProducts?: Array<{ id: string; name: string; slug: string }>
+  availableStreaks?: Array<{ id: string; name: string; slug: string }>
 }
 
 export function GradingCriteriaEditor({
   criteria,
   onChange,
   availableCourses = [],
-  availableProducts = []
+  availableProducts = [],
+  availableStreaks = []
 }: GradingCriteriaEditorProps) {
   const [newRecommendation, setNewRecommendation] = useState('')
 
@@ -38,12 +40,13 @@ export function GradingCriteriaEditor({
       recommendations: [],
       proposedCourses: [],
       proposedProducts: [],
+      proposedStreaks: [],
       description: ''
     }
     onChange([...criteria, newCriteria])
   }
 
-  const updateCriteria = (id: string, field: keyof GradingCriteria, value: string | number | string[]) => {
+  const updateCriteria = (id: string, field: keyof GradingCriteria, value: string | number | string[] | Array<{ id: string; name: string; slug: string }>) => {
     onChange(criteria.map(c =>
       c.id === id ? { ...c, [field]: value } : c
     ))
@@ -73,29 +76,46 @@ export function GradingCriteriaEditor({
 
   const addCourse = (criteriaId: string, courseId: string) => {
     const targetCriteria = criteria.find(c => c.id === criteriaId)
-    if (targetCriteria && !targetCriteria.proposedCourses.includes(courseId)) {
-      updateCriteria(criteriaId, 'proposedCourses', [...targetCriteria.proposedCourses, courseId])
+    const course = availableCourses.find(c => c.id === courseId)
+    if (targetCriteria && course && !targetCriteria.proposedCourses.some(c => c.id === courseId)) {
+      updateCriteria(criteriaId, 'proposedCourses', [...targetCriteria.proposedCourses, course])
     }
   }
 
   const removeCourse = (criteriaId: string, courseId: string) => {
     const targetCriteria = criteria.find(c => c.id === criteriaId)
     if (targetCriteria) {
-      updateCriteria(criteriaId, 'proposedCourses', targetCriteria.proposedCourses.filter(id => id !== courseId))
+      updateCriteria(criteriaId, 'proposedCourses', targetCriteria.proposedCourses.filter(c => c.id !== courseId))
     }
   }
 
   const addProduct = (criteriaId: string, productId: string) => {
     const targetCriteria = criteria.find(c => c.id === criteriaId)
-    if (targetCriteria && !targetCriteria.proposedProducts.includes(productId)) {
-      updateCriteria(criteriaId, 'proposedProducts', [...targetCriteria.proposedProducts, productId])
+    const product = availableProducts.find(p => p.id === productId)
+    if (targetCriteria && product && !targetCriteria.proposedProducts.some(p => p.id === productId)) {
+      updateCriteria(criteriaId, 'proposedProducts', [...targetCriteria.proposedProducts, product])
     }
   }
 
   const removeProduct = (criteriaId: string, productId: string) => {
     const targetCriteria = criteria.find(c => c.id === criteriaId)
     if (targetCriteria) {
-      updateCriteria(criteriaId, 'proposedProducts', targetCriteria.proposedProducts.filter(id => id !== productId))
+      updateCriteria(criteriaId, 'proposedProducts', targetCriteria.proposedProducts.filter(p => p.id !== productId))
+    }
+  }
+
+  const addStreak = (criteriaId: string, streakId: string) => {
+    const targetCriteria = criteria.find(c => c.id === criteriaId)
+    const streak = availableStreaks.find(s => s.id === streakId)
+    if (targetCriteria && streak && !targetCriteria.proposedStreaks.some(s => s.id === streakId)) {
+      updateCriteria(criteriaId, 'proposedStreaks', [...targetCriteria.proposedStreaks, streak])
+    }
+  }
+
+  const removeStreak = (criteriaId: string, streakId: string) => {
+    const targetCriteria = criteria.find(c => c.id === criteriaId)
+    if (targetCriteria) {
+      updateCriteria(criteriaId, 'proposedStreaks', targetCriteria.proposedStreaks.filter(s => s.id !== streakId))
     }
   }
 
@@ -236,28 +256,25 @@ export function GradingCriteriaEditor({
                 <SelectContent>
                   {availableCourses.map((course) => (
                     <SelectItem key={course.id} value={course.id}>
-                      {course.title}
+                      {course.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <div className="flex flex-wrap gap-2">
-                {criterion.proposedCourses.map((courseId) => {
-                  const course = availableCourses.find(c => c.id === courseId)
-                  return course ? (
-                    <Badge key={courseId} variant="outline" className="flex items-center space-x-1">
-                      <span>{course.title}</span>
-                      <button
-                        onClick={() => removeCourse(criterion.id, courseId)}
-                        className="ml-1 hover:text-destructive"
-                        title="Remove course"
-                        aria-label="Remove course"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ) : null
-                })}
+                {criterion.proposedCourses.map((course) => (
+                  <Badge key={course.id} variant="outline" className="flex items-center space-x-1">
+                    <span>{course.name}</span>
+                    <button
+                      onClick={() => removeCourse(criterion.id, course.id)}
+                      className="ml-1 hover:text-destructive"
+                      title="Remove course"
+                      aria-label="Remove course"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))}
               </div>
             </div>
 
@@ -271,28 +288,57 @@ export function GradingCriteriaEditor({
                 <SelectContent>
                   {availableProducts.map((product) => (
                     <SelectItem key={product.id} value={product.id}>
-                      {product.title}
+                      {product.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <div className="flex flex-wrap gap-2">
-                {criterion.proposedProducts.map((productId) => {
-                  const product = availableProducts.find(p => p.id === productId)
-                  return product ? (
-                    <Badge key={productId} variant="outline" className="flex items-center space-x-1">
-                      <span>{product.title}</span>
-                      <button
-                        onClick={() => removeProduct(criterion.id, productId)}
-                        className="ml-1 hover:text-destructive"
-                        title="Remove product"
-                        aria-label="Remove product"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ) : null
-                })}
+                {criterion.proposedProducts.map((product) => (
+                  <Badge key={product.id} variant="outline" className="flex items-center space-x-1">
+                    <span>{product.name}</span>
+                    <button
+                      onClick={() => removeProduct(criterion.id, product.id)}
+                      className="ml-1 hover:text-destructive"
+                      title="Remove product"
+                      aria-label="Remove product"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
+            {/* Proposed Streaks */}
+            <div className="space-y-3">
+              <Label>Proposed Streaks</Label>
+              <Select onValueChange={(value) => addStreak(criterion.id, value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a streak to add..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableStreaks.map((streak) => (
+                    <SelectItem key={streak.id} value={streak.id}>
+                      {streak.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="flex flex-wrap gap-2">
+                {criterion.proposedStreaks.map((streak) => (
+                  <Badge key={streak.id} variant="outline" className="flex items-center space-x-1">
+                    <span>{streak.name}</span>
+                    <button
+                      onClick={() => removeStreak(criterion.id, streak.id)}
+                      className="ml-1 hover:text-destructive"
+                      title="Remove streak"
+                      aria-label="Remove streak"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))}
               </div>
             </div>
           </CardContent>

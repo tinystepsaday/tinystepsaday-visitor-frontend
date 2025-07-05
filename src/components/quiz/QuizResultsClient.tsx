@@ -5,8 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { QuizLayout } from "@/components/quiz/QuizLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Book, Calendar, ArrowRight, Trophy, Target, TrendingUp } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { Book, Calendar, ArrowRight, Target } from "lucide-react";
 import Link from "next/link";
 import { Quiz, QuizResult, calculateQuizResult } from "@/data/quizzes";
 
@@ -79,21 +78,13 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
     );
   }
 
-
-
-  const getLevelIcon = (level: string) => {
-    switch (level) {
-      case 'excellent': return <Trophy className="h-5 w-5" />;
-      case 'good': return <Target className="h-5 w-5" />;
-      case 'fair': return <TrendingUp className="h-5 w-5" />;
-      case 'needs-improvement': return <Book className="h-5 w-5" />;
-      default: return <Book className="h-5 w-5" />;
-    }
-  };
-
-  const getCriteriaForLevel = (level: string) => {
-    return quiz.gradingCriteria.find(c => c.name.toLowerCase().includes(level) || c.label.toLowerCase().includes(level))
+  const getCriteriaForScore = (percentage: number) => {
+    return quiz.gradingCriteria.find(c => 
+      percentage >= c.minScore && percentage <= c.maxScore
+    )
   }
+
+  const matchingCriteria = getCriteriaForScore(result.percentage)
 
   return (
     <QuizLayout
@@ -103,60 +94,41 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
       onBackClick={() => router.push(`/quiz/${quiz.id}`)}
     >
       <div className="space-y-6">
-        {/* Score Card */}
+        {/* Criteria name based on score */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              {getLevelIcon(result.level)}
-              <span>Your Score</span>
-            </CardTitle>
+            <CardTitle>Your Results</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary mb-2">
-                {result.percentage}%
-              </div>
-              <div 
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-                style={{ 
-                  backgroundColor: getCriteriaForLevel(result.level)?.color || '#6b7280',
-                  color: 'white'
-                }}
-              >
-                {getCriteriaForLevel(result.level)?.label || result.level.replace('-', ' ').toUpperCase()}
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Progress</span>
-                <span>{result.score} / {result.maxScore} points</span>
-              </div>
-              <Progress value={result.percentage} className="h-2" />
-            </div>
+          <CardContent>
+            <p className="text-muted-foreground leading-relaxed font-bold text-4xl">
+              {matchingCriteria?.name || 'Results'}
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Score: {result.percentage}% ({result.score}/{result.maxScore} points)
+            </p>
           </CardContent>
         </Card>
 
-        {/* Analysis Card */}
+        {/* Analysis */}
         <Card>
           <CardHeader>
             <CardTitle>Analysis</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground leading-relaxed">
-              {getCriteriaForLevel(result.level)?.description || result.feedback}
+              {matchingCriteria?.description || result.feedback}
             </p>
           </CardContent>
         </Card>
 
-        {/* Recommendations Card */}
+        {/* Recommendations */}
         <Card>
           <CardHeader>
             <CardTitle>Recommendations</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-3">
-              {(getCriteriaForLevel(result.level)?.recommendations || result.recommendations).map((recommendation, index) => (
+              {(matchingCriteria?.recommendations || result.recommendations).map((recommendation, index) => (
                 <li key={index} className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
                   <span className="text-sm text-muted-foreground">{recommendation}</span>
@@ -167,7 +139,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
         </Card>
 
         {/* Recommended Courses */}
-        {getCriteriaForLevel(result.level)?.proposedCourses && getCriteriaForLevel(result.level)!.proposedCourses.length > 0 && (
+        {matchingCriteria?.proposedCourses && matchingCriteria.proposedCourses.length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -177,10 +149,10 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {getCriteriaForLevel(result.level)!.proposedCourses.map((courseId, index) => (
+                {matchingCriteria.proposedCourses.map((course, index) => (
                   <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <span className="text-sm font-medium">{courseId}</span>
-                    <Link href="/courses">
+                    <span className="text-sm font-medium">{course.name}</span>
+                    <Link href={`/courses/${course.slug}`}>
                       <Button variant="outline" size="sm">
                         View Course
                         <ArrowRight className="ml-2 h-4 w-4" />
@@ -194,7 +166,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
         )}
 
         {/* Recommended Products */}
-        {getCriteriaForLevel(result.level)?.proposedProducts && getCriteriaForLevel(result.level)!.proposedProducts.length > 0 && (
+        {matchingCriteria?.proposedProducts && matchingCriteria.proposedProducts.length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -204,12 +176,39 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {getCriteriaForLevel(result.level)!.proposedProducts.map((productId, index) => (
+                {matchingCriteria.proposedProducts.map((product, index) => (
                   <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <span className="text-sm font-medium">{productId}</span>
-                    <Link href="/shop">
+                    <span className="text-sm font-medium">{product.name}</span>
+                    <Link href={`/shop/${product.slug}`}>
                       <Button variant="outline" size="sm">
                         View Product
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Recommended Streaks */}
+        {matchingCriteria?.proposedStreaks && matchingCriteria.proposedStreaks.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Target className="h-5 w-5" />
+                <span>Recommended Streaks</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {matchingCriteria.proposedStreaks.map((streak, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <span className="text-sm font-medium">{streak.name}</span>
+                    <Link href={`/streaks/${streak.slug}`}>
+                      <Button variant="outline" size="sm">
+                        Join Streak
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </Link>

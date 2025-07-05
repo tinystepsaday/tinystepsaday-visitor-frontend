@@ -84,6 +84,14 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
     return option ? option.value : 0
   }
 
+  const getCriteriaForScore = (percentage: number) => {
+    return quiz.gradingCriteria.find(c => 
+      percentage >= c.minScore && percentage <= c.maxScore
+    )
+  }
+
+  const matchingCriteria = getCriteriaForScore(result.percentage)
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -131,7 +139,7 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
               result.level === 'fair' ? 'bg-yellow-100 text-yellow-800' :
               'bg-red-100 text-red-800'
             }>
-              {result.classification}
+              {matchingCriteria?.name || result.classification}
             </Badge>
           </CardContent>
         </Card>
@@ -186,7 +194,7 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
                     result.level === 'fair' ? 'bg-yellow-100 text-yellow-800' :
                     'bg-red-100 text-red-800'
                   }>
-                    {result.level}
+                    {matchingCriteria?.name || result.level}
                   </Badge>
                 </div>
                 <Progress value={result.percentage} className="h-2" />
@@ -194,7 +202,7 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
               
               <div className="p-4 bg-muted rounded-lg">
                 <h4 className="font-medium mb-2">Feedback</h4>
-                <p className="text-sm">{result.feedback}</p>
+                <p className="text-sm">{matchingCriteria?.description || result.feedback}</p>
               </div>
             </CardContent>
           </Card>
@@ -298,7 +306,7 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {result.recommendations.map((recommendation, index) => (
+                {(matchingCriteria?.recommendations || result.recommendations).map((recommendation, index) => (
                   <div key={index} className="flex items-start gap-2">
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
                     <p className="text-sm">{recommendation}</p>
@@ -307,6 +315,72 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
               </div>
             </CardContent>
           </Card>
+
+          {/* Proposed Courses */}
+          {matchingCriteria?.proposedCourses && matchingCriteria.proposedCourses.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Proposed Courses</CardTitle>
+                <CardDescription>
+                  Recommended courses based on performance
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {matchingCriteria.proposedCourses.map((course, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 border rounded">
+                      <span className="text-sm font-medium">{course.name}</span>
+                      <Badge variant="outline">{course.slug}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Proposed Products */}
+          {matchingCriteria?.proposedProducts && matchingCriteria.proposedProducts.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Proposed Products</CardTitle>
+                <CardDescription>
+                  Recommended resources based on performance
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {matchingCriteria.proposedProducts.map((product, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 border rounded">
+                      <span className="text-sm font-medium">{product.name}</span>
+                      <Badge variant="outline">{product.slug}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Proposed Streaks */}
+          {matchingCriteria?.proposedStreaks && matchingCriteria.proposedStreaks.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Proposed Streaks</CardTitle>
+                <CardDescription>
+                  Recommended streaks based on performance
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {matchingCriteria.proposedStreaks.map((streak, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 border rounded">
+                      <span className="text-sm font-medium">{streak.name}</span>
+                      <Badge variant="outline">{streak.slug}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Areas of Improvement */}
           {result.areasOfImprovement.length > 0 && (

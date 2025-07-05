@@ -56,6 +56,7 @@ export default function CreateQuizPage() {
       ],
       proposedCourses: [],
       proposedProducts: [],
+      proposedStreaks: [],
       description: 'Exceptional performance in this area'
     },
     {
@@ -71,6 +72,7 @@ export default function CreateQuizPage() {
       ],
       proposedCourses: [],
       proposedProducts: [],
+      proposedStreaks: [],
       description: 'Solid foundation with room for growth'
     },
     {
@@ -86,6 +88,7 @@ export default function CreateQuizPage() {
       ],
       proposedCourses: [],
       proposedProducts: [],
+      proposedStreaks: [],
       description: 'Potential but needs development'
     },
     {
@@ -101,6 +104,7 @@ export default function CreateQuizPage() {
       ],
       proposedCourses: [],
       proposedProducts: [],
+      proposedStreaks: [],
       description: 'Significant room for improvement'
     }
   ])
@@ -118,17 +122,23 @@ export default function CreateQuizPage() {
 
   // Mock data for courses and products - in real app, these would come from API
   const availableCourses = [
-    { id: 'course-1', title: 'Mindful Living Essentials' },
-    { id: 'course-2', title: 'Emotional Intelligence Mastery' },
-    { id: 'course-3', title: 'Stress Management Techniques' },
-    { id: 'course-4', title: 'Meditation for Modern Life' }
+    { id: 'course-1', name: 'Mindful Living Essentials', slug: 'mindful-living-essentials' },
+    { id: 'course-2', name: 'Emotional Intelligence Mastery', slug: 'emotional-intelligence-mastery' },
+    { id: 'course-3', name: 'Stress Management Techniques', slug: 'stress-management-techniques' },
+    { id: 'course-4', name: 'Meditation for Modern Life', slug: 'meditation-for-modern-life' }
   ]
 
   const availableProducts = [
-    { id: 'product-1', title: 'Mindfulness Journal' },
-    { id: 'product-2', title: 'Meditation Cushion' },
-    { id: 'product-3', title: 'Essential Oil Set' },
-    { id: 'product-4', title: 'Self-Improvement Handbook' }
+    { id: 'product-1', name: 'Mindfulness Journal', slug: 'mindfulness-journal' },
+    { id: 'product-2', name: 'Meditation Cushion', slug: 'meditation-cushion' },
+    { id: 'product-3', name: 'Essential Oil Set', slug: 'essential-oil-set' },
+    { id: 'product-4', name: 'Self-Improvement Handbook', slug: 'self-improvement-handbook' }
+  ]
+
+  const availableStreaks = [
+    { id: 'streak-1', name: 'Meditation Streak', slug: 'meditation-streak' },
+    { id: 'streak-2', name: 'Reading Streak', slug: 'reading-streak' },
+    { id: 'streak-3', name: 'Gratitude Streak', slug: 'gratitude-streak' }
   ]
 
   const addQuestion = () => {
@@ -416,6 +426,7 @@ export default function CreateQuizPage() {
               onChange={setGradingCriteria}
               availableCourses={availableCourses}
               availableProducts={availableProducts}
+              availableStreaks={availableStreaks}
             />
           </CardContent>
         </Card>
