@@ -100,8 +100,13 @@ export const quizSchema = z.object({
 export const userSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
-  role: z.enum(["admin", "editor", "viewer"]),
+  role: z.enum(["admin", "editor", "viewer", "subscriber", "learner", "learner-subscriber"]),
   avatar: z.string().optional(),
+  phone: z.string().optional(),
+  bio: z.string().optional(),
+  location: z.string().optional(),
+  website: z.string().optional(),
+  isActive: z.boolean().default(true),
 })
 
 export const categorySchema = z.object({

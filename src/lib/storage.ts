@@ -62,6 +62,7 @@ class LocalStorage {
             role: "admin",
             createdAt: new Date(),
             isActive: true,
+            totalLogins: 156, // Add missing required field
           },
           modules: [],
           quizzes: [],
@@ -87,6 +88,7 @@ class LocalStorage {
           role: "admin",
           createdAt: new Date(),
           isActive: true,
+          totalLogins: 156, // Add missing required field
         },
       ],
       categories: [
@@ -145,6 +147,10 @@ class LocalStorage {
       ...course,
       createdAt: new Date(course.createdAt),
       updatedAt: new Date(course.updatedAt),
+      instructor: {
+        ...course.instructor,
+        createdAt: new Date(course.instructor.createdAt),
+      },
     }))
   }
 
@@ -191,7 +197,10 @@ class LocalStorage {
   // Category methods
   getCategories(): Category[] {
     const data = this.getStorageData()
-    return data.categories
+    return data.categories.map((category) => ({
+      ...category,
+      createdAt: new Date(category.createdAt),
+    }))
   }
 
   createCategory(categoryData: Omit<Category, "id">): Category {
