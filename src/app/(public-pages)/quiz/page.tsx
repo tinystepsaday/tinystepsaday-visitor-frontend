@@ -1,7 +1,7 @@
 // import { useEffect } from "react";
 import { Metadata } from "next";
 import { SectionHeader } from "@/components/ui/section-header";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Calendar,
@@ -9,9 +9,11 @@ import {
   Book,
   User,
   Search,
-  Activity
+  Activity,
+  Target,
 } from "lucide-react";
 import Link from "next/link";
+import { getAllQuizzes } from "@/data/quizzes";
 
 export const metadata: Metadata = {
   title: "Self-Improvement Quiz - Discover Your Path",
@@ -23,63 +25,63 @@ export const metadata: Metadata = {
   },
 };
 
-const quizCategories = [
-  {
-    id: "self-mastery",
-    title: "Master Your Habits",
-    description: "Build self-discipline, establish routines, and achieve your goals with consistency.",
-    icon: <Calendar className="h-6 w-6" />,
-    time: "3 min",
-    questions: 10,
-    color: "bg-blue-100 dark:bg-blue-900",
-    textColor: "text-blue-600 dark:text-blue-300"
-  },
-  {
-    id: "addictions",
-    title: "Break Free From Addictions",
-    description: "Overcome dependencies on social media, substances, or other habits holding you back.",
-    icon: <Timer className="h-6 w-6" />,
-    time: "4 min",
-    questions: 12,
-    color: "bg-red-100 dark:bg-red-900",
-    textColor: "text-red-600 dark:text-red-300"
-  },
-  {
-    id: "purpose",
-    title: "Find Your Purpose",
-    description: "Clarify your life direction, explore career paths, and discover your deeper meaning.",
-    icon: <Search className="h-6 w-6" />,
-    time: "5 min",
-    questions: 15,
-    color: "bg-purple-100 dark:bg-purple-900",
-    textColor: "text-purple-600 dark:text-purple-300"
-  },
-  {
-    id: "trauma",
-    title: "Heal Your Past",
-    description: "Process and integrate past traumas with mindfulness and proven therapeutic techniques.",
-    icon: <Book className="h-6 w-6" />,
-    time: "4 min",
-    questions: 12,
-    color: "bg-green-100 dark:bg-green-900",
-    textColor: "text-green-600 dark:text-green-300"
-  },
-  {
-    id: "general",
-    title: "General Assessment",
-    description: "Not sure where to start? This quiz will help identify your best focus area.",
-    icon: <User className="h-6 w-6" />,
-    time: "3 min",
-    questions: 10,
-    color: "bg-amber-100 dark:bg-amber-900",
-    textColor: "text-amber-600 dark:text-amber-300"
+// Helper function to get icon based on category
+const getCategoryIcon = (category: string) => {
+  switch (category.toLowerCase()) {
+    case 'personal development':
+      return <User className="h-6 w-6" />;
+    case 'addiction recovery':
+      return <Timer className="h-6 w-6" />;
+    case 'purpose discovery':
+      return <Search className="h-6 w-6" />;
+    case 'trauma healing':
+      return <Book className="h-6 w-6" />;
+    case 'mindfulness':
+      return <Calendar className="h-6 w-6" />;
+    default:
+      return <Target className="h-6 w-6" />;
   }
-];
+};
 
-const Quiz = () => {
-  // useEffect(() => {
-  //   window.scrollTo(0, 0);
-  // }, []);
+// Helper function to get color based on category
+const getCategoryColor = (category: string) => {
+  switch (category.toLowerCase()) {
+    case 'personal development':
+      return {
+        bg: "bg-blue-100 dark:bg-blue-900",
+        text: "text-blue-600 dark:text-blue-300"
+      };
+    case 'addiction recovery':
+      return {
+        bg: "bg-red-100 dark:bg-red-900",
+        text: "text-red-600 dark:text-red-300"
+      };
+    case 'purpose discovery':
+      return {
+        bg: "bg-purple-100 dark:bg-purple-900",
+        text: "text-purple-600 dark:text-purple-300"
+      };
+    case 'trauma healing':
+      return {
+        bg: "bg-green-100 dark:bg-green-900",
+        text: "text-green-600 dark:text-green-300"
+      };
+    case 'mindfulness':
+      return {
+        bg: "bg-amber-100 dark:bg-amber-900",
+        text: "text-amber-600 dark:text-amber-300"
+      };
+    default:
+      return {
+        bg: "bg-gray-100 dark:bg-gray-900",
+        text: "text-gray-600 dark:text-gray-300"
+      };
+  }
+};
+
+const Quiz = async () => {
+  const quizzes = await getAllQuizzes();
+  const publicQuizzes = quizzes.filter(quiz => quiz.isPublic && quiz.status === 'active');
 
   return (
     <div className="container max-w-7xl mx-auto px-4 py-12 md:py-16 w-full">
@@ -97,39 +99,42 @@ const Quiz = () => {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {quizCategories.map((category) => (
-          <Card key={category.id} className="overflow-hidden transition-all hover:shadow-lg">
-            <CardHeader className={`${category.color} py-5 ${category.textColor}`}>
-              <div className="flex items-center justify-between">
-                {category.icon}
-                <div className="flex items-center gap-2 text-sm">
-                  <Timer className="h-4 w-4" />
-                  <span>{category.time}</span>
-                  <span className="mx-1">•</span>
-                  <span>{category.questions} questions</span>
+        {publicQuizzes.map((quiz) => {
+          const colors = getCategoryColor(quiz.category);
+          const icon = getCategoryIcon(quiz.category);
+          
+          return (
+            <Card key={quiz.id} className="overflow-hidden transition-all hover:shadow-lg">
+              <CardHeader className={`${colors.bg} py-5 ${colors.text}`}>
+                <div className="flex items-center justify-between">
+                  {icon}
+                  <div className="flex items-center gap-2 text-sm">
+                    <Timer className="h-4 w-4" />
+                    <span>{quiz.estimatedTime}</span>
+                    <span className="mx-1">•</span>
+                    <span>{quiz.questions.length} questions</span>
+                  </div>
                 </div>
-              </div>
-              <CardTitle className="mt-2 text-foreground">{category.title}</CardTitle>
-              <CardDescription className="text-muted-foreground">
-                {category.description}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <p className="text-sm text-muted-foreground">
-                Take this quiz to receive personalized recommendations for courses,
-                streaks, and resources tailored to your specific needs.
-              </p>
-            </CardContent>
-            <CardFooter>
-              <Button asChild className="w-full">
-                <Link href={`/quiz/${category.id}`}>
-                  <Activity className="mr-2 h-4 w-4" />
-                  Start Quiz
-                </Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+                <CardTitle className="mt-2 text-foreground">{quiz.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    {quiz.subtitle}
+                  </p>
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button asChild className="w-full">
+                  <Link href={`/quiz/${quiz.id}`}>
+                    <Activity className="mr-2 h-4 w-4" />
+                    Learn More
+                  </Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          );
+        })}
       </div>
 
       <div className="mt-16 text-center">

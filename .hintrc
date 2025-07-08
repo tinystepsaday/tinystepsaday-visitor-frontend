@@ -8,6 +8,14 @@
       {
         "list": "off"
       }
+    ],
+    "no-inline-styles": "off",
+    "axe/forms": "off",
+    "axe/name-role-value": [
+      "default",
+      {
+        "button-name": "off"
+      }
     ]
   }
 }

@@ -1,11 +1,18 @@
 import StreakDetailsClient from "@/components/streaks/StreakDetailsClient";
-import { streaks } from "@/data/streaks";
+import { streaks, userStreakProgress } from "@/data/streaks";
 import { notFound } from "next/navigation";
 
 const getStreak = async (slug: string) => {
   const streak = streaks.find(s => s.slug === slug);
   if (!streak) return notFound();
   return streak;
+}
+
+const getUserStreakProgress = async (streakId: string, userId?: string) => {
+  if (!userId) return null;
+  return userStreakProgress.find(progress => 
+    progress.streakId === streakId && progress.userId === userId
+  );
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -53,5 +60,11 @@ export default async function StreakDetailsPage({ params }: { params: Promise<{ 
   const { slug } = await params;
   const streak = await getStreak(slug);
 
-  return <StreakDetailsClient streak={streak} />;
+  // Check if user is logged in and enrolled
+  // Note: In a real app, you'd get the user session here
+  // For now, we'll simulate this with a mock user
+  const mockUserId = "user1"; // This would come from the session
+  const userProgress = await getUserStreakProgress(streak.id, mockUserId);
+
+  return <StreakDetailsClient streak={streak} userProgress={userProgress} />;
 }

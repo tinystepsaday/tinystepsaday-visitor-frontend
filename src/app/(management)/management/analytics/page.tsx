@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
+import { AnalyticsDashboardLoader } from "@/components/ui/loaders"
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import DateRangePicker from "@/components/date-range-picker"
@@ -97,11 +98,7 @@ export default function AnalyticsPage() {
   const trafficSources = analytics?.trafficSources || []
 
   if (isLoading) {
-    return (
-      <div className="flex h-[200px] items-center justify-center">
-        <div className="text-muted-foreground">Loading analytics...</div>
-      </div>
-    )
+    return <AnalyticsDashboardLoader title="Loading Analytics..." subtitle="Please wait while we load the analytics data" />
   }
 
   return (

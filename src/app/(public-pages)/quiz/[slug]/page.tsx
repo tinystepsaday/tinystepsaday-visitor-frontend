@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import QuizTakingClient from "@/components/quiz/QuizTakingClient";
+import QuizDetailsClient from "@/components/quiz/QuizDetailsClient";
 import { getAllQuizzes, getQuizById } from "@/data/quizzes";
 
 interface QuizPageProps {
@@ -8,7 +8,7 @@ interface QuizPageProps {
 }
 
 export async function generateStaticParams() {
-  const quizzes = getAllQuizzes();
+  const quizzes = await getAllQuizzes();
   return quizzes.map((quiz) => ({
     slug: quiz.id,
   }));
@@ -16,7 +16,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: QuizPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const quiz = getQuizById(slug);
+  const quiz = await getQuizById(slug);
   
   if (!quiz) {
     return {
@@ -44,11 +44,11 @@ export async function generateMetadata({ params }: QuizPageProps): Promise<Metad
 
 export default async function QuizPage({ params }: QuizPageProps) {
   const { slug } = await params;
-  const quiz = getQuizById(slug);
+  const quiz = await getQuizById(slug);
   
   if (!quiz) {
     notFound();
   }
 
-  return <QuizTakingClient quiz={quiz} />;
+  return <QuizDetailsClient quiz={quiz} />;
 }

@@ -5,8 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { QuizLayout } from "@/components/quiz/QuizLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Book, Calendar, ArrowRight, Trophy, Target, TrendingUp } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { Book, Calendar, ArrowRight, Target } from "lucide-react";
 import Link from "next/link";
 import { Quiz, QuizResult, calculateQuizResult } from "@/data/quizzes";
 
@@ -21,11 +20,13 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    if (!quiz) return;
+    
     const answersParam = searchParams.get('answers');
     if (answersParam) {
       try {
         const answers = JSON.parse(decodeURIComponent(answersParam));
-        const calculatedResult = calculateQuizResult(answers);
+        const calculatedResult = calculateQuizResult(answers, quiz.id);
         setResult(calculatedResult);
       } catch (error) {
         console.error('Error parsing answers:', error);
@@ -35,7 +36,21 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
       router.push(`/quiz/${quiz.id}`);
     }
     setIsLoading(false);
-  }, [searchParams, quiz.id, router]);
+  }, [searchParams, quiz?.id, router, quiz]);
+
+  // Safety check
+  if (!quiz) {
+    return (
+      <QuizLayout title="Quiz Error" subtitle="Quiz not found">
+        <div className="text-center py-12">
+          <p className="text-muted-foreground mb-4">This quiz could not be found.</p>
+          <Button onClick={() => router.push("/quiz")}>
+            Back to Quizzes
+          </Button>
+        </div>
+      </QuizLayout>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -63,25 +78,13 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
     );
   }
 
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case 'excellent': return 'text-green-600 bg-green-100';
-      case 'good': return 'text-blue-600 bg-blue-100';
-      case 'fair': return 'text-yellow-600 bg-yellow-100';
-      case 'needs-improvement': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
-    }
-  };
+  const getCriteriaForScore = (percentage: number) => {
+    return quiz.gradingCriteria.find(c => 
+      percentage >= c.minScore && percentage <= c.maxScore
+    )
+  }
 
-  const getLevelIcon = (level: string) => {
-    switch (level) {
-      case 'excellent': return <Trophy className="h-5 w-5" />;
-      case 'good': return <Target className="h-5 w-5" />;
-      case 'fair': return <TrendingUp className="h-5 w-5" />;
-      case 'needs-improvement': return <Book className="h-5 w-5" />;
-      default: return <Book className="h-5 w-5" />;
-    }
-  };
+  const matchingCriteria = getCriteriaForScore(result.percentage)
 
   return (
     <QuizLayout
@@ -91,54 +94,41 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
       onBackClick={() => router.push(`/quiz/${quiz.id}`)}
     >
       <div className="space-y-6">
-        {/* Score Card */}
+        {/* Criteria name based on score */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              {getLevelIcon(result.level)}
-              <span>Your Score</span>
-            </CardTitle>
+            <CardTitle>Your Results</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary mb-2">
-                {result.percentage}%
-              </div>
-              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getLevelColor(result.level)}`}>
-                {result.level.replace('-', ' ').toUpperCase()}
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Progress</span>
-                <span>{result.score} / {result.maxScore} points</span>
-              </div>
-              <Progress value={result.percentage} className="h-2" />
-            </div>
+          <CardContent>
+            <p className="text-muted-foreground leading-relaxed font-bold text-4xl">
+              {matchingCriteria?.name || 'Results'}
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Score: {result.percentage}% ({result.score}/{result.maxScore} points)
+            </p>
           </CardContent>
         </Card>
 
-        {/* Feedback Card */}
+        {/* Analysis */}
         <Card>
           <CardHeader>
             <CardTitle>Analysis</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground leading-relaxed">
-              {result.feedback}
+              {matchingCriteria?.description || result.feedback}
             </p>
           </CardContent>
         </Card>
 
-        {/* Recommendations Card */}
+        {/* Recommendations */}
         <Card>
           <CardHeader>
             <CardTitle>Recommendations</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-3">
-              {result.recommendations.map((recommendation, index) => (
+              {(matchingCriteria?.recommendations || result.recommendations).map((recommendation, index) => (
                 <li key={index} className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
                   <span className="text-sm text-muted-foreground">{recommendation}</span>
@@ -148,18 +138,99 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
           </CardContent>
         </Card>
 
-        {/* Action Cards */}
+        {/* Recommended Courses */}
+        {matchingCriteria?.proposedCourses && matchingCriteria.proposedCourses.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Book className="h-5 w-5" />
+                <span>Recommended Courses</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {matchingCriteria.proposedCourses.map((course, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <span className="text-sm font-medium">{course.name}</span>
+                    <Link href={`/courses/${course.slug}`}>
+                      <Button variant="outline" size="sm">
+                        View Course
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Recommended Products */}
+        {matchingCriteria?.proposedProducts && matchingCriteria.proposedProducts.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Calendar className="h-5 w-5" />
+                <span>Recommended Resources</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {matchingCriteria.proposedProducts.map((product, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <span className="text-sm font-medium">{product.name}</span>
+                    <Link href={`/shop/${product.slug}`}>
+                      <Button variant="outline" size="sm">
+                        View Product
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Recommended Streaks */}
+        {matchingCriteria?.proposedStreaks && matchingCriteria.proposedStreaks.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Target className="h-5 w-5" />
+                <span>Recommended Streaks</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {matchingCriteria.proposedStreaks.map((streak, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <span className="text-sm font-medium">{streak.name}</span>
+                    <Link href={`/streaks/${streak.slug}`}>
+                      <Button variant="outline" size="sm">
+                        Join Streak
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Additional Action Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Book className="h-5 w-5" />
-                <span>Related Courses</span>
+                <span>Browse All Courses</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">
-                Explore courses to improve your skills in this area.
+                Explore our full course catalog to find the perfect learning path.
               </p>
             </CardContent>
             <CardFooter>

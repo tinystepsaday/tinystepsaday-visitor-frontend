@@ -16,6 +16,7 @@ import { X, Plus, Save, Eye } from "lucide-react"
 import { MediaSelector } from "@/components/media-selector"
 import { BlogPreview } from "@/components/blog-preview"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { SharingSettingsModal, type SharingOption } from "@/components/blog/SharingSettingsModal"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
@@ -29,6 +30,8 @@ export default function CreateBlogPostPage() {
   const [featuredImage, setFeaturedImage] = useState<string>("")
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSharingModalOpen, setIsSharingModalOpen] = useState(false)
+  const [previousStatus, setPreviousStatus] = useState<string>("draft")
 
   const { toast } = useToast()
   const router = useRouter()
@@ -86,7 +89,17 @@ export default function CreateBlogPostPage() {
     form.setValue("tags", updatedTags)
   }
 
-  const onSubmit = async () => {
+  const handleSharingConfirm = async (sharingOption: SharingOption) => {
+    setIsSharingModalOpen(false)
+    
+    // Here you would typically send the sharing option to your API
+    console.log("Sharing option selected:", sharingOption)
+    
+    // Continue with the actual post creation
+    await createPost()
+  }
+
+  const createPost = async () => {
     setIsLoading(true)
     try {
       toast({
@@ -105,6 +118,25 @@ export default function CreateBlogPostPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const onSubmit = async () => {
+    const currentStatus = form.getValues("status")
+    
+    // Check if status is changing from draft to published
+    if (previousStatus === "draft" && currentStatus === "published") {
+      setIsSharingModalOpen(true)
+      return
+    }
+    
+    // For other status changes or if already published, proceed normally
+    await createPost()
+  }
+
+  // Update previous status when form status changes
+  const handleStatusChange = (newStatus: string) => {
+    setPreviousStatus(form.getValues("status"))
+    form.setValue("status", newStatus as "draft" | "published" | "archived")
   }
 
   return (
@@ -308,7 +340,7 @@ export default function CreateBlogPostPage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Status</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={(value) => handleStatusChange(value)} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select status" />
@@ -388,6 +420,13 @@ export default function CreateBlogPostPage() {
           </div>
         </form>
       </Form>
+
+      {/* Sharing Settings Modal */}
+      <SharingSettingsModal
+        isOpen={isSharingModalOpen}
+        onClose={() => setIsSharingModalOpen(false)}
+        onConfirm={handleSharingConfirm}
+      />
     </div>
   )
 }

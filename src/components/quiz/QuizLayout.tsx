@@ -17,7 +17,7 @@ interface QuizLayoutProps {
 export function QuizLayout({
   children,
   title,
-  subtitle,
+  // subtitle,
   showBackButton = false,
   onBackClick
 }: QuizLayoutProps) {
@@ -31,7 +31,7 @@ export function QuizLayout({
               Back to quizzes
             </Link>
             <h1 className="text-xl font-bold mt-1">{title}</h1>
-            {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+            {/* {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>} */}
           </div>
           <ThemeToggle />
           {showBackButton && (

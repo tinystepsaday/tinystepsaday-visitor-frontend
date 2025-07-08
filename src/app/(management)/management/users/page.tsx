@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal, Plus, Edit, Trash2, Shield, ShieldCheck, Eye } from "lucide-react"
 import { mockUsers } from "@/data/mock-data"
@@ -29,6 +29,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ListPageLoader } from "@/components/ui/loaders"
 
 const columns: ColumnDef<User>[] = [
   {
@@ -136,11 +137,20 @@ const columns: ColumnDef<User>[] = [
 export default function UsersPage() {
   const [users] = useState<User[]>(mockUsers)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [newUser, setNewUser] = useState<{ name: string; email: string; role: "admin" | "editor" | "viewer" }>({
     name: "",
     email: "",
     role: "viewer",
   })
+
+  // Simulate loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 1000)
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleCreateUser = () => {
     console.log("Creating user:", newUser)
@@ -150,6 +160,10 @@ export default function UsersPage() {
       email: "",
       role: "viewer",
     })
+  }
+
+  if (isLoading) {
+    return <ListPageLoader title="Loading Users..." subtitle="Please wait while we load the user data" createButtonText="Add User" />
   }
 
   return (

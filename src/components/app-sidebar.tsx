@@ -148,6 +148,20 @@ const data = {
       ],
     },
     {
+      title: "Streaks",
+      icon: Calendar,
+      items: [
+        {
+          title: "All Streaks",
+          url: "/management/streaks",
+        },
+        {
+          title: "Create Streak",
+          url: "/management/streaks/create",
+        },
+      ],
+    },
+    {
       title: 'Communities',
       icon: Users,
       items: [
