@@ -74,7 +74,7 @@ export default async function StreaksPage() {
         },
       },
       "datePublished": streak.startDate,
-      "dateModified": streak.lastCheckIn,
+      "dateModified": streak.startDate,
       "dateCreated": streak.startDate,
       "keywords": [
         "streaks", "daily challenges", "habits", "tiny steps a day", "personal growth", "self improvement", "mindfulness", "wellness", "consistency", "motivation", "habit tracker", "challenge", "community"
