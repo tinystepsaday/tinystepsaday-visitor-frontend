@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       url: `https://tinystepsaday.com/shop/${product.slug}`,
       images: [
         {
-          url: product.image,
+          url: product.images[0],
           width: 800,
           height: 600,
           alt: product.name
@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       card: "summary_large_image",
       title: `${product.name} - TinyStepsADay`,
       description: product.description,
-      images: [product.image]
+      images: [product.images[0]]
     }
   };
 }
@@ -68,7 +68,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     "@type": "Product",
     "name": product.name,
     "description": product.description,
-    "image": product.image,
+    "image": product.images[0],
     "category": product.category,
     "brand": {
       "@type": "Brand",

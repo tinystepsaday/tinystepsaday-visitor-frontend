@@ -17,7 +17,6 @@ import {
   MessageCircle,
   ShoppingBag,
   Star,
-  Group,
   MessageSquare,
 } from "lucide-react"
 
@@ -219,6 +218,10 @@ const data = {
         {
           title: 'Create Product',
           url: '/management/products/create',
+        },
+        {
+          title: 'Categories',
+          url: '/management/products/categories',
         }
       ]
     },
@@ -259,8 +262,16 @@ const data = {
           url: '/management/sessions',
         },
         {
-          title: 'Create Session',
-          url: '/management/sessions/create',
+          title: 'Calendar View',
+          url: '/management/sessions/calendar',
+        },
+        {
+          title: 'Scheduled Sessions',
+          url: '/management/sessions/scheduled',
+        },
+        {
+          title: 'Set Availability',
+          url: '/management/sessions/availability',
         }
       ]
     },
@@ -280,11 +291,6 @@ const data = {
     },
   ],
   navManagement: [
-    {
-      title: 'Subscribers',
-      icon: Group,
-      url: '/management/subscribers',
-    },
     {
       title: 'Reviews',
       icon: Star,

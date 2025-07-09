@@ -14,9 +14,9 @@ interface CTASectionProps {
 
 const CTASection = ({
   title = "Ready to Begin Your Transformative Journey?",
-  subtitle = "Take the first step towards personal growth, clarity, and authentic living",
+  subtitle = "Take the first step towards personal growth, clarity, and authentic living.",
   buttonText = "Start Your Journey",
-  buttonLink = "/assessment",
+  buttonLink = "/quiz",
   bgClass = "bg-gradient-to-r from-innerpath-primary/20 to-innerpath-blue/20"
 }: CTASectionProps) => {
   return (

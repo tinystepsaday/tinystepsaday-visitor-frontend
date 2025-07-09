@@ -1,16 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Save, X, Plus } from "lucide-react";
-import { getProductById } from "@/data/products";
-import type { Product } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import { Switch } from "@/components/ui/switch";
 import {
   Select,
@@ -19,17 +16,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DetailPageLoader } from "@/components/ui/loaders";
 import { useToast } from "@/hooks/use-toast";
 import { MediaSelector } from "@/components/media-selector";
 import Image from "next/image";
 
-export default function EditProductPage() {
-  const params = useParams();
+export default function CreateProductPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   
   // Form state
@@ -45,44 +38,11 @@ export default function EditProductPage() {
     images: [""],
   });
 
-  useEffect(() => {
-    const loadProduct = async () => {
-      try {
-        const productId = parseInt(params.id as string);
-        const foundProduct = getProductById(productId);
-        
-        if (!foundProduct) {
-          router.push("/management/products");
-          return;
-        }
-
-        setProduct(foundProduct);
-        setFormData({
-          name: foundProduct.name,
-          description: foundProduct.description,
-          detailedDescription: foundProduct.detailedDescription,
-          price: foundProduct.price,
-          category: foundProduct.category,
-          inStock: foundProduct.inStock,
-          features: foundProduct.features.length > 0 ? foundProduct.features : [""],
-          specifications: foundProduct.specifications.length > 0 ? foundProduct.specifications : [""],
-          images: foundProduct.images.length > 0 ? foundProduct.images : [""],
-        });
-      } catch (error) {
-        console.error("Error loading product:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadProduct();
-  }, [params.id, router]);
-
   const handleInputChange = (field: string, value: string | number | boolean) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
-    }));  
+    }));
   };
 
   const handleArrayFieldChange = (field: 'features' | 'specifications' | 'images', index: number, value: string) => {
@@ -138,6 +98,15 @@ export default function EditProductPage() {
         return;
       }
 
+      if (!formData.category) {
+        toast({
+          title: "Validation Error",
+          description: "Category is required",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Filter out empty array items
       const cleanedData = {
         ...formData,
@@ -147,19 +116,19 @@ export default function EditProductPage() {
       };
 
       // Simulate API call with cleaned data
-      console.log("Saving product with data:", cleanedData);
+      console.log("Creating product with data:", cleanedData);
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       toast({
         title: "Success",
-        description: "Product updated successfully",
+        description: "Product created successfully",
       });
 
-      router.push(`/management/products/${params.id}`);
+      router.push("/management/products");
     } catch {
       toast({
         title: "Error",
-        description: "Failed to update product",
+        description: "Failed to create product",
         variant: "destructive",
       });
     } finally {
@@ -167,44 +136,27 @@ export default function EditProductPage() {
     }
   };
 
-  if (loading || !product) {
-    return <DetailPageLoader 
-      title="Edit Product" 
-      subtitle="Loading product information"
-      backHref={`/management/products/${params.id}`}
-      backText="Back to Product"
-      actionButtons={
-        <Button disabled>
-          <Save className="mr-2 h-4 w-4" />
-          Save Changes
-        </Button>
-      }
-    />;
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-4 w-full flex-col">
-          <div className="flex items-center w-full justify-between">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={() => router.push(`/management/products/${params.id}`)}
+            onClick={() => router.push("/management/products")}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Product
+            Back to Products
           </Button>
-          </div>
-          <div className="flex items-start w-full justify-start flex-col">
-            <h1 className="text-3xl font-bold">Edit Product</h1>
-            <p className="text-muted-foreground">{product.name}</p>
+          <div>
+            <h1 className="text-3xl font-bold">Create New Product</h1>
+            <p className="text-muted-foreground">Add a new product to your catalog</p>
           </div>
         </div>
         <Button onClick={handleSave} disabled={saving}>
           <Save className="mr-2 h-4 w-4" />
-          {saving ? "Saving..." : "Save Changes"}
+          {saving ? "Creating..." : "Create Product"}
         </Button>
       </div>
 
@@ -226,7 +178,7 @@ export default function EditProductPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
+              <Label htmlFor="category">Category *</Label>
               <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
@@ -454,13 +406,13 @@ export default function EditProductPage() {
       <div className="flex justify-end gap-4">
         <Button
           variant="outline"
-          onClick={() => router.push(`/management/products/${params.id}`)}
+          onClick={() => router.push("/management/products")}
         >
           Cancel
         </Button>
         <Button onClick={handleSave} disabled={saving}>
           <Save className="mr-2 h-4 w-4" />
-          {saving ? "Saving..." : "Save Changes"}
+          {saving ? "Creating..." : "Create Product"}
         </Button>
       </div>
     </div>
