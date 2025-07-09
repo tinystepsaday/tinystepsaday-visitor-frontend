@@ -139,8 +139,8 @@ export default function StreakCreateManagementClient() {
   };
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 w-full">
+      <div className="max-w-4xl mx-auto w-full">
         <Link href="/management/streaks" className="inline-flex items-center text-primary hover:text-primary/80 mb-6">
           <ChevronLeft className="h-4 w-4 mr-1" />
           Back to Streaks Management
@@ -153,7 +153,7 @@ export default function StreakCreateManagementClient() {
           </p>
         </div>
 
-        <Tabs value={currentStep.toString()} onValueChange={(value) => setCurrentStep(parseInt(value))} className="space-y-6">
+        <Tabs value={currentStep.toString()} onValueChange={(value) => setCurrentStep(parseInt(value))} className="space-y-6 w-full">
           <TabsList className="grid grid-cols-5">
             <TabsTrigger value="1">Basic Info</TabsTrigger>
             <TabsTrigger value="2">Goals & Guidelines</TabsTrigger>

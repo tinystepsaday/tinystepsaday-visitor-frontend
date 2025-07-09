@@ -198,6 +198,7 @@ export function CourseFormClient({ mode = "create", initialCourse, onSave }: Cou
           role: "admin" as const,
           isActive: true,
           createdAt: new Date(),
+          totalLogins: 0, // Add missing required field
         },
         duration: parseInt(totalDuration) || 0,
         modules: modules.map((module, index) => ({

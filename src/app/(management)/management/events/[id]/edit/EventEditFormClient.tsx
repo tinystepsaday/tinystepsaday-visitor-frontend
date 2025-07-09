@@ -13,16 +13,19 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DetailPageLoader } from "@/components/ui/loaders";
+import { MediaSelector } from "@/components/media-selector";
 import {
   ArrowLeft,
   Plus,
   X,
   Save,
-  Eye
+  Eye,
+  ImageIcon
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import type { Event } from "@/data/events";
+import Image from "next/image";
 
 interface EventFormData {
   title: string;
@@ -601,17 +604,48 @@ export default function EventEditFormClient({ eventId, initialEvent }: EventEdit
             <Card>
               <CardHeader>
                 <CardTitle>Event Image</CardTitle>
+                <CardDescription>Choose an image for your event from your media library, upload a new one, or add a link</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="image">Image URL</Label>
-                  <Input
-                    id="image"
-                    value={formData.image}
-                    onChange={(e) => handleInputChange("image", e.target.value)}
-                    placeholder="https://example.com/image.jpg"
+                  <Label>Event Image</Label>
+                  <MediaSelector
+                    onSelect={(media) => handleInputChange("image", media.url)}
+                    trigger={
+                      <Button variant="outline" className="w-fit">
+                        <ImageIcon className="mr-2 h-4 w-4" />
+                        {formData.image ? "Change Image" : "Select Image"}
+                      </Button>
+                    }
                   />
                 </div>
+                
+                {formData.image && (
+                  <div className="space-y-2">
+                    <Label>Image Preview</Label>
+                    <div className="relative aspect-video w-full max-w-md rounded-lg overflow-hidden border">
+                      <Image
+                        src={formData.image}
+                        alt="Event image preview"
+                        fill
+                        className="object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/placeholder.svg";
+                        }}
+                      />
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleInputChange("image", "")}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <X className="mr-2 h-4 w-4" />
+                      Remove Image
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

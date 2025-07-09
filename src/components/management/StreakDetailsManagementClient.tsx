@@ -99,7 +99,7 @@ export default function StreakDetailsManagementClient({ streakId }: StreakDetail
   };
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 w-full">
       <div className="max-w-6xl mx-auto">
         <Link href="/management/streaks" className="inline-flex items-center text-primary hover:text-primary/80 mb-6">
           <ChevronLeft className="h-4 w-4 mr-1" />

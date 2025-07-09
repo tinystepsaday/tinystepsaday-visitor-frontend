@@ -18,6 +18,7 @@ import {
   ShoppingBag,
   Star,
   Group,
+  MessageSquare,
 } from "lucide-react"
 
 import {
@@ -162,20 +163,6 @@ const data = {
       ],
     },
     {
-      title: 'Communities',
-      icon: Users,
-      items: [
-        {
-          title: 'All Communities',
-          url: '/management/communities',
-        },
-        {
-          title: 'Create Community',
-          url: '/management/communities/create',
-        }
-      ]
-    },
-    {
       title: 'Events',
       icon: Calendar,
       items: [
@@ -200,8 +187,26 @@ const data = {
         {
           title: 'Create Message',
           url: '/management/messages/create',
+        },
+        {
+          title: 'Create Template',
+          url: '/management/templates/create',
         }
       ],
+    },
+    {
+      title: 'Messages Templates',
+      icon: MessageSquare,
+      items: [
+        {
+          title: 'All Templates',
+          url: '/management/templates',
+        },
+        {
+          title: 'Create Template',
+          url: '/management/templates/create',
+        }
+      ]
     },
     {
       title: 'Products',
@@ -258,13 +263,27 @@ const data = {
           url: '/management/sessions/create',
         }
       ]
-    }
+    },
+    {
+      title: 'Communities',
+      icon: Users,
+      items: [
+        {
+          title: 'All Communities',
+          url: '/management/communities',
+        },
+        {
+          title: 'Create Community',
+          url: '/management/communities/create',
+        }
+      ]
+    },
   ],
   navManagement: [
     {
-      title: 'Team Members',
+      title: 'Subscribers',
       icon: Group,
-      url: '/management/team',
+      url: '/management/subscribers',
     },
     {
       title: 'Reviews',

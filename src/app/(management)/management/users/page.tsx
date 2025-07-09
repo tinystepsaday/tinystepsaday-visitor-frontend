@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, Plus, Edit, Trash2, Shield, ShieldCheck, Eye } from "lucide-react"
+import { MoreHorizontal, Plus, Edit, Trash2, Shield, ShieldCheck, Eye, Users, BookOpen, Mail, UserCheck } from "lucide-react"
 import { mockUsers } from "@/data/mock-data"
 import type { User } from "@/lib/types"
 import { DataTable } from "@/components/data-table"
@@ -30,115 +30,22 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ListPageLoader } from "@/components/ui/loaders"
+import Link from "next/link"
 
-const columns: ColumnDef<User>[] = [
-  {
-    accessorKey: "name",
-    header: "User",
-    cell: ({ row }) => {
-      const user = row.original
-      return (
-        <div className="flex items-center space-x-3">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
-            <AvatarFallback>
-              {user.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <div className="font-medium">{user.name}</div>
-            <div className="text-sm text-muted-foreground">{user.email}</div>
-          </div>
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: "role",
-    header: "Role",
-    cell: ({ row }) => {
-      const role = row.getValue("role") as string
-      const roleConfig = {
-        admin: { label: "Admin", icon: ShieldCheck, variant: "destructive" as const },
-        editor: { label: "Editor", icon: Shield, variant: "default" as const },
-        viewer: { label: "Viewer", icon: Eye, variant: "secondary" as const },
-      }
-      const config = roleConfig[role as keyof typeof roleConfig]
-
-      return (
-        <Badge variant={config.variant} className="flex items-center gap-1 w-fit">
-          <config.icon className="h-3 w-3" />
-          {config.label}
-        </Badge>
-      )
-    },
-  },
-  {
-    accessorKey: "isActive",
-    header: "Status",
-    cell: ({ row }) => {
-      const isActive = row.getValue("isActive") as boolean
-      return <Badge variant={isActive ? "default" : "secondary"}>{isActive ? "Active" : "Inactive"}</Badge>
-    },
-  },
-  {
-    accessorKey: "lastLogin",
-    header: "Last Login",
-    cell: ({ row }) => {
-      const lastLogin = row.getValue("lastLogin") as Date | undefined
-      return <div>{lastLogin ? lastLogin.toLocaleDateString() : "Never"}</div>
-    },
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Created",
-    cell: ({ row }) => {
-      const date = row.getValue("createdAt") as Date
-      return <div>{date.toLocaleDateString()}</div>
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: () => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>
-              <Eye className="mr-2 h-4 w-4" />
-              View Details
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Edit className="mr-2 h-4 w-4" />
-              Edit User
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete User
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
-  },
-]
+const roleConfig = {
+  admin: { label: "Admin", icon: ShieldCheck, variant: "destructive" as const },
+  editor: { label: "Editor", icon: Shield, variant: "default" as const },
+  viewer: { label: "Viewer", icon: Eye, variant: "secondary" as const },
+  subscriber: { label: "Subscriber", icon: Mail, variant: "outline" as const },
+  learner: { label: "Learner", icon: BookOpen, variant: "outline" as const },
+  "learner-subscriber": { label: "Learner-Subscriber", icon: UserCheck, variant: "outline" as const },
+}
 
 export default function UsersPage() {
   const [users] = useState<User[]>(mockUsers)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [newUser, setNewUser] = useState<{ name: string; email: string; role: "admin" | "editor" | "viewer" }>({
+  const [newUser, setNewUser] = useState<{ name: string; email: string; role: User['role'] }>({
     name: "",
     email: "",
     role: "viewer",
@@ -161,6 +68,113 @@ export default function UsersPage() {
       role: "viewer",
     })
   }
+
+  const getRoleCount = (role: User['role']) => users.filter(u => u.role === role).length
+
+  const columns: ColumnDef<User>[] = [
+    {
+      accessorKey: "name",
+      header: "User",
+      cell: ({ row }) => {
+        const user = row.original
+        return (
+          <div className="flex items-center space-x-3">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+              <AvatarFallback>
+                {user.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="font-medium">{user.name}</div>
+              <div className="text-sm text-muted-foreground">{user.email}</div>
+            </div>
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: "role",
+      header: "Role",
+      cell: ({ row }) => {
+        const role = row.getValue("role") as string
+        const config = roleConfig[role as keyof typeof roleConfig]
+
+        return (
+          <Badge variant={config.variant} className="flex items-center gap-1 w-fit">
+            <config.icon className="h-3 w-3" />
+            {config.label}
+          </Badge>
+        )
+      },
+    },
+    {
+      accessorKey: "isActive",
+      header: "Status",
+      cell: ({ row }) => {
+        const isActive = row.getValue("isActive") as boolean
+        return <Badge variant={isActive ? "default" : "secondary"}>{isActive ? "Active" : "Inactive"}</Badge>
+      },
+    },
+    {
+      accessorKey: "lastLogin",
+      header: "Last Login",
+      cell: ({ row }) => {
+        const lastLogin = row.getValue("lastLogin") as Date | undefined
+        return <div>{lastLogin ? lastLogin.toLocaleDateString() : "Never"}</div>
+      },
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Created",
+      cell: ({ row }) => {
+        const date = row.getValue("createdAt") as Date
+        return <div>{date.toLocaleDateString()}</div>
+      },
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const user = row.original
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem asChild>
+                <Link href={`/management/users/${user.id}`}>
+                  <Eye className="mr-2 h-4 w-4" />
+                View Details
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/management/users/${user.id}/edit`}>
+                  <Edit className="mr-2 h-4 w-4" />
+                Edit User
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-destructive" asChild>
+                <Link href={`/management/users/${user.id}/delete`}>
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete User
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
+    },
+  ]
 
   if (isLoading) {
     return <ListPageLoader title="Loading Users..." subtitle="Please wait while we load the user data" createButtonText="Add User" />
@@ -217,7 +231,7 @@ export default function UsersPage() {
                 </Label>
                 <Select
                   value={newUser.role}
-                  onValueChange={(value: "admin" | "editor" | "viewer") =>
+                  onValueChange={(value: User['role']) =>
                     setNewUser((prev) => ({ ...prev, role: value }))
                   }
                 >
@@ -228,6 +242,9 @@ export default function UsersPage() {
                     <SelectItem value="viewer">Viewer</SelectItem>
                     <SelectItem value="editor">Editor</SelectItem>
                     <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="subscriber">Subscriber</SelectItem>
+                    <SelectItem value="learner">Learner</SelectItem>
+                    <SelectItem value="learner-subscriber">Learner-Subscriber</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -245,7 +262,7 @@ export default function UsersPage() {
         <div className="rounded-lg border p-3">
           <div className="flex items-center justify-between">
             <div className="text-sm font-medium">Total Users</div>
-            <Shield className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-muted-foreground" />
           </div>
           <div className="text-2xl font-bold">{users.length}</div>
           <p className="text-xs text-muted-foreground">+2 from last month</p>
@@ -262,17 +279,19 @@ export default function UsersPage() {
         </div>
         <div className="rounded-lg border p-3">
           <div className="flex items-center justify-between">
-            <div className="text-sm font-medium">Admins</div>
-            <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+            <div className="text-sm font-medium">Learners</div>
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
           </div>
-          <div className="text-2xl font-bold">{users.filter((u) => u.role === "admin").length}</div>
+          <div className="text-2xl font-bold">{getRoleCount("learner") + getRoleCount("learner-subscriber")}</div>
+          <p className="text-xs text-muted-foreground">Active learners</p>
         </div>
         <div className="rounded-lg border p-3">
           <div className="flex items-center justify-between">
-            <div className="text-sm font-medium">Editors</div>
-            <Shield className="h-4 w-4 text-muted-foreground" />
+            <div className="text-sm font-medium">Subscribers</div>
+            <Mail className="h-4 w-4 text-muted-foreground" />
           </div>
-          <div className="text-2xl font-bold">{users.filter((u) => u.role === "editor").length}</div>
+          <div className="text-2xl font-bold">{getRoleCount("subscriber") + getRoleCount("learner-subscriber")}</div>
+          <p className="text-xs text-muted-foreground">Premium subscribers</p>
         </div>
       </div>
 
