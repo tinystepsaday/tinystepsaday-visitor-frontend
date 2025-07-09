@@ -30,6 +30,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Product } from "@/data/products";
+import { ProductImageCarousel } from "./ProductImageCarousel";
 
 interface ProductDetailsClientProps {
   product: Product;
@@ -73,16 +74,8 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
         </Link>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          {/* Product Image */}
-          <div className="rounded-xl overflow-hidden bg-muted">
-            <Image
-              src={product.image}
-              alt={product.name}
-              width={500}
-              height={500}
-              className="w-full h-full object-cover aspect-square"
-            />
-          </div>
+          {/* Product Image Carousel */}
+          <ProductImageCarousel images={product.images} productName={product.name} />
 
           {/* Product Details */}
           <div className="space-y-6">

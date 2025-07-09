@@ -4,6 +4,7 @@ export interface Product {
   price: number;
   description: string;
   image: string;
+  images: string[]; // Array of product images for carousel
   category: string;
   averageRating: number;
   reviewCount: number;
@@ -36,6 +37,12 @@ export const products: Product[] = [
     price: 49.99,
     description: "Comfortable cushion for your meditation practice",
     image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+    images: [
+      "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+      "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d"
+    ],
     category: "Tools",
     averageRating: 4.5,
     reviewCount: 28,
@@ -99,6 +106,12 @@ export const products: Product[] = [
     price: 24.99,
     description: "Beautiful journal for daily reflections",
     image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+    images: [
+      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
+      "https://images.unsplash.com/photo-1506784365847-bbad939e9335"
+    ],
     category: "Books",
     averageRating: 4.2,
     reviewCount: 15,
@@ -139,6 +152,12 @@ export const products: Product[] = [
     price: 39.99,
     description: "Calming essential oils for aromatherapy",
     image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
+    images: [
+      "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
+      "https://images.unsplash.com/photo-1544787219-7f47ccb76574",
+      "https://images.unsplash.com/photo-1518709268805-4e9042af2176",
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f"
+    ],
     category: "Tools",
     averageRating: 4.7,
     reviewCount: 42,
@@ -179,6 +198,12 @@ export const products: Product[] = [
     price: 19.99,
     description: "Practical guide for personal growth and mindfulness",
     image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
+    images: [
+      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+      "https://images.unsplash.com/photo-1506784365847-bbad939e9335"
+    ],
     category: "Handbooks",
     averageRating: 4.0,
     reviewCount: 19,
@@ -219,6 +244,12 @@ export const products: Product[] = [
     price: 34.99,
     description: "Comprehensive guide to yoga poses and practices",
     image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5",
+    images: [
+      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5",
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+      "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d"
+    ],
     category: "Books",
     averageRating: 4.8,
     reviewCount: 31,
@@ -259,6 +290,12 @@ export const products: Product[] = [
     price: 29.99,
     description: "Simple tool to track your meditation sessions",
     image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
+    images: [
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
+      "https://images.unsplash.com/photo-1518709268805-4e9042af2176",
+      "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
+      "https://images.unsplash.com/photo-1544787219-7f47ccb76574"
+    ],
     category: "Tools",
     averageRating: 3.9,
     reviewCount: 12,
@@ -292,6 +329,283 @@ export const products: Product[] = [
         verified: true
       }
     ]
+  },
+  {
+    id: 7,
+    name: "Breathing Exercise Cards",
+    price: 14.99,
+    description: "Deck of cards with guided breathing exercises",
+    image: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0",
+    images: [
+      "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0",
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+      "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d"
+    ],
+    category: "Tools",
+    averageRating: 4.3,
+    reviewCount: 8,
+    detailedDescription: "A beautifully illustrated deck of 50 breathing exercise cards designed to help you master various breathing techniques for relaxation, focus, and stress relief. Each card includes step-by-step instructions and benefits.",
+    features: [
+      "50 different breathing exercises",
+      "Step-by-step instructions",
+      "Beautiful illustrations",
+      "Portable card deck",
+      "Includes benefits for each exercise"
+    ],
+    specifications: [
+      "Cards: 50 cards",
+      "Size: 3.5\" x 2.5\"",
+      "Material: Premium cardstock",
+      "Box: Sturdy storage box included"
+    ],
+    inStock: true,
+    relatedProducts: [1, 3],
+    slug: "breathing-exercise-cards",
+    reviews: [
+      {
+        id: 9,
+        user: {
+          name: "Maria Garcia"
+        },
+        date: "2025-04-18T00:00:00.000Z",
+        rating: 5,
+        title: "Perfect for Daily Practice",
+        comment: "These cards are wonderful! I use them daily and they've helped me develop a consistent breathing practice. The illustrations are calming and the instructions are clear.",
+        verified: true
+      }
+    ]
+  },
+  {
+    id: 8,
+    name: "Gratitude Practice Workbook",
+    price: 18.99,
+    description: "Structured workbook for cultivating gratitude",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+    images: [
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
+      "https://images.unsplash.com/photo-1506784365847-bbad939e9335"
+    ],
+    category: "Books",
+    averageRating: 4.6,
+    reviewCount: 22,
+    detailedDescription: "A comprehensive workbook designed to help you develop a daily gratitude practice. Features guided exercises, reflection prompts, and tracking tools to help you cultivate appreciation and positive thinking.",
+    features: [
+      "90-day gratitude challenge",
+      "Daily reflection prompts",
+      "Gratitude journaling space",
+      "Progress tracking tools",
+      "Scientific benefits explained"
+    ],
+    specifications: [
+      "Pages: 180",
+      "Format: Spiral-bound",
+      "Size: 8.5\" x 11\"",
+      "Paper: High-quality, acid-free"
+    ],
+    inStock: true,
+    relatedProducts: [2, 4],
+    slug: "gratitude-practice-workbook",
+    reviews: [
+      {
+        id: 10,
+        user: {
+          name: "Thomas Anderson"
+        },
+        date: "2025-04-20T00:00:00.000Z",
+        rating: 5,
+        title: "Transformed My Perspective",
+        comment: "This workbook has completely changed how I view my daily life. The exercises are simple but powerful, and I've noticed a significant improvement in my overall mood and outlook.",
+        verified: true
+      }
+    ]
+  },
+  {
+    id: 9,
+    name: "Stress Relief Tea Collection",
+    price: 27.99,
+    description: "Curated collection of calming herbal teas",
+    image: "https://images.unsplash.com/photo-1544787219-7f47ccb76574",
+    images: [
+      "https://images.unsplash.com/photo-1544787219-7f47ccb76574",
+      "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
+      "https://images.unsplash.com/photo-1518709268805-4e9042af2176",
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f"
+    ],
+    category: "Tools",
+    averageRating: 4.4,
+    reviewCount: 16,
+    detailedDescription: "A carefully selected collection of premium herbal teas designed to support relaxation and stress relief. Each blend is crafted with organic ingredients and traditional recipes for maximum effectiveness.",
+    features: [
+      "5 different calming blends",
+      "Organic ingredients",
+      "Caffeine-free options",
+      "Includes brewing guide",
+      "Eco-friendly packaging"
+    ],
+    specifications: [
+      "Contents: 5 x 20 tea bags",
+      "Total: 100 tea bags",
+      "Ingredients: Organic herbs",
+      "Origin: Various countries"
+    ],
+    inStock: true,
+    relatedProducts: [3, 7],
+    slug: "stress-relief-tea-collection",
+    reviews: [
+      {
+        id: 11,
+        user: {
+          name: "Amanda Foster"
+        },
+        date: "2025-04-22T00:00:00.000Z",
+        rating: 4,
+        title: "Delicious and Soothing",
+        comment: "These teas are absolutely delicious and really help me unwind after a long day. The chamomile blend is my favorite. Great quality and the packaging is beautiful.",
+        verified: true
+      }
+    ]
+  },
+  {
+    id: 10,
+    name: "Mindful Living Planner",
+    price: 32.99,
+    description: "Comprehensive planner for mindful daily living",
+    image: "https://images.unsplash.com/photo-1506784365847-bbad939e9335",
+    images: [
+      "https://images.unsplash.com/photo-1506784365847-bbad939e9335",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
+    ],
+    category: "Handbooks",
+    averageRating: 4.7,
+    reviewCount: 14,
+    detailedDescription: "A comprehensive planner that combines traditional planning with mindfulness practices. Features goal setting, habit tracking, reflection prompts, and space for daily intentions and gratitude.",
+    features: [
+      "12-month planning system",
+      "Goal setting worksheets",
+      "Habit tracking pages",
+      "Monthly reflection prompts",
+      "Gratitude and intention spaces"
+    ],
+    specifications: [
+      "Pages: 240",
+      "Format: Hardcover",
+      "Size: 7\" x 9\"",
+      "Binding: Lay-flat design"
+    ],
+    inStock: true,
+    relatedProducts: [2, 8],
+    slug: "mindful-living-planner",
+    reviews: [
+      {
+        id: 12,
+        user: {
+          name: "Rachel Green"
+        },
+        date: "2025-04-25T00:00:00.000Z",
+        rating: 5,
+        title: "Perfect Balance of Planning and Mindfulness",
+        comment: "This planner is exactly what I was looking for. It helps me stay organized while also encouraging mindfulness practices. The layout is beautiful and the prompts are thoughtful.",
+        verified: true
+      }
+    ]
+  },
+  {
+    id: 11,
+    name: "Sound Healing Bowl",
+    price: 89.99,
+    description: "Handcrafted singing bowl for meditation and healing",
+    image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176",
+    images: [
+      "https://images.unsplash.com/photo-1518709268805-4e9042af2176",
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
+      "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
+      "https://images.unsplash.com/photo-1544787219-7f47ccb76574"
+    ],
+    category: "Tools",
+    averageRating: 4.9,
+    reviewCount: 7,
+    detailedDescription: "A handcrafted singing bowl made from seven metals, designed to produce pure, healing tones for meditation and sound therapy. Each bowl is unique and creates beautiful harmonics.",
+    features: [
+      "Handcrafted from seven metals",
+      "Pure, healing tones",
+      "Includes wooden mallet",
+      "Beautiful craftsmanship",
+      "Comes with care instructions"
+    ],
+    specifications: [
+      "Diameter: 6 inches",
+      "Height: 3 inches",
+      "Material: Seven-metal alloy",
+      "Weight: 2.2 lbs",
+      "Origin: Nepal"
+    ],
+    inStock: true,
+    relatedProducts: [1, 6],
+    slug: "sound-healing-bowl",
+    reviews: [
+      {
+        id: 13,
+        user: {
+          name: "Sophie Chen"
+        },
+        date: "2025-04-28T00:00:00.000Z",
+        rating: 5,
+        title: "Absolutely Magical",
+        comment: "This singing bowl produces the most beautiful, pure tones. It's become an essential part of my meditation practice. The craftsmanship is incredible and the sound is truly healing.",
+        verified: true
+      }
+    ]
+  },
+  {
+    id: 12,
+    name: "Digital Wellness Guide",
+    price: 22.99,
+    description: "Guide to maintaining mindfulness in the digital age",
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
+    images: [
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
+      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
+    ],
+    category: "Books",
+    averageRating: 4.1,
+    reviewCount: 11,
+    detailedDescription: "A practical guide to maintaining mindfulness and mental well-being in our increasingly digital world. Learn strategies for digital detox, mindful technology use, and creating healthy boundaries.",
+    features: [
+      "Digital detox strategies",
+      "Mindful technology use",
+      "Screen time management",
+      "Digital wellness exercises",
+      "Real-world case studies"
+    ],
+    specifications: [
+      "Pages: 180",
+      "Format: Paperback",
+      "Language: English",
+      "Publisher: TinyStepsADay"
+    ],
+    inStock: true,
+    relatedProducts: [4, 10],
+    slug: "digital-wellness-guide",
+    reviews: [
+      {
+        id: 14,
+        user: {
+          name: "Kevin Martinez"
+        },
+        date: "2025-05-01T00:00:00.000Z",
+        rating: 4,
+        title: "Timely and Practical",
+        comment: "This guide came at the perfect time for me. I was struggling with my relationship with technology and this book provided practical strategies that I could implement immediately.",
+        verified: true
+      }
+    ]
   }
 ];
 
@@ -318,4 +632,127 @@ export function getProductsByCategory(category: string): Product[] {
 
 export function getAllProducts(): Product[] {
   return products;
+}
+
+// New functions for filtering and searching
+export function getFilteredProducts(params: {
+  search?: string;
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minRating?: number;
+  inStock?: boolean;
+  sortBy?: 'name' | 'price' | 'rating' | 'newest';
+  sortOrder?: 'asc' | 'desc';
+}): Product[] {
+  let filteredProducts = [...products];
+
+  // Search filter
+  if (params.search) {
+    const searchTerm = params.search.toLowerCase();
+    filteredProducts = filteredProducts.filter(product =>
+      product.name.toLowerCase().includes(searchTerm) ||
+      product.description.toLowerCase().includes(searchTerm) ||
+      product.category.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  // Category filter
+  if (params.category) {
+    filteredProducts = filteredProducts.filter(product =>
+      product.category === params.category
+    );
+  }
+
+  // Price range filter
+  if (params.minPrice !== undefined) {
+    filteredProducts = filteredProducts.filter(product =>
+      product.price >= params.minPrice!
+    );
+  }
+  if (params.maxPrice !== undefined) {
+    filteredProducts = filteredProducts.filter(product =>
+      product.price <= params.maxPrice!
+    );
+  }
+
+  // Rating filter
+  if (params.minRating !== undefined) {
+    filteredProducts = filteredProducts.filter(product =>
+      product.averageRating >= params.minRating!
+    );
+  }
+
+  // Stock filter
+  if (params.inStock !== undefined) {
+    filteredProducts = filteredProducts.filter(product =>
+      product.inStock === params.inStock
+    );
+  }
+
+  // Sorting
+  if (params.sortBy) {
+    filteredProducts.sort((a, b) => {
+      let aValue: string | number;
+      let bValue: string | number;
+
+      switch (params.sortBy) {
+        case 'name':
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+          break;
+        case 'price':
+          aValue = a.price;
+          bValue = b.price;
+          break;
+        case 'rating':
+          aValue = a.averageRating;
+          bValue = b.averageRating;
+          break;
+        case 'newest':
+          // Assuming newer products have higher IDs
+          aValue = a.id;
+          bValue = b.id;
+          break;
+        default:
+          return 0;
+      }
+
+      if (params.sortOrder === 'desc') {
+        return bValue > aValue ? 1 : bValue < aValue ? -1 : 0;
+      } else {
+        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+      }
+    });
+  }
+
+  return filteredProducts;
+}
+
+export function getPaginatedProducts(
+  products: Product[],
+  page: number,
+  pageSize: number
+): { products: Product[]; totalPages: number; totalProducts: number } {
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedProducts = products.slice(startIndex, endIndex);
+  
+  return {
+    products: paginatedProducts,
+    totalPages: Math.ceil(products.length / pageSize),
+    totalProducts: products.length
+  };
+}
+
+export function getUniqueCategories(): string[] {
+  return [...new Set(products.map(product => product.category))];
+}
+
+export function getPriceRange(): { min: number; max: number } {
+  const prices = products.map(product => product.price);
+  return {
+    min: Math.min(...prices),
+    max: Math.max(...prices)
+  };
 } 
