@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { MediaSelector } from "@/components/media-selector";
+import Image from "next/image";
 
 export default function CreateProductPage() {
   const router = useRouter();
@@ -382,13 +383,15 @@ export default function CreateProductPage() {
                   </div>
                   {image && (
                     <div className="aspect-square rounded-lg overflow-hidden bg-muted">
-                      <img
+                      <Image
                         src={image}
                         alt={`Product image ${index + 1}`}
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           e.currentTarget.src = "/placeholder.svg?height=200&width=200";
                         }}
+                        width={200}
+                        height={200}
                       />
                     </div>
                   )}

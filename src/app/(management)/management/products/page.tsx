@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import { ListPageLoader } from "@/components/ui/loaders";
 import type { ColumnDef } from "@tanstack/react-table";
+import Image from "next/image";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -83,10 +84,12 @@ export default function ProductsPage() {
         return (
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted">
-              <img
+              <Image
                 src={product.images[0]}
                 alt={product.name}
                 className="w-full h-full object-cover"
+                width={200}
+                height={200}
               />
             </div>
             <div>
