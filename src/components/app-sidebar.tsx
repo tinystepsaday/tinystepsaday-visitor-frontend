@@ -219,6 +219,10 @@ const data = {
         {
           title: 'Create Product',
           url: '/management/products/create',
+        },
+        {
+          title: 'Categories',
+          url: '/management/products/categories',
         }
       ]
     },
