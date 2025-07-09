@@ -17,7 +17,6 @@ import {
   MessageCircle,
   ShoppingBag,
   Star,
-  Group,
   MessageSquare,
 } from "lucide-react"
 
@@ -292,11 +291,6 @@ const data = {
     },
   ],
   navManagement: [
-    {
-      title: 'Subscribers',
-      icon: Group,
-      url: '/management/subscribers',
-    },
     {
       title: 'Reviews',
       icon: Star,
