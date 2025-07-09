@@ -263,8 +263,16 @@ const data = {
           url: '/management/sessions',
         },
         {
-          title: 'Create Session',
-          url: '/management/sessions/create',
+          title: 'Calendar View',
+          url: '/management/sessions/calendar',
+        },
+        {
+          title: 'Scheduled Sessions',
+          url: '/management/sessions/scheduled',
+        },
+        {
+          title: 'Set Availability',
+          url: '/management/sessions/availability',
         }
       ]
     },
