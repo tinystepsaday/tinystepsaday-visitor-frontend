@@ -43,7 +43,7 @@ export default function PricingTierDetailPage() {
   }, [id, router]);
 
   if (loading) {
-    return <DetailPageLoader 
+    return <DetailPageLoader
       title="Pricing Tier Details"
       subtitle="View and manage pricing tier information"
     />;
@@ -76,20 +76,22 @@ export default function PricingTierDetailPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Button variant="ghost" onClick={() => router.back()}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <div>
+        <div className="flex items-center flex-col w-full gap-4">
+          <div className="flex items-center justify-between w-full">
+            <Button variant="ghost" onClick={() => router.back()}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+            <Button onClick={() => router.push(`/management/pricing-table/${tier.id}/edit`)}>
+              <Edit className="mr-2 h-4 w-4" />
+              Edit Tier
+            </Button>
+          </div>
+          <div className="flex flex-col w-full">
             <h1 className="text-3xl font-bold tracking-tight">{tier.name}</h1>
             <p className="text-muted-foreground">{tier.description}</p>
           </div>
         </div>
-        <Button onClick={() => router.push(`/management/pricing-table/${tier.id}/edit`)}>
-          <Edit className="mr-2 h-4 w-4" />
-          Edit Tier
-        </Button>
       </div>
 
       {/* Tier Overview Card */}
@@ -371,14 +373,12 @@ export default function PricingTierDetailPage() {
               <div className="space-y-4">
                 {tier.features.map((feature, index) => (
                   <div key={index} className="flex items-start space-x-3 p-3 border rounded-lg">
-                    <div className={`w-4 h-4 rounded-full mt-0.5 ${
-                      feature.included ? 'bg-green-500' : 'bg-gray-300'
-                    }`} />
+                    <div className={`w-4 h-4 rounded-full mt-0.5 ${feature.included ? 'bg-green-500' : 'bg-gray-300'
+                      }`} />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className={`font-medium ${
-                          feature.included ? 'text-foreground' : 'text-muted-foreground'
-                        }`}>
+                        <span className={`font-medium ${feature.included ? 'text-foreground' : 'text-muted-foreground'
+                          }`}>
                           {feature.name}
                         </span>
                         {feature.limit && (
@@ -435,7 +435,7 @@ export default function PricingTierDetailPage() {
                   </p>
                 </div>
               </div>
-              
+
               {(tier.billingOptions.setupFee || tier.billingOptions.trialDays) && (
                 <div className="mt-6 pt-6 border-t">
                   <div className="grid gap-4 md:grid-cols-2">

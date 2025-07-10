@@ -259,23 +259,25 @@ export default function EditPricingTierPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+      <div className="flex items-center justify-between w-full">
+        <div className="flex items-center flex-col w-full gap-4">
+          <div className="flex items-center justify-between w-full">
           <Button variant="ghost" onClick={() => router.back()}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
-          <div>
+          <Button variant="outline" onClick={() => setShowPreview(!showPreview)}>
+            {showPreview ? <EyeOff className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />}
+            {showPreview ? "Hide Preview" : "Show Preview"}
+          </Button>
+          </div>
+          <div className="flex flex-col w-full">
             <h1 className="text-3xl font-bold tracking-tight">Edit Pricing Tier</h1>
             <p className="text-muted-foreground">
               Update pricing tier: {tier.name}
             </p>
           </div>
         </div>
-        <Button variant="outline" onClick={() => setShowPreview(!showPreview)}>
-          {showPreview ? <EyeOff className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />}
-          {showPreview ? "Hide Preview" : "Show Preview"}
-        </Button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
