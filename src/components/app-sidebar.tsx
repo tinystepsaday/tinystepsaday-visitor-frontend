@@ -18,6 +18,7 @@ import {
   ShoppingBag,
   Star,
   MessageSquare,
+  DollarSign,
 } from "lucide-react"
 
 import {
@@ -289,6 +290,20 @@ const data = {
         }
       ]
     },
+    {
+      title: 'Pricing',
+      icon: DollarSign,
+      items: [
+        {
+          title: 'All Pricing',
+          url: '/management/pricing-table',
+        },
+        {
+          title: 'Create Pricing',
+          url: '/management/pricing-table/create',
+        }
+      ]
+    }
   ],
   navManagement: [
     {
