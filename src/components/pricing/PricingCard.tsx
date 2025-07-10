@@ -8,6 +8,8 @@ export interface PricingFeature {
   name: string;
   included: boolean;
   details?: string;
+  limit?: number; // For features with limits (e.g., "5 blog posts per month")
+  unlimited?: boolean; // For unlimited features
 }
 
 export interface PricingTier {
