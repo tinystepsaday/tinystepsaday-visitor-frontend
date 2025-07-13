@@ -13,5 +13,9 @@ export default function ConditionalFooter() {
     return null;
   }
   
+  if (pathname?.includes("maintenance")) {
+    return null;
+  }
+
   return <Footer />;
 } 
