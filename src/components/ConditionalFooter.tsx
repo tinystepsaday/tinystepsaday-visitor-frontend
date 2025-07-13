@@ -13,7 +13,7 @@ export default function ConditionalFooter() {
     return null;
   }
   
-  if (pathname?.includes("maintenance")) {
+  if (pathname?.includes("")) {
     return null;
   }
 

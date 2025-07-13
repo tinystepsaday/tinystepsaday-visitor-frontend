@@ -18,7 +18,7 @@ export default function ConditionalNavbar() {
     return null;
   }
 
-  if (pathname?.includes("maintenance")) {
+  if (pathname?.includes("")) {
     return null;
   }
 
