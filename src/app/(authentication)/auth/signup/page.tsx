@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 import AuthLayout from "@/components/auth/AuthLayout";
 import SignupForm from "@/components/auth/SignupForm";
+import AuthFormSkeleton from "@/components/auth/AuthFormSkeleton";
 
 export const metadata: Metadata = {
   title: "Sign Up - Tiny Steps A Day",
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
 export default function SignupPage() {
   return (
     <AuthLayout>
-      <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <Suspense fallback={<AuthFormSkeleton />}>
         <SignupForm />
       </Suspense>
     </AuthLayout>

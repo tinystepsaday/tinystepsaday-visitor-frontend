@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Suspense } from "react"
 import { Toaster } from "sonner"
+import UserMenu from "@/components/user-menu"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -63,6 +64,7 @@ export default function RootLayout({
                   </Suspense>
                   <Notifications />
                   <ModeToggle />
+                  <UserMenu />
                 </div>
               </header>
               <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>

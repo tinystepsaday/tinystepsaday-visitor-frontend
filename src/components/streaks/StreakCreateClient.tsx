@@ -137,7 +137,7 @@ export default function StreakCreateClient() {
       guidelines: guidelines.filter(g => g.trim()),
       milestones: milestones.filter(m => m.name.trim()),
       creatorId: user?.id,
-      creatorName: user?.name,
+      creatorName: user?.username,
       privacyPolicy: "Your data and progress will be kept confidential and used only to track your personal growth journey.",
       termsAndConditions: "By joining this streak, participants agree to follow the guidelines and practice safely.",
     });

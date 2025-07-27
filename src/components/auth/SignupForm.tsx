@@ -9,10 +9,9 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { User, Mail, Lock, ArrowRight } from "lucide-react";
+import { User, Mail, Lock, ArrowRight, Eye } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAuthStore } from "@/store/authStore";
 
 const signupSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -37,8 +36,8 @@ export default function SignupForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login } = useAuthStore();
-  
+  // const { login } = useAuthStore();
+  const [showPassword, setShowPassword] = useState(false);
   // Get return URL from search params
   const returnUrl = searchParams.get('returnUrl') || '/dashboard';
   
@@ -60,14 +59,14 @@ export default function SignupForm() {
       console.log("Signup form submitted:", data);
       
       // Create a user object and log them in
-      const user = {
-        id: "user-" + Date.now(),
-        name: data.name,
-        email: data.email
-      };
+      // const user = {
+      //   id: "user-" + Date.now(),
+      //   name: data.name,
+      //   email: data.email
+      // };
       
       // Log the user in
-      login(user);
+      // login(user);
       
       toast.success("Account created successfully!", {
         description: "Redirecting...",
@@ -84,14 +83,14 @@ export default function SignupForm() {
       console.log(`Signing up with ${provider}`);
       
       // Create a user object and log them in
-      const user = {
-        id: "user-" + Date.now(),
-        name: `User from ${provider}`,
-        email: `user@${provider.toLowerCase()}.com`
-      };
+      // const user = {
+      //   id: "user-" + Date.now(),
+      //   name: `User from ${provider}`,
+      //   email: `user@${provider.toLowerCase()}.com`
+      // };
       
       // Log the user in
-      login(user);
+      // login(user);
       
       toast.success("Account created successfully!", {
         description: "Redirecting...",
@@ -200,7 +199,7 @@ export default function SignupForm() {
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input 
-                      type="password" 
+                      type={showPassword ? "text" : "password"} 
                       placeholder="••••••••" 
                       className="pl-10" 
                       {...field} 
@@ -232,6 +231,7 @@ export default function SignupForm() {
                       {...field} 
                       disabled={isLoading}
                     />
+                    <Eye className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" onClick={() => setShowPassword(!showPassword)} />
                   </div>
                 </FormControl>
                 <FormMessage />

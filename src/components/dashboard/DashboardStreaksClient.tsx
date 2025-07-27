@@ -46,7 +46,7 @@ export default function DashboardStreaksClient() {
   const createdStreaks = streaks.slice(3, 5).map(streak => ({
     ...streak,
     creatorId: user?.id || "user-1",
-    creatorName: user?.name || "You",
+    creatorName: user?.username || "You",
   }));
 
   const getStatusBadge = (streak: typeof streaks[0]) => {

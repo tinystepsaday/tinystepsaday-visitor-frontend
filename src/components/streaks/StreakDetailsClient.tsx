@@ -49,7 +49,7 @@ export default function StreakDetailsClient({ streak, userProgress }: StreakDeta
   const handleReviewSubmit = (review: { rating: number; comment: string }) => {
     const newReview = {
       id: Date.now(),
-      user: user?.name || "Anonymous",
+      user: user?.username || "Anonymous",
       rating: review.rating,
       comment: review.comment,
       date: new Date().toISOString().split('T')[0],
