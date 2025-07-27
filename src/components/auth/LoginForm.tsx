@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import { useAuthStore } from "@/store/authStore";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -26,7 +27,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login } = useAuthStore();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   // Get return URL from search params
   const returnUrl = searchParams.get('returnUrl') || '/dashboard';
@@ -61,24 +62,25 @@ export default function LoginForm() {
     setIsLoading(true);
     
     try {
-      const result = await login(data.email, data.password);
+      const result = await login(data.email, data.password, data.rememberMe);
       
       if (result.success) {
         toast.success("Login successful!", {
           description: "Redirecting...",
         });
         
-        // Get the updated user from store
-        const currentUser = useAuthStore.getState().user;
-        
-        if (currentUser) {
-          // Check if user is admin
-          if (currentUser.role === 'ADMIN') {
-            router.push('/management');
-          } else {
-            router.push(returnUrl);
+        // Check if user is admin and redirect accordingly
+        // The user will be available in the next render cycle
+        setTimeout(() => {
+          const currentUser = useAuthStore.getState().user;
+          if (currentUser) {
+            if (currentUser.role === 'ADMIN') {
+              router.push('/management');
+            } else {
+              router.push(returnUrl);
+            }
           }
-        }
+        }, 100);
       } else {
         toast.error("Login failed", {
           description: result.message,
@@ -219,7 +221,7 @@ export default function LoginForm() {
                     disabled={isLoading}
                   />
                 </FormControl>
-                <FormLabel className="text-sm font-normal">Remember me for 30 days</FormLabel>
+                <FormLabel className="text-sm font-normal">Remember me</FormLabel>
               </FormItem>
             )}
           />
