@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
 
 interface DashboardNavProps {
   onItemClick?: () => void;
@@ -13,6 +14,9 @@ interface DashboardNavProps {
 
 export function DashboardNav({ onItemClick }: DashboardNavProps) {
   const router = usePathname();
+  const navigation = useRouter();
+  const { logout } = useAuthStore();
+  
   const isActive = (path: string) => {
     if (path === "/dashboard") {
       return router === "/dashboard";
@@ -20,9 +24,14 @@ export function DashboardNav({ onItemClick }: DashboardNavProps) {
     return router.startsWith(path);
   };
 
-  const handleLogout = () => {
-    toast("Logged out successfully");
-    window.location.href = "/";
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast("Logged out successfully");
+      navigation.push("/");
+    } catch {
+      toast("Error logging out");
+    }
   };
 
   return (

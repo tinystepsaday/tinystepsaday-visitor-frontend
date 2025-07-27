@@ -19,6 +19,7 @@ import {
   Star,
   MessageSquare,
   DollarSign,
+  User,
 } from "lucide-react"
 
 import {
@@ -37,6 +38,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useAuthStore } from "@/store/authStore"
 
 const data = {
   user: {
@@ -321,10 +323,16 @@ const data = {
       url: "/management/settings",
       icon: Settings,
     },
+    {
+      title: "Account",
+      url: "/management/account",
+      icon: User,
+    },
   ],  
 }
 
 export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuthStore()
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -417,12 +425,12 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
             <SidebarMenuButton size="lg" asChild>
               <div className="flex items-center gap-2">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={data.user.avatar || "/placeholder.svg"} alt={data.user.name} />
-                  <AvatarFallback className="rounded-lg">JD</AvatarFallback>
+                  <AvatarImage src={user?.avatar || "/placeholder.svg"} alt={user?.username} />
+                  <AvatarFallback className="rounded-lg">{user?.username?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{data.user.name}</span>
-                  <span className="truncate text-xs">{data.user.email}</span>
+                  <span className="truncate font-semibold">{user?.username}</span>
+                  <span className="truncate text-xs">{user?.email}</span>
                 </div>
               </div>
             </SidebarMenuButton>

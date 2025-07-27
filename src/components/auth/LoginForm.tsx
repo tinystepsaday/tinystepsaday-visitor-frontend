@@ -12,11 +12,11 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Mail, Lock, ArrowRight } from "lucide-react";
+import { Mail, Lock, ArrowRight, Eye } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+  password: z.string().min(1, { message: "Password is required." }),
   rememberMe: z.boolean().optional()
 });
 
@@ -27,7 +27,7 @@ export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuthStore();
-  
+  const [showPassword, setShowPassword] = useState(false);
   // Get return URL from search params
   const returnUrl = searchParams.get('returnUrl') || '/dashboard';
   
@@ -38,16 +38,15 @@ export default function LoginForm() {
     
     if (storedUser && isAlreadyLoggedIn) {
       const user = JSON.parse(storedUser);
-      login(user);
       
       // Check if user is admin
-      if (user.role === 'admin') {
-        router.push('/admin');
+      if (user.role === 'ADMIN') {
+        router.push('/management');
       } else {
         router.push(returnUrl);
       }
     }
-  }, [login, returnUrl, router]);
+  }, [returnUrl, router]);
   
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -58,64 +57,53 @@ export default function LoginForm() {
     }
   });
 
-  const onSubmit = (data: LoginFormValues) => {
+  const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     
-    // Check if it's admin login
-    if (data.email === "admin@gmail.com" && data.password === "Admin123!") {
-      setTimeout(() => {
-        console.log("Admin login successful");
-        const adminUser = {
-          id: "admin",
-          name: "Admin",
-          email: data.email,
-          role: "admin"
-        };
-        login(adminUser);
-        toast.success("Admin Login Successful!", {
-          description: "Redirecting to admin dashboard...",
+    try {
+      const result = await login(data.email, data.password);
+      
+      if (result.success) {
+        toast.success("Login successful!", {
+          description: "Redirecting...",
         });
-        setIsLoading(false);
-        router.push("/admin");
-      }, 1500);
-      return;
-    }
-    
-    // Regular user login
-    setTimeout(() => {
-      console.log("Login form submitted:", data);
-      
-      // Simulate checking user credentials
-      // In a real app, this would be an API call
-      
-      // Create a user object to store in auth state
-      const user = {
-        id: "user-" + Date.now(), // Generate a simple ID
-        name: data.email.split('@')[0], // Use part of email as name
-        email: data.email
-      };
-      
-      // Update auth state
-      login(user);
-      
-      toast.success("Login successful!", {
-        description: "Redirecting...",
+        
+        // Get the updated user from store
+        const currentUser = useAuthStore.getState().user;
+        
+        if (currentUser) {
+          // Check if user is admin
+          if (currentUser.role === 'ADMIN') {
+            router.push('/management');
+          } else {
+            router.push(returnUrl);
+          }
+        }
+      } else {
+        toast.error("Login failed", {
+          description: result.message,
+        });
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Login failed", {
+        description: "An unexpected error occurred. Please try again.",
       });
+    } finally {
       setIsLoading(false);
-      router.push(returnUrl);
-    }, 1500);
+    }
   };
 
   const handleSocialLogin = (provider: string) => {
     setIsLoading(true);
+
     
     setTimeout(() => {
       console.log(`Logging in with ${provider}`);
-      toast.success("Login successful!", {
-        description: "Redirecting...",
+      toast.info("Social login coming soon!", {
+        description: "This feature is under development.",
       });
       setIsLoading(false);
-      router.push(returnUrl);
     }, 1500);
   };
 
@@ -201,12 +189,13 @@ export default function LoginForm() {
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input 
-                      type="password" 
+                      type={showPassword ? "text" : "password"} 
                       placeholder="••••••••" 
                       className="pl-10" 
                       {...field} 
                       disabled={isLoading}
                     />
+                    <Eye className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" onClick={() => setShowPassword(!showPassword)} />
                   </div>
                 </FormControl>
                 <FormMessage />

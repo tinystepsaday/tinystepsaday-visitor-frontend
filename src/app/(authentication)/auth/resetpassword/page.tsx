@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import AuthLayout from "@/components/auth/AuthLayout";
 import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
+import AuthFormSkeleton from "@/components/auth/AuthFormSkeleton";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Reset Password - Tiny Steps A Day",
@@ -21,7 +23,9 @@ export const metadata: Metadata = {
 export default function ResetPasswordPage() {
   return (
     <AuthLayout>
-      <ResetPasswordForm />
+      <Suspense fallback={<AuthFormSkeleton />}>  
+        <ResetPasswordForm />
+      </Suspense>
     </AuthLayout>
   );
 }
