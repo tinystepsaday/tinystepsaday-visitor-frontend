@@ -105,6 +105,25 @@ export interface SignupResponse {
   }>;
 }
 
+export interface VerifyEmailResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    id: string;
+    email: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    isEmailVerified: boolean;
+    twoFactorEnabled: boolean;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
+  error?: string;
+}
+
 export interface ForgotPasswordResponse {
   success: boolean;
   message: string;
@@ -130,6 +149,21 @@ export interface SignupRequest {
   lastName: string;
 }
 
+export interface VerifyEmailRequest {
+  email: string;
+  verificationCode: string;
+}
+
+export interface ResendVerificationRequest {
+  email: string;
+}
+
+export interface ResendVerificationResponse {
+  success: boolean;
+  message: string;
+  error?: string;
+}
+
 export interface ForgotPasswordRequest {
   email: string;
 }
@@ -147,6 +181,16 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
 
 export const signup = async (userData: SignupRequest): Promise<SignupResponse> => {
   const response = await authApi.post("/register", userData);
+  return response.data;
+};
+
+export const verifyEmail = async (verificationData: VerifyEmailRequest): Promise<VerifyEmailResponse> => {
+  const response = await authApi.post("/verify-email", verificationData);
+  return response.data;
+};
+
+export const resendVerificationCode = async (email: string): Promise<ResendVerificationResponse> => {
+  const response = await authApi.post("/resend-verification", { email });
   return response.data;
 };
 
