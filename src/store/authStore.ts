@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { getSubscription } from "@/utils/localStorage";
-import { login as loginApi, logout as logoutApi, signup as signupApi, LoginResponse, SignupResponse, SignupRequest } from "@/integration/auth";
+import { login as loginApi, logout as logoutApi, signup as signupApi, refreshToken as refreshTokenApi, LoginResponse, SignupResponse, SignupRequest } from "@/integration/auth";
 
 type User = {
   id: string;
@@ -33,12 +33,15 @@ type AuthStore = {
   subscription: Subscription;
   hasActiveSubscription: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
+  rememberMe: boolean;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean; message: string }>;
   signup: (userData: SignupRequest) => Promise<{ success: boolean; message: string }>;
   logout: () => Promise<void>;
+  refreshToken: () => Promise<boolean>;
   checkSubscription: () => void;
   setUser: (user: User) => void;
   clearAuth: () => void;
+  setRememberMe: (rememberMe: boolean) => void;
 };
 
 // Initialize with data from localStorage if available
@@ -55,8 +58,9 @@ export const useAuthStore = create<AuthStore>()(
       subscription: initialSubscription,
       hasActiveSubscription: initialSubscription.type !== 'free',
       isLoading: false,
+      rememberMe: false,
       
-      login: async (email: string, password: string) => {
+      login: async (email: string, password: string, rememberMe: boolean = false) => {
         set({ isLoading: true });
         
         try {
@@ -83,6 +87,7 @@ export const useAuthStore = create<AuthStore>()(
               user: userWithName, 
               isLoggedIn: true,
               isAdmin,
+              rememberMe,
               isLoading: false
             });
             
@@ -213,6 +218,34 @@ export const useAuthStore = create<AuthStore>()(
           subscription,
           hasActiveSubscription: subscription.type !== 'free'
         });
+      },
+      
+      refreshToken: async () => {
+        try {
+          const refreshToken = localStorage.getItem('refreshToken');
+          if (!refreshToken) {
+            return false;
+          }
+          
+          const response = await refreshTokenApi(refreshToken);
+          if (response.success && response.data) {
+            const { token, refreshToken: newRefreshToken } = response.data;
+            
+            // Update tokens
+            localStorage.setItem('accessToken', token);
+            localStorage.setItem('refreshToken', newRefreshToken);
+            
+            return true;
+          }
+          return false;
+        } catch (error) {
+          console.error('Token refresh failed:', error);
+          return false;
+        }
+      },
+      
+      setRememberMe: (rememberMe: boolean) => {
+        set({ rememberMe });
       }
     }),
     {
