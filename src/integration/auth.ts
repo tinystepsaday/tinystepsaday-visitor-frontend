@@ -105,6 +105,18 @@ export interface SignupResponse {
   }>;
 }
 
+export interface ForgotPasswordResponse {
+  success: boolean;
+  message: string;
+  error?: string;
+}
+
+export interface ResetPasswordResponse {
+  success: boolean;
+  message: string;
+  error?: string;
+}
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -118,6 +130,16 @@ export interface SignupRequest {
   lastName: string;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  resetToken: string;
+  newPassword: string;
+}
+
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
   const response = await authApi.post("/login", credentials);
   return response.data;
@@ -125,6 +147,16 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
 
 export const signup = async (userData: SignupRequest): Promise<SignupResponse> => {
   const response = await authApi.post("/register", userData);
+  return response.data;
+};
+
+export const forgotPassword = async (email: string): Promise<ForgotPasswordResponse> => {
+  const response = await authApi.post("/forgot-password", { email });
+  return response.data;
+};
+
+export const resetPassword = async (resetData: ResetPasswordRequest): Promise<ResetPasswordResponse> => {
+  const response = await authApi.post("/reset-password", resetData);
   return response.data;
 };
 

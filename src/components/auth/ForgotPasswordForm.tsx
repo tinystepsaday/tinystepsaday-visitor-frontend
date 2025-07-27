@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Mail, ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { forgotPassword } from "@/integration/auth";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -28,17 +29,29 @@ export default function ForgotPasswordForm() {
     }
   });
 
-  const onSubmit = (data: ForgotPasswordFormValues) => {
+  const onSubmit = async (data: ForgotPasswordFormValues) => {
     setIsLoading(true);
     
-    setTimeout(() => {
-      console.log("Forgot password form submitted:", data);
-      toast.success("Reset link sent!", {
-        description: "Check your email for password reset instructions.",
+    try {
+      const result = await forgotPassword(data.email);
+      
+      if (result.success) {
+        toast.success("Reset link sent!", {
+          description: "Check your email for password reset instructions.",
+        });
+        setIsSubmitted(true);
+      } else {
+        toast.error("Failed to send reset link", {
+          description: result.message || "Please try again later.",
+        });
+      }
+    } catch {
+      toast.error("An unexpected error occurred", {
+        description: "Please try again later.",
       });
+    } finally {
       setIsLoading(false);
-      setIsSubmitted(true);
-    }, 1500);
+    }
   };
 
   if (isSubmitted) {
