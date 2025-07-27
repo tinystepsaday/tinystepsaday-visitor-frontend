@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { getSubscription } from "@/utils/localStorage";
-import { login as loginApi, logout as logoutApi, LoginResponse } from "@/integration/auth";
+import { login as loginApi, logout as logoutApi, signup as signupApi, LoginResponse, SignupResponse, SignupRequest } from "@/integration/auth";
 
 type User = {
   id: string;
@@ -34,6 +34,7 @@ type AuthStore = {
   hasActiveSubscription: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
+  signup: (userData: SignupRequest) => Promise<{ success: boolean; message: string }>;
   logout: () => Promise<void>;
   checkSubscription: () => void;
   setUser: (user: User) => void;
@@ -111,6 +112,50 @@ export const useAuthStore = create<AuthStore>()(
             return { 
               success: false, 
               message: errorData.message || 'Login failed' 
+            };
+          }
+          
+          return { 
+            success: false, 
+            message: 'Network error. Please try again.' 
+          };
+        }
+      },
+      
+      signup: async (userData: SignupRequest) => {
+        set({ isLoading: true });
+        
+        try {
+          const response: SignupResponse = await signupApi(userData);
+          
+          if (response.success && response.data) {
+            set({ isLoading: false });
+            return { success: true, message: response.message };
+          } else {
+            set({ isLoading: false });
+            return { 
+              success: false, 
+              message: response.message || 'Signup failed' 
+            };
+          }
+        } catch (error: unknown) {
+          set({ isLoading: false });
+          
+          if (error && typeof error === 'object' && 'response' in error) {
+            const errorData = (error as { response: { data: { message?: string; details?: Array<{ field: string; message: string }> } } }).response.data;
+            
+            // Handle validation errors
+            if (errorData.details && errorData.details.length > 0) {
+              const fieldErrors = errorData.details.map(detail => `${detail.field}: ${detail.message}`).join(', ');
+              return { 
+                success: false, 
+                message: fieldErrors 
+              };
+            }
+            
+            return { 
+              success: false, 
+              message: errorData.message || 'Signup failed' 
             };
           }
           

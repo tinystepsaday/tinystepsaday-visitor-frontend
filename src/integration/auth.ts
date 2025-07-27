@@ -82,13 +82,49 @@ export interface LoginResponse {
   }>;
 }
 
+export interface SignupResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    id: string;
+    email: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    isEmailVerified: boolean;
+    twoFactorEnabled: boolean;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
+  error?: string;
+  details?: Array<{
+    field: string;
+    message: string;
+  }>;
+}
+
 export interface LoginRequest {
   email: string;
   password: string;
 }
 
+export interface SignupRequest {
+  email: string;
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}
+
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
   const response = await authApi.post("/login", credentials);
+  return response.data;
+};
+
+export const signup = async (userData: SignupRequest): Promise<SignupResponse> => {
+  const response = await authApi.post("/register", userData);
   return response.data;
 };
 
