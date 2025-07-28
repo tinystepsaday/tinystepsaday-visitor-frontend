@@ -37,7 +37,7 @@ export function DashboardHeader({ onToggleSidebar }: DashboardHeaderProps) {
         <Menu className="h-5 w-5" />
       </Button>
       <Link href="/" className="text-xl font-bold gradient-text">
-        Tiny Steps A Day Journey
+        Tiny Steps A Day
       </Link>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

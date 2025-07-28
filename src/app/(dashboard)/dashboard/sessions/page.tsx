@@ -1,5 +1,13 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Mentorship Sessions | Tiny Steps A Day",
+  description: "Schedule and manage your mentorship sessions with our expert instructors.",
+  keywords: "mentorship sessions, expert guidance, learning support, one-on-one coaching",
+  robots: "noindex, nofollow", // Dashboard pages should not be indexed
+};
 
 const ComingSoon = ({ title }: { title: string }) => (
   <div className="text-center py-16">

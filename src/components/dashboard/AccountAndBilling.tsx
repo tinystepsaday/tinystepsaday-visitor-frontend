@@ -129,10 +129,9 @@ const AccountAndBilling = () => {
   return (
     <div>
       <Tabs defaultValue="subscription">
-        <TabsList className="grid w-full md:w-auto md:inline-grid grid-cols-3 mb-8">
+        <TabsList className="grid w-full md:w-auto md:inline-grid grid-cols-2 mb-8">
           <TabsTrigger value="subscription">Subscription</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
-          <TabsTrigger value="payments">Payment History</TabsTrigger>
         </TabsList>
         
         <TabsContent value="subscription">
@@ -246,45 +245,6 @@ const AccountAndBilling = () => {
                 <Button variant="outline">Add Payment Method</Button>
                 <Button variant="outline">Update Billing Address</Button>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="payments">
-          <Card>
-            <CardHeader>
-              <CardTitle>Payment History</CardTitle>
-              <CardDescription>View and download your payment receipts</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {paymentHistory.length > 0 ? (
-                <div className="border rounded-lg overflow-hidden">
-                  <div className="grid grid-cols-4 bg-muted p-3 text-sm font-medium">
-                    <div>Invoice</div>
-                    <div>Date</div>
-                    <div>Amount</div>
-                    <div>Status</div>
-                  </div>
-                  <Separator />
-                  {paymentHistory.map((payment) => (
-                    <div key={payment.id} className="grid grid-cols-4 p-3 text-sm items-center">
-                      <div>{payment.id}</div>
-                      <div>{payment.date}</div>
-                      <div>${payment.amount.toFixed(2)}</div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                          {payment.status}
-                        </Badge>
-                        <Button variant="ghost" size="sm">Download</Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">No payment history available.</p>
-                </div>
-              )}
             </CardContent>
           </Card>
         </TabsContent>

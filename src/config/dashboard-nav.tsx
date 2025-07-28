@@ -51,5 +51,10 @@ export const dashboardNavItems = [
     title: "Recommendations",
     path: "/dashboard/recommendations",
     icon: <List className="h-5 w-5" />
+  },
+  {
+    title: "Profile",
+    path: "/dashboard/profile",
+    icon: <User className="h-5 w-5" />
   }
 ];
