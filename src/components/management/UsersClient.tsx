@@ -36,6 +36,9 @@ import Link from "next/link";
 const roleConfig = {
   ADMIN: { label: "Admin", icon: ShieldCheck, variant: "destructive" as const },
   USER: { label: "User", icon: Shield, variant: "default" as const },
+  MODERATOR: { label: "Moderator", icon: Shield, variant: "secondary" as const },
+  INSTRUCTOR: { label: "Instructor", icon: BookOpen, variant: "outline" as const },
+  SUPER_ADMIN: { label: "Super Admin", icon: ShieldCheck, variant: "destructive" as const },
 };
 
 export function UsersClient() {
@@ -52,12 +55,24 @@ export function UsersClient() {
     limit: 10,
     totalPages: 1,
   });
+  const [analytics, setAnalytics] = useState({
+    totalUsers: 0,
+    activeUsers: 0,
+    inactiveUsers: 0,
+    verifiedUsers: 0,
+    unverifiedUsers: 0,
+    admins: 0,
+    moderators: 0,
+    instructors: 0,
+    superAdmins: 0,
+    regularUsers: 0,
+  });
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
   const [roleFilter, setRoleFilter] = useState(searchParams.get("role") || "all");
-  const [isActiveFilter, setIsActiveFilter] = useState(searchParams.get("isActive") || "");
-  const [isEmailVerifiedFilter, setIsEmailVerifiedFilter] = useState(searchParams.get("isEmailVerified") || "");
+  const [isActiveFilter, setIsActiveFilter] = useState(searchParams.get("isActive") || "all");
+  const [isEmailVerifiedFilter, setIsEmailVerifiedFilter] = useState(searchParams.get("isEmailVerified") || "all");
   const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "createdAt");
   const [sortOrder, setSortOrder] = useState(searchParams.get("sortOrder") || "desc");
 
@@ -80,10 +95,22 @@ export function UsersClient() {
         search: searchParams.get("search") || "",
         role: (() => {
           const roleParam = searchParams.get("role");
-          return roleParam && roleParam !== "" ? (roleParam as "USER" | "ADMIN" | "MODERATOR" | "INSTRUCTOR" | "SUPER_ADMIN") : undefined;
+          return roleParam && roleParam !== "" ? (roleParam as "USER" | "ADMIN" | "MODERATOR" | "INSTRUCTOR" | "SUPER_ADMIN" | "all") : undefined;
         })(),
-        isActive: searchParams.get("isActive") === "true" ? true : searchParams.get("isActive") === "false" ? false : "",
-        isEmailVerified: searchParams.get("isEmailVerified") === "true" ? true : searchParams.get("isEmailVerified") === "false" ? false : "",
+        isActive: (() => {
+          const isActiveParam = searchParams.get("isActive");
+          if (isActiveParam === "true") return true;
+          if (isActiveParam === "false") return false;
+          if (isActiveParam === "all") return "all";
+          return undefined;
+        })(),
+        isEmailVerified: (() => {
+          const isEmailVerifiedParam = searchParams.get("isEmailVerified");
+          if (isEmailVerifiedParam === "true") return true;
+          if (isEmailVerifiedParam === "false") return false;
+          if (isEmailVerifiedParam === "all") return "all";
+          return undefined;
+        })(),
         sortBy: (searchParams.get("sortBy") as UsersQueryParams['sortBy']) || "createdAt",
         sortOrder: (searchParams.get("sortOrder") as "asc" | "desc") || "desc",
         ...params,
@@ -94,6 +121,7 @@ export function UsersClient() {
       if (response) {
         setUsers(response.data);
         setPagination(response.pagination);
+        setAnalytics(response.analytics);
       } else {
         toast.error("Failed to fetch users");
       }
@@ -129,9 +157,7 @@ export function UsersClient() {
   // Handle role filter
   const handleRoleFilter = (value: string) => {
     setRoleFilter(value);
-    // Convert "all" to empty string for API
-    const apiValue = value === "all" ? "" : value;
-    updateSearchParams({ role: apiValue, page: "1" });
+    updateSearchParams({ role: value, page: "1" });
   };
 
   // Handle active filter
@@ -160,15 +186,15 @@ export function UsersClient() {
   const clearFilters = () => {
     setSearchTerm("");
     setRoleFilter("all");
-    setIsActiveFilter("");
-    setIsEmailVerifiedFilter("");
+    setIsActiveFilter("all");
+    setIsEmailVerifiedFilter("all");
     setSortBy("createdAt");
     setSortOrder("desc");
     router.push("/management/users");
   };
 
   // Check if any filters are active
-  const hasActiveFilters = searchTerm || roleFilter !== "all" || isActiveFilter || isEmailVerifiedFilter || sortBy !== "createdAt" || sortOrder !== "desc";
+  const hasActiveFilters = searchTerm || roleFilter !== "all" || isActiveFilter !== "all" || isEmailVerifiedFilter !== "all" || sortBy !== "createdAt" || sortOrder !== "desc";
 
   // Handle create user
   const handleCreateUser = () => {
@@ -396,7 +422,7 @@ export function UsersClient() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{pagination.total}</div>
+            <div className="text-2xl font-bold">{analytics.totalUsers}</div>
             <p className="text-xs text-muted-foreground">All registered users</p>
           </CardContent>
         </Card>
@@ -406,9 +432,9 @@ export function UsersClient() {
             <ShieldCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{users.filter((u) => u.isActive).length}</div>
+            <div className="text-2xl font-bold">{analytics.activeUsers}</div>
             <p className="text-xs text-muted-foreground">
-              {pagination.total > 0 ? Math.round((users.filter((u) => u.isActive).length / pagination.total) * 100) : 0}% of total
+              {analytics.totalUsers > 0 ? Math.round((analytics.activeUsers / analytics.totalUsers) * 100) : 0}% of total
             </p>
           </CardContent>
         </Card>
@@ -418,7 +444,7 @@ export function UsersClient() {
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{users.filter((u) => u.role === "USER").length}</div>
+            <div className="text-2xl font-bold">{analytics.regularUsers}</div>
             <p className="text-xs text-muted-foreground">Active learners</p>
           </CardContent>
         </Card>
@@ -428,7 +454,7 @@ export function UsersClient() {
             <Mail className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{users.filter((u) => u.role === "ADMIN").length}</div>
+            <div className="text-2xl font-bold">{analytics.admins + analytics.superAdmins}</div>
             <p className="text-xs text-muted-foreground">System administrators</p>
           </CardContent>
         </Card>

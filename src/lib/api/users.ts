@@ -6,7 +6,7 @@ export interface User {
     username: string;
     firstName: string;
     lastName: string;
-    role: "USER" | "ADMIN";
+    role: "USER" | "ADMIN" | "MODERATOR" | "INSTRUCTOR" | "SUPER_ADMIN";
     isEmailVerified: boolean;
     twoFactorEnabled: boolean;
     isActive: boolean;
@@ -16,25 +16,37 @@ export interface User {
 }
 
 export interface UsersResponse {
-    success: boolean;
-    message: string;
-    data: User[];
-    pagination: {
-        total: number;
-        page: number;
-        limit: number;
-        totalPages: number;
-    };
+  success: boolean;
+  message: string;
+  data: User[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+  analytics: {
+    totalUsers: number;
+    activeUsers: number;
+    inactiveUsers: number;
+    verifiedUsers: number;
+    unverifiedUsers: number;
+    admins: number;
+    moderators: number;
+    instructors: number;
+    superAdmins: number;
+    regularUsers: number;
+  };
 }
 
 export interface UsersQueryParams {
     page?: number;
     limit?: number;
     search?: string;
-    role?: "USER" | "ADMIN" | "MODERATOR" | "INSTRUCTOR" | "SUPER_ADMIN";
-    isActive?: boolean | "";
-    isEmailVerified?: boolean | "";
-    sortBy?: "createdAt" | "updatedAt" | "email" | "username" | "lastLogin";
+    role?: "USER" | "ADMIN" | "MODERATOR" | "INSTRUCTOR" | "SUPER_ADMIN" | "all";
+    isActive?: boolean | "all";
+    isEmailVerified?: boolean | "all";
+    sortBy?: "createdAt" | "updatedAt" | "lastLogin" | "email" | "username";
     sortOrder?: "asc" | "desc";
 }
 
@@ -94,8 +106,8 @@ export async function getUsers(params: UsersQueryParams = {}): Promise<UsersResp
         if (params.limit) queryParams.append('limit', params.limit.toString());
         if (params.search) queryParams.append('search', params.search);
         if (params.role) queryParams.append('role', params.role);
-        if (params.isActive !== undefined && params.isActive !== "") queryParams.append('isActive', params.isActive.toString());
-        if (params.isEmailVerified !== undefined && params.isEmailVerified !== "") queryParams.append('isEmailVerified', params.isEmailVerified.toString());
+        if (params.isActive !== undefined) queryParams.append('isActive', params.isActive.toString());
+        if (params.isEmailVerified !== undefined) queryParams.append('isEmailVerified', params.isEmailVerified.toString());
         if (params.sortBy) queryParams.append('sortBy', params.sortBy);
         if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
 
