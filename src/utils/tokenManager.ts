@@ -5,6 +5,13 @@ class TokenManager {
   private refreshInterval: NodeJS.Timeout | null = null;
 
   /**
+   * Get the current authentication token
+   */
+  getAuthToken(): string | null {
+    return localStorage.getItem('accessToken');
+  }
+
+  /**
    * Initialize token manager with automatic refresh
    */
   async initialize() {
@@ -129,5 +136,8 @@ class TokenManager {
 
 // Create singleton instance
 const tokenManager = new TokenManager();
+
+// Export the getAuthToken function for direct import
+export const getAuthToken = () => tokenManager.getAuthToken();
 
 export default tokenManager; 
