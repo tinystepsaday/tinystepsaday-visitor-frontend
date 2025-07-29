@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { UserProfile, updateUserProfile, changePassword, getUserProfile } from "@/lib/api/user";
+import { UserProfile, updateUserProfile, changePassword, getUserProfile } from "@/lib/api/users";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
