@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import { Suspense } from "react";
 import { UsersClient } from "@/components/management/UsersClient";
+import { Suspense } from "react";
 import { ListPageLoader } from "@/components/ui/loaders";
 
 export const metadata: Metadata = {
@@ -12,8 +12,10 @@ export const metadata: Metadata = {
 
 export default function UsersPage() {
   return (
-    <Suspense fallback={<ListPageLoader title="Loading Users..." subtitle="Please wait while we load the user data" />}>
-      <UsersClient />
-    </Suspense>
+    <div className="flex flex-col gap-4">
+      <Suspense fallback={<ListPageLoader />}>
+        <UsersClient />
+      </Suspense>
+    </div>
   );
 }

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, Plus, Edit, Trash2, Shield, ShieldCheck, Eye, Users, BookOpen, Mail, Filter, X } from "lucide-react";
-import { User, getUsers, UsersQueryParams } from "@/lib/api/users";
+import { User, getUsers, UsersQueryParams, createUser } from "@/lib/api/users";
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,7 +44,7 @@ const roleConfig = {
 export function UsersClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // State
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -77,17 +77,55 @@ export function UsersClient() {
   const [sortOrder, setSortOrder] = useState(searchParams.get("sortOrder") || "desc");
 
   // New user form state
-  const [newUser, setNewUser] = useState<{ name: string; email: string; role: User['role'] }>({
-    name: "",
+  const [newUser, setNewUser] = useState<{ 
+    firstName: string; 
+    lastName: string; 
+    email: string; 
+    username: string;
+    password: string;
+    role: User['role'];
+  }>({
+    firstName: "",
+    lastName: "",
     email: "",
+    username: "",
+    password: "",
     role: "USER",
   });
+
+  // Generate username from firstName and lastName
+  const generateUsername = (firstName: string, lastName: string) => {
+    if (!firstName && !lastName) return "";
+    
+    const first = firstName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const last = lastName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    
+    if (first && last) {
+      return `${first}${last}`;
+    } else if (first) {
+      return first;
+    } else if (last) {
+      return last;
+    }
+    return "";
+  };
+
+  // Update username when firstName or lastName changes
+  const handleNameChange = (field: 'firstName' | 'lastName', value: string) => {
+    const updatedUser = { ...newUser, [field]: value };
+    const generatedUsername = generateUsername(
+      field === 'firstName' ? value : newUser.firstName,
+      field === 'lastName' ? value : newUser.lastName
+    );
+    updatedUser.username = generatedUsername;
+    setNewUser(updatedUser);
+  };
 
   // Fetch users function
   const fetchUsers = useCallback(async (params: UsersQueryParams = {}) => {
     try {
       setIsLoading(true);
-      
+
       // Build query params from current state
       const queryParams: UsersQueryParams = {
         page: parseInt(searchParams.get("page") || "1"),
@@ -117,7 +155,7 @@ export function UsersClient() {
       };
 
       const response = await getUsers(queryParams);
-      
+
       if (response) {
         setUsers(response.data);
         setPagination(response.pagination);
@@ -136,7 +174,7 @@ export function UsersClient() {
   // Update URL search params
   const updateSearchParams = (params: Record<string, string>) => {
     const newSearchParams = new URLSearchParams(searchParams.toString());
-    
+
     Object.entries(params).forEach(([key, value]) => {
       if (value) {
         newSearchParams.set(key, value);
@@ -197,15 +235,28 @@ export function UsersClient() {
   const hasActiveFilters = searchTerm || roleFilter !== "all" || isActiveFilter !== "all" || isEmailVerifiedFilter !== "all" || sortBy !== "createdAt" || sortOrder !== "desc";
 
   // Handle create user
-  const handleCreateUser = () => {
-    console.log("Creating user:", newUser);
-    setIsDialogOpen(false);
-    setNewUser({
-      name: "",
-      email: "",
-      role: "USER",
-    });
-    toast.success("User created successfully");
+  const handleCreateUser = async () => {
+    try {
+      const response = await createUser(newUser);
+      if (response) {
+        toast.success("User created successfully");
+        setIsDialogOpen(false);
+        setNewUser({
+          firstName: "",
+          lastName: "",
+          email: "",
+          username: "",
+          password: "",
+          role: "USER",
+        });
+        fetchUsers(); // Refresh users after creation
+      } else {
+        toast.error("Failed to create user");
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+      toast.error("An error occurred while creating user");
+    }
   };
 
   // Fetch users on component mount and when search params change
@@ -357,15 +408,27 @@ export function UsersClient() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Name
+                <Label htmlFor="firstName" className="text-right">
+                  First Name
                 </Label>
                 <Input
-                  id="name"
-                  value={newUser.name}
-                  onChange={(e) => setNewUser((prev) => ({ ...prev, name: e.target.value }))}
+                  id="firstName"
+                  value={newUser.firstName}
+                  onChange={(e) => handleNameChange('firstName', e.target.value)}
                   className="col-span-3"
-                  placeholder="Full name"
+                  placeholder="John"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="lastName" className="text-right">
+                  Last Name
+                </Label>
+                <Input
+                  id="lastName"
+                  value={newUser.lastName}
+                  onChange={(e) => handleNameChange('lastName', e.target.value)}
+                  className="col-span-3"
+                  placeholder="Doe"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -379,6 +442,31 @@ export function UsersClient() {
                   onChange={(e) => setNewUser((prev) => ({ ...prev, email: e.target.value }))}
                   className="col-span-3"
                   placeholder="user@example.com"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="username" className="text-right">
+                  Username
+                </Label>
+                <Input
+                  id="username"
+                  value={newUser.username}
+                  onChange={(e) => setNewUser((prev) => ({ ...prev, username: e.target.value }))}
+                  className="col-span-3"
+                  placeholder="johndoe"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="password" className="text-right">
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={newUser.password}
+                  onChange={(e) => setNewUser((prev) => ({ ...prev, password: e.target.value }))}
+                  className="col-span-3"
+                  placeholder="Password"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">

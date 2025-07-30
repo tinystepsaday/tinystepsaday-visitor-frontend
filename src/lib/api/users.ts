@@ -142,6 +142,95 @@ export async function getUsers(params: UsersQueryParams = {}): Promise<UsersResp
 }
 
 /**
+ * Create a new user
+ */
+export async function createUser(userData: {
+  email: string;
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}): Promise<ApiResponse<User>> {
+  try {
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/register`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Authentication failed');
+      }
+      if (response.status === 409) {
+        throw new Error('User already exists with this email or username');
+      }
+      throw new Error(`Failed to create user: ${response.statusText}`);
+    }
+
+    const result: ApiResponse<User> = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to create user');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
+  }
+}
+
+/**
+ * Fetch user by ID from the server
+ */
+export async function getUserById(id: string): Promise<User | null> {
+    try {
+        const token = getAuthToken();
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('Authentication failed');
+            }
+            if (response.status === 404) {
+                return null;
+            }
+            throw new Error(`Failed to fetch user: ${response.statusText}`);
+        }
+
+        const result: ApiResponse<User> = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.message || 'Failed to fetch user');
+        }
+
+        return result.data || null;
+    } catch (error) {
+        console.error('Error fetching user by ID:', error);
+        return null;
+    }
+}
+
+/**
  * Fetch user profile from the server
  */
 export async function getUserProfile(): Promise<UserProfile | null> {
