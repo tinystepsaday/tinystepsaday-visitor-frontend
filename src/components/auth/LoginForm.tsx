@@ -1,62 +1,81 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { useAuthStore } from "@/store/authStore";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Form, FormField, FormItem, FormLabel, FormMessage, FormControl } from "@/components/ui/form";
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Mail, Lock, ArrowRight, Eye } from "lucide-react";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
+import { toast } from "sonner";
+import { 
+  googleSignIn, 
+  verifyGoogleToken, 
+  initializeGoogleAuth,
+  appleSignIn,
+  initializeAppleAuth 
+} from "@/lib/api/socialAuth";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(1, { message: "Password is required." }),
-  rememberMe: z.boolean().optional()
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
+  rememberMe: z.boolean(),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isGoogleAuthReady, setIsGoogleAuthReady] = useState(false);
+  const [isAppleAuthReady, setIsAppleAuthReady] = useState(false);
+  
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login } = useAuth();
-  const [showPassword, setShowPassword] = useState(false);
-  // Get return URL from search params
-  const returnUrl = searchParams.get('redirect') || searchParams.get('returnUrl') || '/dashboard';
-  
-  // Check for existing user in localStorage on component mount
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const isAlreadyLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    
-    if (storedUser && isAlreadyLoggedIn) {
-      const user = JSON.parse(storedUser);
-      
-      // Check if user is admin
-      if (user.role === 'ADMIN' || user.role === 'SUPERADMIN' || user.role === 'MODERATOR' || user.role === 'INSTRUCTOR') {
-        router.push('/management');
-      } else {
-        router.push(returnUrl);
-      }
-    }
-  }, [returnUrl, router]);
-  
+  const { login } = useAuthStore();
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
-      rememberMe: false
-    }
+      rememberMe: false,
+    },
   });
+
+  // Initialize social auth providers
+  useEffect(() => {
+    const initializeSocialAuth = async () => {
+      try {
+        await initializeGoogleAuth();
+        setIsGoogleAuthReady(true);
+      } catch (error) {
+        console.error('Failed to initialize Google Auth:', error);
+      }
+
+      try {
+        await initializeAppleAuth();
+        setIsAppleAuthReady(true);
+      } catch (error) {
+        console.error('Failed to initialize Apple Auth:', error);
+      }
+    };
+
+    initializeSocialAuth();
+  }, []);
 
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
@@ -66,20 +85,15 @@ export default function LoginForm() {
       
       if (result.success) {
         toast.success("Login successful!", {
-          description: "Redirecting...",
+          description: "Welcome back!",
         });
         
-        // Check if user is admin and redirect accordingly
-        // The user will be available in the next render cycle
+        // Get return URL from search params
+        const returnUrl = searchParams.get('redirect') || searchParams.get('returnUrl') || '/dashboard';
+        
+        // Small delay to ensure state is updated
         setTimeout(() => {
-          const currentUser = useAuthStore.getState().user;
-          if (currentUser) {
-            if (currentUser.role === 'ADMIN') {
-              router.push('/management');
-            } else {
-              router.push(returnUrl);
-            }
-          }
+          router.push(returnUrl);
         }, 100);
       } else {
         toast.error("Login failed", {
@@ -96,17 +110,103 @@ export default function LoginForm() {
     }
   };
 
-  const handleSocialLogin = (provider: string) => {
-    setIsLoading(true);
-
-    
-    setTimeout(() => {
-      console.log(`Logging in with ${provider}`);
-      toast.info("Social login coming soon!", {
-        description: "This feature is under development.",
+  const handleGoogleLogin = async () => {
+    if (!isGoogleAuthReady) {
+      toast.error("Google authentication not ready", {
+        description: "Please wait a moment and try again.",
       });
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const response = await googleSignIn() as { access_token?: string };
+      
+      if (response.access_token) {
+        // Verify the token with our backend
+        const authResult = await verifyGoogleToken(response.access_token);
+        
+        if (authResult.success && authResult.data) {
+          // Store tokens and user data
+          const { user, token, refreshToken } = authResult.data;
+          
+          // Update auth store
+          useAuthStore.getState().setUser({
+            ...user,
+            permissions: [],
+            subscriptionTier: 'free',
+            subscriptionStatus: 'active',
+            subscriptionExpiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            lastDataSync: new Date().toISOString(),
+          });
+          
+          // Store tokens
+          localStorage.setItem('accessToken', token);
+          localStorage.setItem('refreshToken', refreshToken);
+          
+          // Sync with server
+          await fetch('/api/auth/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accessToken: token, refreshToken }),
+          });
+
+          toast.success("Google login successful!", {
+            description: `Welcome, ${user.firstName || user.username}!`,
+          });
+
+          const returnUrl = searchParams.get('redirect') || searchParams.get('returnUrl') || '/dashboard';
+          router.push(returnUrl);
+        } else {
+          toast.error("Google authentication failed", {
+            description: authResult.message,
+          });
+        }
+      }
+    } catch (error: unknown) {
+      console.error("Google login error:", error);
+      toast.error("Google login failed", {
+        description: (error as Error).message || "An unexpected error occurred.",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
+  };
+
+  const handleAppleLogin = async () => {
+    if (!isAppleAuthReady) {
+      toast.error("Apple authentication not ready", {
+        description: "Please wait a moment and try again.",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const response = await appleSignIn() as { authorization?: unknown };
+      
+      if (response.authorization) {
+        // Handle Apple authentication response
+        toast.info("Apple authentication", {
+          description: "Apple authentication is being processed...",
+        });
+        
+        // TODO: Implement Apple token verification with backend
+        // For now, show a placeholder message
+        toast.info("Apple authentication coming soon!", {
+          description: "This feature is under development.",
+        });
+      }
+    } catch (error: unknown) {
+      console.error("Apple login error:", error);
+      toast.error("Apple login failed", {
+        description: (error as Error).message || "An unexpected error occurred.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -122,25 +222,33 @@ export default function LoginForm() {
         <Button 
           variant="outline" 
           className="w-full"
-          onClick={() => handleSocialLogin("Google")}
-          disabled={isLoading}
+          onClick={handleGoogleLogin}
+          disabled={isLoading || !isGoogleAuthReady}
         >
-          <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M21.8055 10.0415H21V10H12V14H17.6515C16.827 16.3285 14.6115 18 12 18C8.6865 18 6 15.3135 6 12C6 8.6865 8.6865 6 12 6C13.5295 6 14.921 6.577 15.9805 7.5195L18.809 4.691C17.023 3.0265 14.634 2 12 2C6.4775 2 2 6.4775 2 12C2 17.5225 6.4775 22 12 22C17.5225 22 22 17.5225 22 12C22 11.3295 21.931 10.675 21.8055 10.0415Z" fill="#FFC107"/>
-            <path d="M3.15302 7.3455L6.43851 9.755C7.32751 7.554 9.48052 6 12 6C13.5295 6 14.921 6.577 15.9805 7.5195L18.809 4.691C17.023 3.0265 14.634 2 12 2C8.15902 2 4.82801 4.1685 3.15302 7.3455Z" fill="#FF3D00"/>
-            <path d="M12 22C14.583 22 16.93 21.0115 18.7045 19.404L15.6095 16.785C14.5717 17.5742 13.3037 18.001 12 18C9.39897 18 7.19047 16.3415 6.35847 14.027L3.09747 16.5395C4.75247 19.778 8.11347 22 12 22Z" fill="#4CAF50"/>
-            <path d="M21.8055 10.0415H21V10H12V14H17.6515C17.2571 15.1082 16.5467 16.0766 15.608 16.7855L15.6095 16.7845L18.7045 19.4035C18.4855 19.6025 22 17 22 12C22 11.3295 21.931 10.675 21.8055 10.0415Z" fill="#1976D2"/>
-          </svg>
+          {isLoading ? (
+            <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+          ) : (
+            <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21.8055 10.0415H21V10H12V14H17.6515C16.827 16.3285 14.6115 18 12 18C8.6865 18 6 15.3135 6 12C6 8.6865 8.6865 6 12 6C13.5295 6 14.921 6.577 15.9805 7.5195L18.809 4.691C17.023 3.0265 14.634 2 12 2C6.4775 2 2 6.4775 2 12C2 17.5225 6.4775 22 12 22C17.5225 22 22 17.5225 22 12C22 11.3295 21.931 10.675 21.8055 10.0415Z" fill="#FFC107"/>
+              <path d="M3.15302 7.3455L6.43851 9.755C7.32751 7.554 9.48052 6 12 6C13.5295 6 14.921 6.577 15.9805 7.5195L18.809 4.691C17.023 3.0265 14.634 2 12 2C8.15902 2 4.82801 4.1685 3.15302 7.3455Z" fill="#FF3D00"/>
+              <path d="M12 22C14.583 22 16.93 21.0115 18.7045 19.404L15.6095 16.785C14.5717 17.5742 13.3037 18.001 12 18C9.39897 18 7.19047 16.3415 6.35847 14.027L3.09747 16.5395C4.75247 19.778 8.11347 22 12 22Z" fill="#4CAF50"/>
+              <path d="M21.8055 10.0415H21V10H12V14H17.6515C17.2571 15.1082 16.5467 16.0766 15.608 16.7855L15.6095 16.7845L18.7045 19.4035C18.4855 19.6025 22 17 22 12C22 11.3295 21.931 10.675 21.8055 10.0415Z" fill="#1976D2"/>
+            </svg>
+          )}
           Continue with Google
         </Button>
         
         <Button 
           variant="outline" 
           className="w-full"
-          onClick={() => handleSocialLogin("Apple")}
-          disabled={isLoading}
+          onClick={handleAppleLogin}
+          disabled={isLoading || !isAppleAuthReady}
         >
-          <svg className="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>
+          {isLoading ? (
+            <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+          ) : (
+            <svg className="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>
+          )}
           Continue with Apple
         </Button>
       </div>
@@ -181,23 +289,31 @@ export default function LoginForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <div className="flex items-center justify-between">
-                  <FormLabel>Password</FormLabel>
-                  <Link href="/auth/forgotpassword" className="text-xs text-primary hover:underline">
-                    Forgot password?
-                  </Link>
-                </div>
+                <FormLabel>Password</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input 
-                      type={showPassword ? "text" : "password"} 
-                      placeholder="••••••••" 
-                      className="pl-10" 
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password" 
+                      className="pl-10 pr-10" 
                       {...field} 
                       disabled={isLoading}
                     />
-                    <Eye className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" onClick={() => setShowPassword(!showPassword)} />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                      disabled={isLoading}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </Button>
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -205,45 +321,67 @@ export default function LoginForm() {
             )}
           />
           
-          <FormField
-            control={form.control}
-            name="rememberMe"
-            render={({ field }) => (
-              <FormItem className="flex items-center space-x-2 space-y-0">
-                <FormControl>
-                  <Input  
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                    title="Remember me for 14 days"
-                    placeholder="Remember me for 14 days"
-                    checked={field.value}
-                    onChange={field.onChange}
-                    disabled={isLoading}
-                  />
-                </FormControl>
-                <FormLabel className="text-sm font-normal">Remember me</FormLabel>
-              </FormItem>
-            )}
-          />
+          <div className="flex items-center justify-between">
+            <FormField
+              control={form.control}
+              name="rememberMe"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      disabled={isLoading}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel className="text-sm font-normal">
+                      Remember me
+                    </FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
+            
+            <Button
+              type="button"
+              variant="link"
+              className="px-0 text-sm"
+              onClick={() => router.push('/auth/forgotpassword')}
+              disabled={isLoading}
+            >
+              Forgot password?
+            </Button>
+          </div>
           
           <Button 
             type="submit" 
             className="w-full" 
             disabled={isLoading}
           >
-            {isLoading ? "Signing in..." : "Sign in"}
-            {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              "Sign in"
+            )}
           </Button>
         </form>
       </Form>
       
-      <div className="text-center mt-6">
-        <p className="text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
-          <Link href={`/auth/signup?returnUrl=${encodeURIComponent(returnUrl)}`} className="text-primary hover:underline font-medium">
-            Sign up
-          </Link>
-        </p>
+      <div className="mt-6 text-center text-sm">
+        <span className="text-muted-foreground">Don&apos;t have an account? </span>
+        <Button
+          type="button"
+          variant="link"
+          className="px-0 text-sm"
+          onClick={() => router.push('/auth/signup')}
+          disabled={isLoading}
+        >
+          Sign up
+        </Button>
       </div>
     </div>
   );
