@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getUserById } from "@/lib/api/users";
+import { getServerUserById, requireRole } from "@/lib/auth/server";
 import { UserDetailsClient } from "@/components/management/user-details/UserDetailsClient";
 
 interface UserDetailsPageProps {
@@ -11,8 +11,11 @@ interface UserDetailsPageProps {
 
 export async function generateMetadata({ params }: UserDetailsPageProps): Promise<Metadata> {
   try {
+    // Require admin role for accessing user details
+    await requireRole('ADMIN');
+    
     const { id } = await params;
-    const user = await getUserById(id);
+    const user = await getServerUserById(id);
 
     if (!user) {
       return {
@@ -42,8 +45,11 @@ export async function generateMetadata({ params }: UserDetailsPageProps): Promis
 
 export default async function UserDetailsPage({ params }: UserDetailsPageProps) {
   try {
+    // Require admin role for accessing user details
+    await requireRole('ADMIN');
+    
     const { id } = await params;
-    const user = await getUserById(id);
+    const user = await getServerUserById(id);
 
     if (!user) {
       notFound();

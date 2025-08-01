@@ -37,6 +37,9 @@ type AuthStore = {
   user: User | null;
   isLoggedIn: boolean;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
+  isModerator: boolean;
+  isInstructor: boolean;
   subscription: Subscription;
   hasActiveSubscription: boolean;
   isLoading: boolean;
@@ -75,6 +78,9 @@ export const useAuthStore = create<AuthStore>()(
       user: null,
       isLoggedIn: false,
       isAdmin: false,
+      isSuperAdmin: false,
+      isModerator: false,
+      isInstructor: false,
       subscription: initialSubscription,
       hasActiveSubscription: initialSubscription.type !== 'free',
       isLoading: false,
@@ -86,7 +92,7 @@ export const useAuthStore = create<AuthStore>()(
         set({ isLoading: true });
         
         try {
-          const response: LoginResponse = await loginApi({ email, password });
+          const response: LoginResponse = await loginApi({ email, password, rememberMe });
           
           if (response.success && response.data) {
             const { user, token, refreshToken } = response.data;
@@ -97,6 +103,9 @@ export const useAuthStore = create<AuthStore>()(
             
             // Check if user is admin
             const isAdmin = user.role === 'ADMIN';
+            const isSuperAdmin = user.role === 'SUPER_ADMIN';
+            const isModerator = user.role === 'MODERATOR';
+            const isInstructor = user.role === 'INSTRUCTOR';
             
             // Create user object with name
             const userWithName = {
@@ -110,6 +119,9 @@ export const useAuthStore = create<AuthStore>()(
               user: userWithName, 
               isLoggedIn: true,
               isAdmin,
+              isSuperAdmin,
+              isModerator,
+              isInstructor,
               rememberMe,
               isLoading: false,
               lastUserSync: Date.now()
@@ -120,6 +132,15 @@ export const useAuthStore = create<AuthStore>()(
             localStorage.setItem('isLoggedIn', 'true');
             if (isAdmin) {
               localStorage.setItem('isAdmin', 'true');
+            }
+            if (isSuperAdmin) {
+              localStorage.setItem('isSuperAdmin', 'true');
+            }
+            if (isModerator) {
+              localStorage.setItem('isModerator', 'true');
+            }
+            if (isInstructor) {
+              localStorage.setItem('isInstructor', 'true');
             }
             
             // Check subscription status
@@ -215,6 +236,9 @@ export const useAuthStore = create<AuthStore>()(
           user: null, 
           isLoggedIn: false,
           isAdmin: false,
+          isSuperAdmin: false,
+          isModerator: false,
+          isInstructor: false,
           isLoading: false,
           lastUserSync: null,
           isSyncingUser: false
@@ -226,14 +250,23 @@ export const useAuthStore = create<AuthStore>()(
         localStorage.removeItem('refreshToken');
         localStorage.setItem('isLoggedIn', 'false');
         localStorage.removeItem('isAdmin');
+        localStorage.removeItem('isSuperAdmin');
+        localStorage.removeItem('isModerator');
+        localStorage.removeItem('isInstructor');
       },
       
       setUser: (user: User) => {
         const isAdmin = user.role === 'ADMIN';
+        const isSuperAdmin = user.role === 'SUPER_ADMIN';
+        const isModerator = user.role === 'MODERATOR';
+        const isInstructor = user.role === 'INSTRUCTOR';
         set({ 
           user, 
           isLoggedIn: true,
           isAdmin,
+          isSuperAdmin,
+          isModerator,
+          isInstructor,
           lastUserSync: Date.now()
         });
         
@@ -241,6 +274,15 @@ export const useAuthStore = create<AuthStore>()(
         localStorage.setItem('isLoggedIn', 'true');
         if (isAdmin) {
           localStorage.setItem('isAdmin', 'true');
+        }
+        if (isSuperAdmin) {
+          localStorage.setItem('isSuperAdmin', 'true');
+        }
+        if (isModerator) {
+          localStorage.setItem('isModerator', 'true');
+        }
+        if (isInstructor) {
+          localStorage.setItem('isInstructor', 'true');
         }
       },
       
@@ -402,6 +444,9 @@ export const useAuthStore = create<AuthStore>()(
         } : null,
         isLoggedIn: state.isLoggedIn,
         isAdmin: state.isAdmin,
+        isSuperAdmin: state.isSuperAdmin,
+        isModerator: state.isModerator,
+        isInstructor: state.isInstructor,
         subscription: state.subscription,
         hasActiveSubscription: state.hasActiveSubscription,
         rememberMe: state.rememberMe,

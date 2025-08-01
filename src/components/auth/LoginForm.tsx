@@ -41,7 +41,7 @@ export default function LoginForm() {
       const user = JSON.parse(storedUser);
       
       // Check if user is admin
-      if (user.role === 'ADMIN') {
+      if (user.role === 'ADMIN' || user.role === 'SUPERADMIN' || user.role === 'MODERATOR' || user.role === 'INSTRUCTOR') {
         router.push('/management');
       } else {
         router.push(returnUrl);
@@ -211,11 +211,11 @@ export default function LoginForm() {
             render={({ field }) => (
               <FormItem className="flex items-center space-x-2 space-y-0">
                 <FormControl>
-                  <Input
+                  <Input  
                     type="checkbox"
                     className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                    title="Remember me for 30 days"
-                    placeholder="Remember me for 30 days"
+                    title="Remember me for 14 days"
+                    placeholder="Remember me for 14 days"
                     checked={field.value}
                     onChange={field.onChange}
                     disabled={isLoading}

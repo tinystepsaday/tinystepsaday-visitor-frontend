@@ -15,10 +15,10 @@ export default function UserMenu() {
     const handleLogout = async () => {
         try {
             await logout();
-            toast("Logged out successfully");
+            toast.success("Logged out successfully", { description: "You have been logged out successfully"});
             router.push("/");
         } catch {
-            toast("Error logging out");
+            toast.error("Error logging out");
         }
     }
 

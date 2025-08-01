@@ -27,7 +27,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Tiny Steps A Day Dashboard",
   description: "Manage your blog, courses, and media content",
-    generator: 'v0.dev'
+  generator: 'v0.dev'
 }
 
 export default function RootLayout({
