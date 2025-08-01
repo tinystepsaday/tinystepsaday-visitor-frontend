@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Plus, Edit, Trash2, Shield, ShieldCheck, Eye, Users, BookOpen, Mail, Filter, X, CheckSquare } from "lucide-react";
+import { MoreHorizontal, Plus, Edit, Shield, ShieldCheck, Eye, Users, BookOpen, CheckSquare, Filter, X, Mail } from "lucide-react";
 import { User, getUsers, UsersQueryParams, createUser, bulkUserOperations } from "@/lib/api/users";
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
@@ -446,13 +445,6 @@ export function UsersClient() {
                 <Link href={`/management/users/${user.id}/edit`}>
                   <Edit className="mr-2 h-4 w-4" />
                   Edit User
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive" asChild>
-                <Link href={`/management/users/${user.id}/delete`}>
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete User
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
