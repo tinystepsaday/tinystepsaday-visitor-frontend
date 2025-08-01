@@ -1,4 +1,3 @@
-
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -16,7 +15,7 @@ export const metadata: Metadata = {
     images: ["/images/privacy.png"],
   },
   alternates: {
-    canonical: "/privacy",
+    canonical: "/privacy-policy",
   },
 };
 
@@ -26,7 +25,7 @@ export default function PrivacyPolicyPage() {
     "@type": "WebSite",
     "name": "Privacy Policy | Tiny Steps A Day",
     "description": "Our privacy policy details how we collect, use, and protect your personal information.",
-    "url": "https://www.tinystepsaday.com/privacy",
+    "url": "https://www.tinystepsaday.com/privacy-policy",
     "image": "https://www.tinystepsaday.com/images/privacy.png",
     "author": {
       "@type": "Person",
@@ -44,7 +43,7 @@ export default function PrivacyPolicyPage() {
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://www.tinystepsaday.com/privacy"
+      "@id": "https://www.tinystepsaday.com/privacy-policy"
     }
   };
   

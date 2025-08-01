@@ -1,7 +1,55 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: 'Terms of Service | Tiny Steps A Day',
+  description: 'Terms of Service for Tiny Steps A Day',
+  keywords: ['terms of service', 'tinystepsaday'],
+  openGraph: {
+    title: 'Terms of Service | Tiny Steps A Day',
+    description: 'Terms of Service for Tiny Steps A Day',
+    images: ['/images/terms.png'],
+  },
+  twitter: {
+    title: 'Terms of Service | Tiny Steps A Day',
+    description: 'Terms of Service for Tiny Steps A Day',
+    images: ['/images/terms.png'],
+  },
+  alternates: {
+    canonical: '/terms-of-service',
+  },
+};
 
 export default function TermsOfService() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Terms of Service | Tiny Steps A Day",
+    "description": "Terms of Service for Tiny Steps A Day",
+    "url": "https://tinystepsaday.com/terms-of-service",
+    "image": "https://www.tinystepsaday.com/images/terms.png",
+    "author": {
+      "@type": "Person",
+      "name": "Tiny Steps A Day",
+      "url": "https://www.tinystepsaday.com"
+    },
+    "publisher": {
+      "@type": "Company",
+      "name": "Tiny Steps A Day",
+      "url": "https://www.tinystepsaday.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.tinystepsaday.com/images/terms.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://www.tinystepsaday.com/terms-of-service"
+    }
+  }
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="container max-w-3xl mx-auto px-4 py-12 w-full">
         <h1 className="text-3xl md:text-4xl text-primary font-bold mb-8 mt-24">Terms of Service</h1>
         <div className="prose prose-lg">
