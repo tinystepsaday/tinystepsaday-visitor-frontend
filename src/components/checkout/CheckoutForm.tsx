@@ -547,9 +547,9 @@ export default function CheckoutForm({ tierInfo: propTierInfo, courseInfo: propC
         <div className="text-center text-sm text-muted-foreground">
           <p>By proceeding, you agree to our</p>
           <div className="space-x-2">
-            <Link href="/terms" className="hover:underline text-primary">Terms of Service</Link>
+            <Link href="/terms-of-service" className="hover:underline text-primary">Terms of Service</Link>
             <span>&middot;</span>
-            <Link href="/privacy" className="hover:underline text-primary">Privacy Policy</Link>
+            <Link href="/privacy-policy" className="hover:underline text-primary">Privacy Policy</Link>
           </div>
         </div>
       </div>

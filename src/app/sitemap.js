@@ -31,13 +31,13 @@ export default function sitemap() {
             priority: 0.8,
         },
         {
-            url: "/privacy",
+            url: "/privacy-policy",
             lastModified: new Date(),
             changeFrequency: "daily",
             priority: 0.8,
         },
         {
-            url: "/terms",
+            url: "/terms-of-service",
             lastModified: new Date(),
             changeFrequency: "daily",
             priority: 0.8,
