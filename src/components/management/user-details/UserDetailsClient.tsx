@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import {
   Edit,
-  Save,
   Mail,
   Shield,
   ShieldCheck,
@@ -35,8 +35,11 @@ import {
   Bookmark,
   Heart,
   Bell,
+  Trash2,
 } from "lucide-react";
-import { User } from "@/lib/api/users";
+import { User, deleteUser } from "@/lib/api/users";
+import { toast } from "sonner";
+import Link from "next/link";
 
 const roleConfig = {
   ADMIN: { label: "Admin", icon: ShieldCheck, variant: "destructive" as const },
@@ -65,9 +68,9 @@ interface UserDetailsClientProps {
 
 export function UserDetailsClient({ user }: UserDetailsClientProps) {
   const router = useRouter();
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedUser, setEditedUser] = useState<User>(user);
   const [activeTab, setActiveTab] = useState("overview");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Dummy data for missing fields (to be replaced with real API calls later)
   const activities = [
@@ -115,10 +118,18 @@ export function UserDetailsClient({ user }: UserDetailsClientProps) {
     { id: "3", key: "newsletter", category: "marketing", value: true },
   ];
 
-  const handleSave = () => {
-    console.log("Saving user:", editedUser);
-    setEditedUser(editedUser);
-    setIsEditing(false);
+  const handleDeleteUser = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteUser(user.id);
+      toast.success("User deleted successfully");
+      router.push("/management/users");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete user");
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteDialogOpen(false);
+    }
   };
 
   const config = roleConfig[user.role as keyof typeof roleConfig] || roleConfig.USER;
@@ -154,22 +165,20 @@ export function UserDetailsClient({ user }: UserDetailsClientProps) {
             Back
           </Button>
           <div className="flex items-center space-x-2">
-            {isEditing ? (
-              <>
-                <Button variant="outline" onClick={() => setIsEditing(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleSave}>
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Changes
-                </Button>
-              </>
-            ) : (
-              <Button onClick={() => setIsEditing(true)}>
+            <Link href={`/management/users/${user.id}/edit`}>
+              <Button variant="outline" size="sm">
                 <Edit className="mr-2 h-4 w-4" />
-                Edit User
+                Edit
               </Button>
-            )}
+            </Link>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete
+            </Button>
           </div>
         </div>
         <div className="flex justify-start flex-col w-full">
@@ -183,14 +192,8 @@ export function UserDetailsClient({ user }: UserDetailsClientProps) {
         <div className="lg:col-span-1">
           <Card>
             <CardHeader className="text-center">
-              <Avatar className="h-24 w-24 mx-auto">
-                <AvatarImage src="/placeholder.svg" alt={fullName} />
-                <AvatarFallback className="text-lg">
-                  {fullName
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </AvatarFallback>
+              <Avatar className="h-20 w-20">
+                <AvatarFallback>{fullName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
               </Avatar>
               <CardTitle>{fullName}</CardTitle>
               <CardDescription>{user.email}</CardDescription>
@@ -935,6 +938,28 @@ export function UserDetailsClient({ user }: UserDetailsClientProps) {
           </Tabs>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {fullName}? This action cannot be undone and will permanently remove the user account.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteUser} 
+              className="bg-destructive text-destructive-foreground"
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete User"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 } 

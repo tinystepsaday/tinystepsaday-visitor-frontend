@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Plus, Edit, Trash2, Shield, ShieldCheck, Eye, Users, BookOpen, Mail, Filter, X } from "lucide-react";
-import { User, getUsers, UsersQueryParams, createUser } from "@/lib/api/users";
+import { MoreHorizontal, Plus, Edit, Trash2, Shield, ShieldCheck, Eye, Users, BookOpen, Mail, Filter, X, CheckSquare } from "lucide-react";
+import { User, getUsers, UsersQueryParams, createUser, bulkUserOperations } from "@/lib/api/users";
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +30,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import Link from "next/link";
 
@@ -67,6 +70,19 @@ export function UsersClient() {
     superAdmins: 0,
     regularUsers: 0,
   });
+
+  // Bulk operations state
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [bulkOperation, setBulkOperation] = useState<{
+    operation: 'activate' | 'deactivate' | 'delete' | 'verify' | 'unverify';
+    reason: string;
+  }>({
+    operation: 'activate',
+    reason: '',
+  });
+  const [isPerformingOperation, setIsPerformingOperation] = useState(false);
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
@@ -259,6 +275,48 @@ export function UsersClient() {
     }
   };
 
+  // Handle bulk operations
+  const handleBulkOperation = async () => {
+    if (selectedUsers.length === 0) {
+      toast.error("Please select users to perform bulk operation");
+      return;
+    }
+
+    setIsPerformingOperation(true);
+    try {
+      await bulkUserOperations({
+        userIds: selectedUsers,
+        operation: bulkOperation.operation,
+        reason: bulkOperation.reason,
+      });
+      
+      toast.success(`Bulk operation '${bulkOperation.operation}' completed successfully`);
+      setSelectedUsers([]);
+      setIsBulkDialogOpen(false);
+      fetchUsers(); // Refresh the list
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to perform bulk operation");
+    } finally {
+      setIsPerformingOperation(false);
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (selectedUsers.length === users.length) {
+      setSelectedUsers([]);
+    } else {
+      setSelectedUsers(users.map(user => user.id));
+    }
+  };
+
+  const handleSelectUser = (userId: string) => {
+    setSelectedUsers(prev => 
+      prev.includes(userId) 
+        ? prev.filter(id => id !== userId)
+        : [...prev, userId]
+    );
+  };
+
   // Fetch users on component mount and when search params change
   useEffect(() => {
     fetchUsers();
@@ -266,6 +324,25 @@ export function UsersClient() {
 
   // Table columns
   const columns: ColumnDef<User>[] = [
+    {
+      id: "select",
+      header: () => (
+        <Checkbox
+          checked={selectedUsers.length === users.length && users.length > 0}
+          onCheckedChange={handleSelectAll}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={selectedUsers.includes(row.original.id)}
+          onCheckedChange={() => handleSelectUser(row.original.id)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
     {
       accessorKey: "firstName",
       header: "User",
@@ -275,7 +352,6 @@ export function UsersClient() {
         return (
           <div className="flex items-center space-x-3">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder.svg" alt={fullName} />
               <AvatarFallback>
                 {fullName
                   .split(" ")
@@ -387,7 +463,7 @@ export function UsersClient() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -620,6 +696,38 @@ export function UsersClient() {
         </CardContent>
       </Card>
 
+      {/* Bulk Operations Bar */}
+      {selectedUsers.length > 0 && (
+        <div className="border-blue-200 bg-blue-50 rounded-md p-2 dark:bg-blue-950 dark:border-blue-800">
+          <div className="p-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <CheckSquare className="h-4 w-4 text-blue-600" />
+                <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                  {selectedUsers.length} user{selectedUsers.length !== 1 ? 's' : ''} selected
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => setIsBulkDialogOpen(true)}
+                >
+                  Bulk Actions
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setSelectedUsers([])}
+                >
+                  Clear Selection
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Users Table */}
       <Card>
         <CardHeader>
@@ -641,6 +749,85 @@ export function UsersClient() {
           />
         </CardContent>
       </Card>
+
+      {/* Bulk Operations Dialog */}
+      <Dialog open={isBulkDialogOpen} onOpenChange={setIsBulkDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Bulk User Operations</DialogTitle>
+            <DialogDescription>
+              Perform operations on {selectedUsers.length} selected user{selectedUsers.length !== 1 ? 's' : ''}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="operation">Operation</Label>
+              <Select
+                value={bulkOperation.operation}
+                onValueChange={(value) => setBulkOperation(prev => ({ 
+                  ...prev, 
+                  operation: value as 'activate' | 'deactivate' | 'delete' | 'verify' | 'unverify' 
+                }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select operation" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="activate">Activate Users</SelectItem>
+                  <SelectItem value="deactivate">Deactivate Users</SelectItem>
+                  <SelectItem value="delete">Delete Users</SelectItem>
+                  <SelectItem value="verify">Verify Email</SelectItem>
+                  <SelectItem value="unverify">Unverify Email</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reason">Reason</Label>
+              <Textarea
+                id="reason"
+                value={bulkOperation.reason}
+                onChange={(e) => setBulkOperation(prev => ({ ...prev, reason: e.target.value }))}
+                placeholder="Enter reason for bulk operation"
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsBulkDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleBulkOperation} 
+              disabled={isPerformingOperation || !bulkOperation.reason}
+              variant={bulkOperation.operation === 'delete' ? 'destructive' : 'default'}
+            >
+              {isPerformingOperation ? "Processing..." : `Perform ${bulkOperation.operation}`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Users</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {selectedUsers.length} user{selectedUsers.length !== 1 ? 's' : ''}? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleBulkOperation} 
+              className="bg-destructive text-destructive-foreground"
+              disabled={isPerformingOperation}
+            >
+              {isPerformingOperation ? "Deleting..." : "Delete Users"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 } 

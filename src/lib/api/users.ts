@@ -401,4 +401,232 @@ export async function deactivateAccount(data: DeactivateAccountData): Promise<Ap
             message: error instanceof Error ? error.message : 'Failed to deactivate account',
         };
     }
+}
+
+/**
+ * Update user by ID
+ */
+export async function updateUser(id: string, data: {
+  firstName?: string;
+  lastName?: string;
+  isActive?: boolean;
+}): Promise<ApiResponse<User>> {
+  try {
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Authentication failed');
+      }
+      if (response.status === 404) {
+        throw new Error('User not found');
+      }
+      throw new Error(`Failed to update user: ${response.statusText}`);
+    }
+
+    const result: ApiResponse<User> = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to update user');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error updating user:', error);
+    throw error;
+  }
+}
+
+/**
+ * Delete user by ID
+ */
+export async function deleteUser(id: string): Promise<ApiResponse> {
+  try {
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Authentication failed');
+      }
+      if (response.status === 404) {
+        throw new Error('User not found');
+      }
+      throw new Error(`Failed to delete user: ${response.statusText}`);
+    }
+
+    const result: ApiResponse = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to delete user');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    throw error;
+  }
+}
+
+/**
+ * Change user role
+ */
+export async function changeUserRole(userId: string, data: {
+  role: User['role'];
+  reason: string;
+}): Promise<ApiResponse<User>> {
+  try {
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}/role`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Authentication failed');
+      }
+      if (response.status === 404) {
+        throw new Error('User not found');
+      }
+      throw new Error(`Failed to change user role: ${response.statusText}`);
+    }
+
+    const result: ApiResponse<User> = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to change user role');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error changing user role:', error);
+    throw error;
+  }
+}
+
+/**
+ * Toggle user account status
+ */
+export async function toggleUserStatus(userId: string, data: {
+  isActive: boolean;
+  reason: string;
+}): Promise<ApiResponse<User>> {
+  try {
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Authentication failed');
+      }
+      if (response.status === 404) {
+        throw new Error('User not found');
+      }
+      throw new Error(`Failed to toggle user status: ${response.statusText}`);
+    }
+
+    const result: ApiResponse<User> = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to toggle user status');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error toggling user status:', error);
+    throw error;
+  }
+}
+
+/**
+ * Bulk user operations
+ */
+export async function bulkUserOperations(data: {
+  userIds: string[];
+  operation: 'activate' | 'deactivate' | 'delete' | 'verify' | 'unverify';
+  reason: string;
+}): Promise<ApiResponse<{
+  operation: string;
+  affectedCount: number;
+  affectedUserIds: string[];
+}>> {
+  try {
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/bulk`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Authentication failed');
+      }
+      throw new Error(`Failed to perform bulk operation: ${response.statusText}`);
+    }
+
+    const result: ApiResponse<{
+      operation: string;
+      affectedCount: number;
+      affectedUserIds: string[];
+    }> = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to perform bulk operation');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error performing bulk operation:', error);
+    throw error;
+  }
 } 
