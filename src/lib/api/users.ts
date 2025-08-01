@@ -585,8 +585,9 @@ export async function toggleUserStatus(userId: string, data: {
  */
 export async function bulkUserOperations(data: {
   userIds: string[];
-  operation: 'activate' | 'deactivate' | 'delete' | 'verify' | 'unverify';
+  operation: 'activate' | 'deactivate' | 'delete' | 'verify' | 'unverify' | 'change_role';
   reason: string;
+  role?: User['role'];
 }): Promise<ApiResponse<{
   operation: string;
   affectedCount: number;

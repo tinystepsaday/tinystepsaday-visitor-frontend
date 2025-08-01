@@ -10,14 +10,7 @@ import GlobalSearch from "@/components/global-search"
 import Notifications from "@/components/notifications"
 import ModeToggle from "@/components/mode-toggle"
 import { Separator } from "@/components/ui/separator"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+import { DynamicBreadcrumb } from "@/components/ui/dynamic-breadcrumb"
 import { Suspense } from "react"
 import { Toaster } from "sonner"
 import UserMenu from "@/components/user-menu"
@@ -46,17 +39,9 @@ export default function RootLayout({
                 <div className="flex items-center gap-2 px-4">
                   <SidebarTrigger className="-ml-1" />
                   <Separator orientation="vertical" className="mr-2 h-4" />
-                  <Breadcrumb>
-                    <BreadcrumbList>
-                      <BreadcrumbItem className="hidden md:block">
-                        <BreadcrumbLink href="/management">Dashboard</BreadcrumbLink>
-                      </BreadcrumbItem>
-                      <BreadcrumbSeparator className="hidden md:block" />
-                      <BreadcrumbItem>
-                        <BreadcrumbPage>Overview</BreadcrumbPage>
-                      </BreadcrumbItem>
-                    </BreadcrumbList>
-                  </Breadcrumb>
+                  <Suspense fallback={<div className="h-4 w-32 animate-pulse bg-muted rounded" />}>
+                    <DynamicBreadcrumb />
+                  </Suspense>
                 </div>
                 <div className="ml-auto flex items-center gap-2 px-4">
                   <Suspense fallback={<div>Loading...</div>}>

@@ -30,7 +30,7 @@ export default function LoginForm() {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   // Get return URL from search params
-  const returnUrl = searchParams.get('returnUrl') || '/dashboard';
+  const returnUrl = searchParams.get('redirect') || searchParams.get('returnUrl') || '/dashboard';
   
   // Check for existing user in localStorage on component mount
   useEffect(() => {

@@ -75,11 +75,13 @@ export function UsersClient() {
   const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [bulkOperation, setBulkOperation] = useState<{
-    operation: 'activate' | 'deactivate' | 'delete' | 'verify' | 'unverify';
+    operation: 'activate' | 'deactivate' | 'delete' | 'change_role';
     reason: string;
+    role?: User['role'];
   }>({
     operation: 'activate',
     reason: '',
+    role: 'USER',
   });
   const [isPerformingOperation, setIsPerformingOperation] = useState(false);
 
@@ -283,11 +285,23 @@ export function UsersClient() {
 
     setIsPerformingOperation(true);
     try {
-      await bulkUserOperations({
+      const operationData: {
+        userIds: string[];
+        operation: 'activate' | 'deactivate' | 'delete' | 'change_role';
+        reason: string;
+        role?: User['role'];
+      } = {
         userIds: selectedUsers,
         operation: bulkOperation.operation,
         reason: bulkOperation.reason,
-      });
+      };
+
+      // Add role parameter for change_role operation
+      if (bulkOperation.operation === 'change_role' && bulkOperation.role) {
+        operationData.role = bulkOperation.role;
+      }
+
+      await bulkUserOperations(operationData);
       
       toast.success(`Bulk operation '${bulkOperation.operation}' completed successfully`);
       setSelectedUsers([]);
@@ -758,7 +772,7 @@ export function UsersClient() {
                 value={bulkOperation.operation}
                 onValueChange={(value) => setBulkOperation(prev => ({ 
                   ...prev, 
-                  operation: value as 'activate' | 'deactivate' | 'delete' | 'verify' | 'unverify' 
+                  operation: value as 'activate' | 'deactivate' | 'delete' | 'change_role' 
                 }))}
               >
                 <SelectTrigger>
@@ -768,11 +782,32 @@ export function UsersClient() {
                   <SelectItem value="activate">Activate Users</SelectItem>
                   <SelectItem value="deactivate">Deactivate Users</SelectItem>
                   <SelectItem value="delete">Delete Users</SelectItem>
-                  <SelectItem value="verify">Verify Email</SelectItem>
-                  <SelectItem value="unverify">Unverify Email</SelectItem>
+                  <SelectItem value="change_role">Change Role</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+            {bulkOperation.operation === 'change_role' && (
+              <div className="space-y-2">
+                <Label htmlFor="newRole">New Role</Label>
+                <Select
+                  value={bulkOperation.role}
+                  onValueChange={(value: User['role']) =>
+                    setBulkOperation(prev => ({ ...prev, role: value }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select new role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="USER">User</SelectItem>
+                    <SelectItem value="MODERATOR">Moderator</SelectItem>
+                    <SelectItem value="INSTRUCTOR">Instructor</SelectItem>
+                    <SelectItem value="ADMIN">Admin</SelectItem>
+                    <SelectItem value="SUPER_ADMIN">Super Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="reason">Reason</Label>
               <Textarea
@@ -790,7 +825,11 @@ export function UsersClient() {
             </Button>
             <Button 
               onClick={handleBulkOperation} 
-              disabled={isPerformingOperation || !bulkOperation.reason}
+              disabled={
+                isPerformingOperation || 
+                !bulkOperation.reason || 
+                (bulkOperation.operation === 'change_role' && !bulkOperation.role)
+              }
               variant={bulkOperation.operation === 'delete' ? 'destructive' : 'default'}
             >
               {isPerformingOperation ? "Processing..." : `Perform ${bulkOperation.operation}`}
