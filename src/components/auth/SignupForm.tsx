@@ -18,6 +18,7 @@ import {
   verifyGoogleToken, 
   initializeGoogleAuth,
 } from "@/lib/api/socialAuth";
+import { getRedirectUrl } from "@/utils/redirectUtils";
 
 const signupSchema = z.object({
   firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
@@ -181,7 +182,8 @@ export default function SignupForm() {
             description: `Welcome to Tiny Steps A Day, ${user.firstName || user.username}!`,
           });
 
-          router.push(returnUrl);
+          const redirectUrl = getRedirectUrl(user.role as 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'MODERATOR', null, returnUrl);
+          router.push(redirectUrl);
         } else {
           toast.error("Google authentication failed", {
             description: authResult.message,

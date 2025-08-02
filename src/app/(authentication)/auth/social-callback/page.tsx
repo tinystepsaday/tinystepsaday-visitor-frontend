@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import { getRedirectUrl } from '@/utils/redirectUtils';
 
 function SocialCallbackInner() {
   const [isProcessing, setIsProcessing] = useState(true);
@@ -63,11 +64,12 @@ function SocialCallbackInner() {
             }
           );
 
-          // Redirect based on user state
+          // Redirect based on user state and role
           if (isNewUser && !profileCompleted) {
             router.push('/onboarding');
           } else {
-            router.push('/dashboard');
+            const redirectUrl = getRedirectUrl(userData.data.role as 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'MODERATOR');
+            router.push(redirectUrl);
           }
         } else {
           throw new Error('Failed to get user data');

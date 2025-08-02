@@ -14,6 +14,7 @@ export function middleware(request: NextRequest) {
     '/management',
     '/account',
     '/profile',
+    '/onboarding',
   ];
 
   // Check if the current path is a protected route
@@ -26,8 +27,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // For admin routes, we'll let the server component handle role checking
+  // For management routes, we'll let the server component handle role checking
   // since we need to fetch user data to check roles
+  // The server components will redirect unauthorized users appropriately
 
   // Continue with the request
   return NextResponse.next();

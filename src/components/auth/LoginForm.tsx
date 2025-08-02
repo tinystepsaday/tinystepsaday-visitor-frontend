@@ -26,6 +26,7 @@ import {
   verifyGoogleToken, 
   initializeGoogleAuth,
 } from "@/lib/api/socialAuth";
+import { getRedirectUrl } from "@/utils/redirectUtils";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -78,12 +79,13 @@ export default function LoginForm() {
           description: "Welcome back!",
         });
         
-        // Get return URL from search params
-        const returnUrl = searchParams.get('redirect') || searchParams.get('returnUrl') || '/dashboard';
+        // Get user data from auth store and apply role-based redirect
+        const user = useAuthStore.getState().user;
+        const redirectUrl = getRedirectUrl(user?.role as 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'MODERATOR', searchParams.get('redirect'), searchParams.get('returnUrl'));
         
         // Small delay to ensure state is updated
         setTimeout(() => {
-          router.push(returnUrl);
+          router.push(redirectUrl);
         }, 100);
       } else {
         toast.error("Login failed", {
@@ -146,8 +148,8 @@ export default function LoginForm() {
             description: `Welcome, ${user.firstName || user.username}!`,
           });
 
-          const returnUrl = searchParams.get('redirect') || searchParams.get('returnUrl') || '/dashboard';
-          router.push(returnUrl);
+          const redirectUrl = getRedirectUrl(user.role as 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'MODERATOR', searchParams.get('redirect'), searchParams.get('returnUrl'));
+          router.push(redirectUrl);
         } else {
           toast.error("Google authentication failed", {
             description: authResult.message,
