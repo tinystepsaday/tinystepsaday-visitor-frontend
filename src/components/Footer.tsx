@@ -58,7 +58,7 @@ const Footer = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/programs" className="text-foreground/80 hover:text-primary transition-colors">
+                    <Link href="/courses" className="text-foreground/80 hover:text-primary transition-colors">
                       Digital Courses
                     </Link>
                   </li>
@@ -76,18 +76,18 @@ const Footer = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/assessment" className="text-foreground/80 hover:text-primary transition-colors">
+                    <Link href="/quiz" className="text-foreground/80 hover:text-primary transition-colors">
                       Self-Assessment
                     </Link>
                   </li>
                   <li>
                     <Link href="/courses" className="text-foreground/80 hover:text-primary transition-colors">
-                      Free Resources
+                      Courses
                     </Link>
                   </li>
                   <li>
-                    <Link href="/blog" className="text-foreground/80 hover:text-primary transition-colors">
-                      Podcast
+                    <Link href="/streaks" className="text-foreground/80 hover:text-primary transition-colors">
+                      Streaks
                     </Link>
                   </li>
                 </ul>
@@ -114,8 +114,8 @@ const Footer = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/about" className="text-foreground/80 hover:text-primary transition-colors">
-                      Testimonials
+                    <Link href="/gallery" className="text-foreground/80 hover:text-primary transition-colors">
+                      Gallery
                     </Link>
                   </li>
                 </ul>
@@ -137,7 +137,7 @@ const Footer = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/cookies" className="text-foreground/80 hover:text-primary transition-colors">
+                    <Link href="/cookie-policy" className="text-foreground/80 hover:text-primary transition-colors">
                       Cookie Policy
                     </Link>
                   </li>

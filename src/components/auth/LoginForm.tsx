@@ -25,8 +25,6 @@ import {
   googleSignIn, 
   verifyGoogleToken, 
   initializeGoogleAuth,
-  appleSignIn,
-  initializeAppleAuth 
 } from "@/lib/api/socialAuth";
 
 const loginSchema = z.object({
@@ -41,7 +39,6 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isGoogleAuthReady, setIsGoogleAuthReady] = useState(false);
-  const [isAppleAuthReady, setIsAppleAuthReady] = useState(false);
   
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -64,13 +61,6 @@ export default function LoginForm() {
         setIsGoogleAuthReady(true);
       } catch (error) {
         console.error('Failed to initialize Google Auth:', error);
-      }
-
-      try {
-        await initializeAppleAuth();
-        setIsAppleAuthReady(true);
-      } catch (error) {
-        console.error('Failed to initialize Apple Auth:', error);
       }
     };
 
@@ -174,40 +164,40 @@ export default function LoginForm() {
     }
   };
 
-  const handleAppleLogin = async () => {
-    if (!isAppleAuthReady) {
-      toast.error("Apple authentication not ready", {
-        description: "Please wait a moment and try again.",
-      });
-      return;
-    }
+  // const handleAppleLogin = async () => {
+  //   if (!isAppleAuthReady) {
+  //     toast.error("Apple authentication not ready", {
+  //       description: "Please wait a moment and try again.",
+  //     });
+  //     return;
+  //   }
 
-    setIsLoading(true);
+  //   setIsLoading(true);
     
-    try {
-      const response = await appleSignIn() as { authorization?: unknown };
+  //   try {
+  //     const response = await appleSignIn() as { authorization?: unknown };
       
-      if (response.authorization) {
-        // Handle Apple authentication response
-        toast.info("Apple authentication", {
-          description: "Apple authentication is being processed...",
-        });
+  //     if (response.authorization) {
+  //       // Handle Apple authentication response
+  //       toast.info("Apple authentication", {
+  //         description: "Apple authentication is being processed...",
+  //       });
         
-        // TODO: Implement Apple token verification with backend
-        // For now, show a placeholder message
-        toast.info("Apple authentication coming soon!", {
-          description: "This feature is under development.",
-        });
-      }
-    } catch (error: unknown) {
-      console.error("Apple login error:", error);
-      toast.error("Apple login failed", {
-        description: (error as Error).message || "An unexpected error occurred.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //       // TODO: Implement Apple token verification with backend
+  //       // For now, show a placeholder message
+  //       toast.info("Apple authentication coming soon!", {
+  //         description: "This feature is under development.",
+  //       });
+  //     }
+  //   } catch (error: unknown) {
+  //     console.error("Apple login error:", error);
+  //     toast.error("Apple login failed", {
+  //       description: (error as Error).message || "An unexpected error occurred.",
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   return (
     <div className="bg-background rounded-xl shadow-lg p-8 w-full max-w-md">
@@ -236,20 +226,6 @@ export default function LoginForm() {
             </svg>
           )}
           Continue with Google
-        </Button>
-        
-        <Button 
-          variant="outline" 
-          className="w-full"
-          onClick={handleAppleLogin}
-          disabled={isLoading || !isAppleAuthReady}
-        >
-          {isLoading ? (
-            <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-          ) : (
-            <svg className="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>
-          )}
-          Continue with Apple
         </Button>
       </div>
       
