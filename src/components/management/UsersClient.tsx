@@ -46,6 +46,8 @@ const roleConfig = {
 export function UsersClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isCreateUserLoading, setIsCreateUserLoading] = useState(false);
 
   // State
   const [users, setUsers] = useState<User[]>([]);
@@ -94,29 +96,27 @@ export function UsersClient() {
   const [sortOrder, setSortOrder] = useState(searchParams.get("sortOrder") || "desc");
 
   // New user form state
-  const [newUser, setNewUser] = useState<{ 
-    firstName: string; 
-    lastName: string; 
-    email: string; 
+  const [newUser, setNewUser] = useState<{
+    firstName: string;
+    lastName: string;
+    email: string;
     username: string;
-    password: string;
-    role: User['role'];
+    password: string; 
   }>({
     firstName: "",
     lastName: "",
     email: "",
     username: "",
     password: "",
-    role: "USER",
   });
 
   // Generate username from firstName and lastName
   const generateUsername = (firstName: string, lastName: string) => {
     if (!firstName && !lastName) return "";
-    
+
     const first = firstName.toLowerCase().replace(/[^a-z0-9]/g, '');
     const last = lastName.toLowerCase().replace(/[^a-z0-9]/g, '');
-    
+
     if (first && last) {
       return `${first}${last}`;
     } else if (first) {
@@ -254,6 +254,7 @@ export function UsersClient() {
   // Handle create user
   const handleCreateUser = async () => {
     try {
+      setIsCreateUserLoading(true);
       const response = await createUser(newUser);
       if (response) {
         toast.success("User created successfully");
@@ -264,7 +265,6 @@ export function UsersClient() {
           email: "",
           username: "",
           password: "",
-          role: "USER",
         });
         fetchUsers(); // Refresh users after creation
       } else {
@@ -273,6 +273,8 @@ export function UsersClient() {
     } catch (error) {
       console.error("Error creating user:", error);
       toast.error("An error occurred while creating user");
+    } finally {
+      setIsCreateUserLoading(false);
     }
   };
 
@@ -302,7 +304,7 @@ export function UsersClient() {
       }
 
       await bulkUserOperations(operationData);
-      
+
       toast.success(`Bulk operation '${bulkOperation.operation}' completed successfully`);
       setSelectedUsers([]);
       setIsBulkDialogOpen(false);
@@ -323,8 +325,8 @@ export function UsersClient() {
   };
 
   const handleSelectUser = (userId: string) => {
-    setSelectedUsers(prev => 
-      prev.includes(userId) 
+    setSelectedUsers(prev =>
+      prev.includes(userId)
         ? prev.filter(id => id !== userId)
         : [...prev, userId]
     );
@@ -538,46 +540,26 @@ export function UsersClient() {
                   placeholder="johndoe"
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-4 items-start gap-4">
                 <Label htmlFor="password" className="text-right">
                   Password
                 </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={newUser.password}
-                  onChange={(e) => setNewUser((prev) => ({ ...prev, password: e.target.value }))}
-                  className="col-span-3"
-                  placeholder="Password"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="role" className="text-right">
-                  Role
-                </Label>
-                <Select
-                  value={newUser.role}
-                  onValueChange={(value: User['role']) =>
-                    setNewUser((prev) => ({ ...prev, role: value }))
-                  }
-                >
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All roles</SelectItem>
-                    <SelectItem value="USER">User</SelectItem>
-                    <SelectItem value="ADMIN">Admin</SelectItem>
-                    <SelectItem value="MODERATOR">Moderator</SelectItem>
-                    <SelectItem value="INSTRUCTOR">Instructor</SelectItem>
-                    <SelectItem value="SUPER_ADMIN">Super Admin</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex flex-col gap-2 col-span-3">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={newUser.password}
+                    onChange={(e) => setNewUser((prev) => ({ ...prev, password: e.target.value }))}
+                    className="w-full"
+                    placeholder="Password"
+                  />
+                  <span className="text-xs text-muted-foreground" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "Hide Password" : "Show Password"}</span>
+                </div>
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit" onClick={handleCreateUser}>
-                Create User
+              <Button type="submit" onClick={handleCreateUser} disabled={isCreateUserLoading}>
+                {isCreateUserLoading ? "Creating..." : "Create User"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -770,9 +752,9 @@ export function UsersClient() {
               <Label htmlFor="operation">Operation</Label>
               <Select
                 value={bulkOperation.operation}
-                onValueChange={(value) => setBulkOperation(prev => ({ 
-                  ...prev, 
-                  operation: value as 'activate' | 'deactivate' | 'delete' | 'change_role' 
+                onValueChange={(value) => setBulkOperation(prev => ({
+                  ...prev,
+                  operation: value as 'activate' | 'deactivate' | 'delete' | 'change_role'
                 }))}
               >
                 <SelectTrigger>
@@ -823,11 +805,11 @@ export function UsersClient() {
             <Button variant="outline" onClick={() => setIsBulkDialogOpen(false)}>
               Cancel
             </Button>
-            <Button 
-              onClick={handleBulkOperation} 
+            <Button
+              onClick={handleBulkOperation}
               disabled={
-                isPerformingOperation || 
-                !bulkOperation.reason || 
+                isPerformingOperation ||
+                !bulkOperation.reason ||
                 (bulkOperation.operation === 'change_role' && !bulkOperation.role)
               }
               variant={bulkOperation.operation === 'delete' ? 'destructive' : 'default'}
@@ -849,8 +831,8 @@ export function UsersClient() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleBulkOperation} 
+            <AlertDialogAction
+              onClick={handleBulkOperation}
               className="bg-destructive text-destructive-foreground"
               disabled={isPerformingOperation}
             >

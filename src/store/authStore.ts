@@ -48,7 +48,8 @@ type AuthStore = {
   isSyncingUser: boolean;
   
   // Core auth methods
-  login: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean; message: string }>;
+  initializeAuth: () => void;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean; message: string; user?: User }>;
   signup: (userData: SignupRequest) => Promise<{ success: boolean; message: string }>;
   logout: () => Promise<void>;
   refreshToken: () => Promise<boolean>;
@@ -87,6 +88,40 @@ export const useAuthStore = create<AuthStore>()(
       rememberMe: false,
       lastUserSync: null,
       isSyncingUser: false,
+      
+      // Initialize auth state from localStorage
+      initializeAuth: () => {
+        if (typeof window === 'undefined') return;
+        
+        try {
+          const storedUser = localStorage.getItem('user');
+          const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+          const isAdmin = localStorage.getItem('isAdmin') === 'true';
+          const isSuperAdmin = localStorage.getItem('isSuperAdmin') === 'true';
+          const isModerator = localStorage.getItem('isModerator') === 'true';
+          const isInstructor = localStorage.getItem('isInstructor') === 'true';
+          
+          if (storedUser && isLoggedIn) {
+            const user = JSON.parse(storedUser);
+            console.log('AuthStore: Initializing from localStorage', { user, isLoggedIn });
+            set({ 
+              user, 
+              isLoggedIn, 
+              isAdmin, 
+              isSuperAdmin, 
+              isModerator, 
+              isInstructor,
+              isLoading: false 
+            });
+          } else {
+            console.log('AuthStore: No stored auth data found');
+            set({ isLoading: false });
+          }
+        } catch (error) {
+          console.error('AuthStore: Error initializing from localStorage', error);
+          set({ isLoading: false });
+        }
+      },
       
       login: async (email: string, password: string, rememberMe: boolean = false) => {
         set({ isLoading: true });
@@ -151,7 +186,7 @@ export const useAuthStore = create<AuthStore>()(
               get().syncUserData();
             }, 1000);
             
-            return { success: true, message: response.message };
+            return { success: true, message: response.message, user: userWithName };
           } else {
             set({ isLoading: false });
             return { 

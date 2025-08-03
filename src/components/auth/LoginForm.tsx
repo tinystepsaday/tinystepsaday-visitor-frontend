@@ -79,14 +79,19 @@ export default function LoginForm() {
           description: "Welcome back!",
         });
         
-        // Get user data from auth store and apply role-based redirect
-        const user = useAuthStore.getState().user;
-        const redirectUrl = getRedirectUrl(user?.role as 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'MODERATOR', searchParams.get('redirect'), searchParams.get('returnUrl'));
-        
-        // Small delay to ensure state is updated
-        setTimeout(() => {
-          router.push(redirectUrl);
-        }, 100);
+        // Use the user data returned from the login function
+        if (result.user) {
+          console.log('Login successful - User data:', result.user);
+          const redirectUrl = getRedirectUrl(result.user.role as 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'MODERATOR', searchParams.get('redirect'), searchParams.get('returnUrl'));
+          console.log('Redirecting to:', redirectUrl);
+          
+          // Use window.location.href for reliable redirect
+          window.location.href = redirectUrl;
+        } else {
+          // Fallback to default redirect
+          console.log('No user data in result, redirecting to dashboard');
+          window.location.href = '/dashboard';
+        }
       } else {
         toast.error("Login failed", {
           description: result.message,
@@ -123,15 +128,18 @@ export default function LoginForm() {
           // Store tokens and user data
           const { user, token, refreshToken } = authResult.data;
           
-          // Update auth store
-          useAuthStore.getState().setUser({
+          // Create user object with enhanced fields
+          const userWithEnhancedFields = {
             ...user,
             permissions: [],
-            subscriptionTier: 'free',
-            subscriptionStatus: 'active',
+            subscriptionTier: 'free' as const,
+            subscriptionStatus: 'active' as const,
             subscriptionExpiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
             lastDataSync: new Date().toISOString(),
-          });
+          };
+          
+          // Update auth store
+          useAuthStore.getState().setUser(userWithEnhancedFields);
           
           // Store tokens
           localStorage.setItem('accessToken', token);
@@ -148,8 +156,12 @@ export default function LoginForm() {
             description: `Welcome, ${user.firstName || user.username}!`,
           });
 
+          // Use the user data directly for redirect
           const redirectUrl = getRedirectUrl(user.role as 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'MODERATOR', searchParams.get('redirect'), searchParams.get('returnUrl'));
-          router.push(redirectUrl);
+          console.log('Google login redirectUrl:', redirectUrl);
+          
+          // Use window.location.href for reliable redirect
+          window.location.href = redirectUrl;
         } else {
           toast.error("Google authentication failed", {
             description: authResult.message,
