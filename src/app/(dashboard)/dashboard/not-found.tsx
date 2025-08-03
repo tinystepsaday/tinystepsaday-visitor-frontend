@@ -8,12 +8,6 @@ export const metadata: Metadata = {
 }
 
 export default function NotFound() {
-    const jsonLd = {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "404 - Page Not Found",
-        description: "The page you are looking for does not exist.",
-    }
     return (
         <div className="min-h-screen flex flex-col items-center justify-center w-full bg-gradient-to-br from-violet-100 via-white to-violet-50 dark:from-violet-950 dark:via-gray-950 dark:to-violet-900 px-4 py-12">
             <div className="flex flex-col items-center gap-6 animate-fade-in">
@@ -31,9 +25,8 @@ export default function NotFound() {
                 <h1 className="text-7xl font-extrabold text-violet-600 drop-shadow-sm tracking-tight dark:text-violet-300">404</h1>
                 <h2 className="text-2xl font-semibold text-gray-700 mb-2 dark:text-gray-200">Oops! Page Not Found</h2>
                 <p className="text-gray-500 text-center max-w-md mb-6 dark:text-gray-400">The page you are looking for doesn&apos;t exist or has been moved. Let&apos;s get you back on track!</p>
-                <Link href="/" className="inline-block px-6 py-3 rounded-lg bg-violet-600 text-white font-medium shadow-md hover:bg-violet-700 transition-colors dark:bg-violet-800 dark:hover:bg-violet-700">Go Home</Link>
+                <Link href="/dashboard" className="inline-block px-6 py-3 rounded-lg bg-violet-600 text-white font-medium shadow-md hover:bg-violet-700 transition-colors dark:bg-violet-800 dark:hover:bg-violet-700">Go to Dashboard</Link>
             </div>
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         </div>
     );
 }
