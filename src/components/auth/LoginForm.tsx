@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
+// import { Separator } from "@/components/ui/separator";
 import {
   Form,
   FormControl,
@@ -22,8 +22,8 @@ import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { toast } from "sonner";
 import { 
-  googleSignIn, 
-  verifyGoogleToken, 
+  // googleSignIn, 
+  // verifyGoogleToken, 
   initializeGoogleAuth,
 } from "@/lib/api/socialAuth";
 import { getRedirectUrl } from "@/utils/redirectUtils";
@@ -39,7 +39,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [isGoogleAuthReady, setIsGoogleAuthReady] = useState(false);
+  // const [isGoogleAuthReady, setIsGoogleAuthReady] = useState(false);
   
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -59,7 +59,7 @@ export default function LoginForm() {
     const initializeSocialAuth = async () => {
       try {
         await initializeGoogleAuth();
-        setIsGoogleAuthReady(true);
+        // setIsGoogleAuthReady(true);
       } catch (error) {
         console.error('Failed to initialize Google Auth:', error);
       }
@@ -107,76 +107,76 @@ export default function LoginForm() {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    if (!isGoogleAuthReady) {
-      toast.error("Google authentication not ready", {
-        description: "Please wait a moment and try again.",
-      });
-      return;
-    }
+  // const handleGoogleLogin = async () => {
+  //   if (!isGoogleAuthReady) {
+  //     toast.error("Google authentication not ready", {
+  //       description: "Please wait a moment and try again.",
+  //     });
+  //     return;
+  //   }
 
-    setIsLoading(true);
+  //   setIsLoading(true);
     
-    try {
-      const response = await googleSignIn() as { access_token?: string };
+  //   try {
+  //     const response = await googleSignIn() as { access_token?: string };
       
-      if (response.access_token) {
-        // Verify the token with our backend
-        const authResult = await verifyGoogleToken(response.access_token);
+  //     if (response.access_token) {
+  //       // Verify the token with our backend
+  //       const authResult = await verifyGoogleToken(response.access_token);
         
-        if (authResult.success && authResult.data) {
-          // Store tokens and user data
-          const { user, token, refreshToken } = authResult.data;
+  //       if (authResult.success && authResult.data) {
+  //         // Store tokens and user data
+  //         const { user, token, refreshToken } = authResult.data;
           
-          // Create user object with enhanced fields
-          const userWithEnhancedFields = {
-            ...user,
-            permissions: [],
-            subscriptionTier: 'free' as const,
-            subscriptionStatus: 'active' as const,
-            subscriptionExpiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            lastDataSync: new Date().toISOString(),
-          };
+  //         // Create user object with enhanced fields
+  //         const userWithEnhancedFields = {
+  //           ...user,
+  //           permissions: [],
+  //           subscriptionTier: 'free' as const,
+  //           subscriptionStatus: 'active' as const,
+  //           subscriptionExpiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+  //           lastDataSync: new Date().toISOString(),
+  //         };
           
-          // Update auth store
-          useAuthStore.getState().setUser(userWithEnhancedFields);
+  //         // Update auth store
+  //         useAuthStore.getState().setUser(userWithEnhancedFields);
           
-          // Store tokens
-          localStorage.setItem('accessToken', token);
-          localStorage.setItem('refreshToken', refreshToken);
+  //         // Store tokens
+  //         localStorage.setItem('accessToken', token);
+  //         localStorage.setItem('refreshToken', refreshToken);
           
-          // Sync with server
-          await fetch('/api/auth/sync', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ accessToken: token, refreshToken }),
-          });
+  //         // Sync with server
+  //         await fetch('/api/auth/sync', {
+  //           method: 'POST',
+  //           headers: { 'Content-Type': 'application/json' },
+  //           body: JSON.stringify({ accessToken: token, refreshToken }),
+  //         });
 
-          toast.success("Google login successful!", {
-            description: `Welcome, ${user.firstName || user.username}!`,
-          });
+  //         toast.success("Google login successful!", {
+  //           description: `Welcome, ${user.firstName || user.username}!`,
+  //         });
 
-          // Use the user data directly for redirect
-          const redirectUrl = getRedirectUrl(user.role as 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'MODERATOR', searchParams.get('redirect'), searchParams.get('returnUrl'));
-          console.log('Google login redirectUrl:', redirectUrl);
+  //         // Use the user data directly for redirect
+  //         const redirectUrl = getRedirectUrl(user.role as 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'MODERATOR', searchParams.get('redirect'), searchParams.get('returnUrl'));
+  //         console.log('Google login redirectUrl:', redirectUrl);
           
-          // Use window.location.href for reliable redirect
-          window.location.href = redirectUrl;
-        } else {
-          toast.error("Google authentication failed", {
-            description: authResult.message,
-          });
-        }
-      }
-    } catch (error: unknown) {
-      console.error("Google login error:", error);
-      toast.error("Google login failed", {
-        description: (error as Error).message || "An unexpected error occurred.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //         // Use window.location.href for reliable redirect
+  //         window.location.href = redirectUrl;
+  //       } else {
+  //         toast.error("Google authentication failed", {
+  //           description: authResult.message,
+  //         });
+  //       }
+  //     }
+  //   } catch (error: unknown) {
+  //     console.error("Google login error:", error);
+  //     toast.error("Google login failed", {
+  //       description: (error as Error).message || "An unexpected error occurred.",
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   // const handleAppleLogin = async () => {
   //   if (!isAppleAuthReady) {
@@ -222,7 +222,7 @@ export default function LoginForm() {
         </p>
       </div>
       
-      <div className="space-y-4 mb-6">
+      {/* <div className="space-y-4 mb-6">
         <Button 
           variant="outline" 
           className="w-full"
@@ -248,7 +248,7 @@ export default function LoginForm() {
         <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">
           or continue with email
         </span>
-      </div>
+      </div> */}
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

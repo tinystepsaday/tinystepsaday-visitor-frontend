@@ -3,22 +3,22 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+// import { Separator } from "@/components/ui/separator";
 import { Form, FormField, FormItem, FormLabel, FormMessage, FormControl } from "@/components/ui/form";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { User, Mail, Lock, ArrowRight, Eye, Loader2 } from "lucide-react";
+import { User, Mail, Lock, ArrowRight, Eye } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { 
-  googleSignIn, 
-  verifyGoogleToken, 
+  // googleSignIn, 
+  // verifyGoogleToken, 
   initializeGoogleAuth,
 } from "@/lib/api/socialAuth";
-import { getRedirectUrl } from "@/utils/redirectUtils";
+// import { getRedirectUrl } from "@/utils/redirectUtils";
 
 const signupSchema = z.object({
   firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
@@ -43,7 +43,7 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 
 export default function SignupForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleAuthReady, setIsGoogleAuthReady] = useState(false);
+  // const [isGoogleAuthReady, setIsGoogleAuthReady] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
@@ -55,7 +55,7 @@ export default function SignupForm() {
     const initializeSocialAuth = async () => {
       try {
         await initializeGoogleAuth();
-        setIsGoogleAuthReady(true);
+        // setIsGoogleAuthReady(true);
       } catch (error) {
         console.error('Failed to initialize Google Auth:', error);
       }
@@ -136,69 +136,69 @@ export default function SignupForm() {
     }
   };
 
-  const handleGoogleSignup = async () => {
-    if (!isGoogleAuthReady) {
-      toast.error("Google authentication not ready", {
-        description: "Please wait a moment and try again.",
-      });
-      return;
-    }
+  // const handleGoogleSignup = async () => {
+  //   if (!isGoogleAuthReady) {
+  //     toast.error("Google authentication not ready", {
+  //       description: "Please wait a moment and try again.",
+  //     });
+  //     return;
+  //   }
 
-    setIsLoading(true);
+  //   setIsLoading(true);
     
-    try {
-      const response = await googleSignIn() as { access_token?: string };
+  //   try {
+  //     const response = await googleSignIn() as { access_token?: string };
       
-      if (response.access_token) {
-        // Verify the token with our backend
-        const authResult = await verifyGoogleToken(response.access_token);
+  //     if (response.access_token) {
+  //       // Verify the token with our backend
+  //       const authResult = await verifyGoogleToken(response.access_token);
         
-        if (authResult.success && authResult.data) {
-          // Store tokens and user data
-          const { user, token, refreshToken } = authResult.data;
+  //       if (authResult.success && authResult.data) {
+  //         // Store tokens and user data
+  //         const { user, token, refreshToken } = authResult.data;
           
-          // Update auth store
-          useAuthStore.getState().setUser({
-            ...user,
-            permissions: [],
-            subscriptionTier: 'free',
-            subscriptionStatus: 'active',
-            subscriptionExpiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            lastDataSync: new Date().toISOString(),
-          });
+  //         // Update auth store
+  //         useAuthStore.getState().setUser({
+  //           ...user,
+  //           permissions: [],
+  //           subscriptionTier: 'free',
+  //           subscriptionStatus: 'active',
+  //           subscriptionExpiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+  //           lastDataSync: new Date().toISOString(),
+  //         });
           
-          // Store tokens
-          localStorage.setItem('accessToken', token);
-          localStorage.setItem('refreshToken', refreshToken);
+  //         // Store tokens
+  //         localStorage.setItem('accessToken', token);
+  //         localStorage.setItem('refreshToken', refreshToken);
           
-          // Sync with server
-          await fetch('/api/auth/sync', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ accessToken: token, refreshToken }),
-          });
+  //         // Sync with server
+  //         await fetch('/api/auth/sync', {
+  //           method: 'POST',
+  //           headers: { 'Content-Type': 'application/json' },
+  //           body: JSON.stringify({ accessToken: token, refreshToken }),
+  //         });
 
-          toast.success("Google signup successful!", {
-            description: `Welcome to Tiny Steps A Day, ${user.firstName || user.username}!`,
-          });
+  //         toast.success("Google signup successful!", {
+  //           description: `Welcome to Tiny Steps A Day, ${user.firstName || user.username}!`,
+  //         });
 
-          const redirectUrl = getRedirectUrl(user.role as 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'MODERATOR', null, returnUrl);
-          router.push(redirectUrl);
-        } else {
-          toast.error("Google authentication failed", {
-            description: authResult.message,
-          });
-        }
-      }
-    } catch (error: unknown) {
-      console.error("Google signup error:", error);
-      toast.error("Google signup failed", {
-        description: (error as Error).message || "An unexpected error occurred.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //         const redirectUrl = getRedirectUrl(user.role as 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'MODERATOR', null, returnUrl);
+  //         router.push(redirectUrl);
+  //       } else {
+  //         toast.error("Google authentication failed", {
+  //           description: authResult.message,
+  //         });
+  //       }
+  //     }
+  //   } catch (error: unknown) {
+  //     console.error("Google signup error:", error);
+  //     toast.error("Google signup failed", {
+  //       description: (error as Error).message || "An unexpected error occurred.",
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   // const handleAppleSignup = async () => {
   //   if (!isAppleAuthReady) {
@@ -244,7 +244,7 @@ export default function SignupForm() {
         </p>
       </div>
 
-      <div className="space-y-4 mb-6">
+      {/* <div className="space-y-4 mb-6">
         <Button
           variant="outline"
           className="w-full"
@@ -263,20 +263,6 @@ export default function SignupForm() {
           )}
           Sign up with Google
         </Button>
-
-        {/* <Button
-          variant="outline"
-          className="w-full"
-          onClick={handleAppleSignup}
-          disabled={isLoading || !isAppleAuthReady}
-        >
-          {isLoading ? (
-            <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-          ) : (
-            <svg className="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z" /><path d="M10 2c1 .5 2 2 2 5" /></svg>
-          )}
-          Sign up with Apple
-        </Button> */}
       </div>
 
       <div className="relative mb-6">
@@ -284,7 +270,7 @@ export default function SignupForm() {
         <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">
           or sign up with email
         </span>
-      </div>
+      </div> */}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

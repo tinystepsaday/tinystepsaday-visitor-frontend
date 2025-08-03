@@ -9,6 +9,20 @@ import {
   LayoutDashboard,
   X,
   ShoppingBag,
+  ChevronDown,
+  ChevronRight,
+  BookOpen,
+  Calendar,
+  Heart,
+  Lightbulb,
+  MessagesSquare,
+  Users,
+  ArrowRight,
+  Briefcase,
+  UserRound,
+  Home,
+  Zap,
+  DollarSign
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
@@ -24,6 +38,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const pathname = usePathname();
 
   const { isLoggedIn } = useAuthStore();
@@ -42,6 +57,12 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsOpen(false);
+    setExpandedSections([]);
+  }, [pathname]);
+
   const toggleTheme = () => {
     setIsDark(!isDark);
     if (!isDark) {
@@ -51,34 +72,91 @@ const Navbar = () => {
     }
   };
 
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => 
+      prev.includes(section) 
+        ? prev.filter(s => s !== section)
+        : [...prev, section]
+    );
+  };
+
   const mainNavLinks = [
-    { name: "Home", path: "/" },
-    { name: "Quiz", path: "/quiz" },
-    { name: "Pricing", path: "/pricing" }
+    { name: "Home", path: "/", icon: Home },
+    { name: "Quiz", path: "/quiz", icon: Zap },
+    { name: "Pricing", path: "/pricing", icon: DollarSign }
   ];
 
   const resourcesDropdown = [
-    { name: "Programs", path: "/programs" },
-    { name: "Courses", path: "/courses" },
-    { name: "Blog", path: "/blog" },
-    { name: "Events", path: "/events" },
-    { name: "Streaks", path: "/streaks" },
+    { name: "Programs", path: "/programs", icon: Lightbulb, description: "Personalized guidance and support" },
+    { name: "Courses", path: "/courses", icon: BookOpen, description: "Self-paced learning for personal growth" },
+    { name: "Blog", path: "/blog", icon: Lightbulb, description: "Insights and wisdom for your journey" },
+    { name: "Events", path: "/events", icon: Calendar, description: "Workshops, retreats, and gatherings" },
+    { name: "Streaks", path: "/streaks", icon: Heart, description: "Build positive habits consistently" },
   ];
 
   const exploreDropdown = [
-    { name: "Gallery", path: "/gallery" },
-    { name: "Shop", path: "/shop" },
-    { name: "Schedule", path: "/schedule" },
-    { name: "Community", path: "/community" },
-    { name: "Contact", path: "/contact" },
+    { name: "Gallery", path: "/gallery", icon: Users, description: "Inspiration and visual content" },
+    { name: "Shop", path: "/shop", icon: ShoppingBag, description: "Wellness products and resources" },
+    { name: "Schedule", path: "/schedule", icon: Calendar, description: "Book sessions and consultations" },
+    { name: "Community", path: "/community", icon: Users, description: "Connect with like-minded individuals" },
+    { name: "Contact", path: "/contact", icon: MessagesSquare, description: "Get in touch with our team" },
   ];
 
   const aboutDropdown = [
-    { name: "About Us", path: "/about" },
-    { name: "Careers", path: "/careers" },
+    { name: "About Us", path: "/about", icon: UserRound, description: "Our mission and values" },
+    { name: "Careers", path: "/careers", icon: Briefcase, description: "Join our growing team" },
   ];
 
-  console.log(pathname);
+  const renderMobileMenuItem = (item: { name: string; path: string; icon?: React.ComponentType<{ className?: string }>; description?: string }) => {
+    const IconComponent = item.icon;
+    return (
+      <li key={item.name} className="list-none">
+        <Link
+          href={item.path}
+          className="flex items-center gap-3 p-3 text-foreground/80 hover:text-primary hover:bg-accent/50 rounded-lg transition-colors"
+          onClick={() => setIsOpen(false)}
+        >
+          {IconComponent && <IconComponent className="h-5 w-5 flex-shrink-0" />}
+          <div className="flex-1">
+            <span className="font-medium">{item.name}</span>
+            {item.description && (
+              <p className="text-xs text-muted-foreground mt-1">{item.description}</p>
+            )}
+          </div>
+          <ArrowRight className="h-4 w-4 text-muted-foreground" />
+        </Link>
+      </li>
+    );
+  };
+
+  const renderMobileDropdownSection = (
+    title: string,
+    items: { name: string; path: string; icon?: React.ComponentType<{ className?: string }>; description?: string }[],
+    sectionKey: string
+  ) => {
+    const isExpanded = expandedSections.includes(sectionKey);
+    
+    return (
+      <li key={sectionKey} className="list-none">
+        <button
+          onClick={() => toggleSection(sectionKey)}
+          className="flex items-center justify-between w-full p-3 text-left font-semibold text-foreground hover:bg-accent/50 rounded-lg transition-colors"
+        >
+          <span>{title}</span>
+          {isExpanded ? (
+            <ChevronDown className="h-5 w-5" />
+          ) : (
+            <ChevronRight className="h-5 w-5" />
+          )}
+        </button>
+        {isExpanded && (
+          <ul className="ml-4 mt-2 space-y-1 border-l-2 border-muted pl-4 list-none">
+            {items.map(renderMobileMenuItem)}
+          </ul>
+        )}
+      </li>
+    );
+  };
 
   return (
     <nav
@@ -140,7 +218,7 @@ const Navbar = () => {
           )}
         </div>
 
-        <div className="md:hidden flex items-center space-x-4">
+        <div className="md:hidden flex items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
@@ -149,6 +227,7 @@ const Navbar = () => {
           >
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
+          
           <Button
             variant="outline"
             size="sm"
@@ -169,6 +248,7 @@ const Navbar = () => {
             size="icon"
             onClick={() => setIsOpen(!isOpen)}
             className="text-foreground"
+            aria-label={isOpen ? "Close menu" : "Open menu"}
           >
             {isOpen ? (
               <X className="h-6 w-6" />
@@ -179,94 +259,76 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* Mobile Navigation Menu */}
       {isOpen && (
-        <div className="md:hidden absolute top-16 left-0 right-0 bg-background shadow-md p-4 border-t animate-fade-in">
-          <ul className="flex flex-col space-y-4">
-            {mainNavLinks.map((link) => (
-              <li key={link.name}>
-                <Link
-                  href={link.path}
-                  className="text-foreground/80 hover:text-primary transition-colors block py-2"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {link.name}
-                </Link>
-              </li>
-            ))}
+        <div className="md:hidden fixed inset-0 top-16 bg-background/95 backdrop-blur-sm z-40">
+          <div className="h-full overflow-y-auto">
+            <div className="p-6 space-y-6">
+              {/* Main Navigation Links */}
+              <div>
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                  Main Navigation
+                </h3>
+                <ul className="space-y-1 list-none">
+                  {mainNavLinks.map(renderMobileMenuItem)}
+                </ul>
+              </div>
 
-            <li className="py-2 font-semibold">About</li>
-            {aboutDropdown.map((item) => (
-              <li key={item.name} className="pl-4">
-                <Link
-                  href={item.path}
-                  className="text-foreground/80 hover:text-primary transition-colors block py-2"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              </li>
-            ))}
+              {/* About Section */}
+              <div>
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                  About
+                </h3>
+                <ul className="space-y-1 list-none">
+                  {aboutDropdown.map(renderMobileMenuItem)}
+                </ul>
+              </div>
 
-            <li className="py-2 font-semibold">Resources</li>
-            {resourcesDropdown.map((item) => (
-              <li key={item.name} className="pl-4">
-                <Link
-                  href={item.path}
-                  className="text-foreground/80 hover:text-primary transition-colors block py-2"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              </li>
-            ))}
+              {/* Resources Section */}
+              {renderMobileDropdownSection("Resources", resourcesDropdown, "resources")}
 
-            <li className="py-2 font-semibold">Explore</li>
-            {exploreDropdown.map((item) => (
-              <li key={item.name} className="pl-4">
-                <Link
-                  href={item.path}
-                  className="text-foreground/80 hover:text-primary transition-colors block py-2"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              </li>
-            ))}
+              {/* Explore Section */}
+              {renderMobileDropdownSection("Explore", exploreDropdown, "explore")}
 
-            <li className="pt-2 border-t">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleTheme}
-                className="w-full flex justify-center items-center py-2 mb-2"
-              >
-                {isDark ? (
-                  <>
-                    <Sun className="h-4 w-4 mr-2" /> Light Mode
-                  </>
+              {/* Action Buttons */}
+              <div className="pt-6 border-t space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Theme</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={toggleTheme}
+                    className="flex items-center gap-2"
+                  >
+                    {isDark ? (
+                      <>
+                        <Sun className="h-4 w-4" /> Light Mode
+                      </>
+                    ) : (
+                      <>
+                        <Moon className="h-4 w-4" /> Dark Mode
+                      </>
+                    )}
+                  </Button>
+                </div>
+
+                {isLoggedIn ? (
+                  <Button asChild className="w-full rounded-full">
+                    <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                      <LayoutDashboard className="h-4 w-4 mr-2" />
+                      Dashboard
+                    </Link>
+                  </Button>
                 ) : (
-                  <>
-                    <Moon className="h-4 w-4 mr-2" /> Dark Mode
-                  </>
+                  <Button asChild className="w-full rounded-full">
+                    <Link href="/auth/login" onClick={() => setIsOpen(false)}>
+                      Sign In
+                    </Link>
+                  </Button>
                 )}
-              </Button>
-
-              {isLoggedIn ? (
-                <Button asChild className="w-full rounded-full">
-                  <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                    <LayoutDashboard className="h-4 w-4 mr-2" />
-                    Dashboard
-                  </Link>
-                </Button>
-              ) : (
-                <Button asChild className="w-full rounded-full">
-                  <Link href="/auth/login" onClick={() => setIsOpen(false)}>
-                    Sign In
-                  </Link>
-                </Button>
-              )}
-            </li>
-          </ul>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
