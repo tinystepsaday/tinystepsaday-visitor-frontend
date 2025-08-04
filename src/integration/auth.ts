@@ -1,57 +1,4 @@
-import axios from "axios";
-
-const authApi = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL + "/api/users",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-// Add request interceptor to include auth token
-authApi.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// Add response interceptor to handle token refresh
-authApi.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (refreshToken) {
-        try {
-          const response = await authApi.post('/refresh-token', {
-            refreshToken
-          });
-          
-          const { token } = response.data.data;
-          localStorage.setItem('accessToken', token);
-          
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          return authApi(originalRequest);
-        } catch (refreshError) {
-          // Refresh token failed, redirect to login
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          localStorage.removeItem('user');
-          localStorage.setItem('isLoggedIn', 'false');
-          window.location.href = '/auth/login';
-          return Promise.reject(refreshError);
-        }
-      }
-    }
-    
-    return Promise.reject(error);
-  }
-);
+import apiClient from './apiClient';
 
 export interface LoginResponse {
   success: boolean;
@@ -176,52 +123,73 @@ export interface ResetPasswordRequest {
 }
 
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
-  const response = await authApi.post("/login", credentials);
-  return response.data;
+  const response = await apiClient.post<LoginResponse>("/api/users/login", credentials);
+  
+  // Store tokens using the token manager
+  if (response.success && response.data) {
+    apiClient.getTokenManager().setTokens(response.data.token, response.data.refreshToken);
+  }
+  
+  return response;
 };
 
 export const signup = async (userData: SignupRequest): Promise<SignupResponse> => {
-  const response = await authApi.post("/register", userData);
-  return response.data;
+  const response = await apiClient.post<SignupResponse>("/api/users/register", userData);
+  return response;
 };
 
 export const verifyEmail = async (verificationData: VerifyEmailRequest): Promise<VerifyEmailResponse> => {
-  const response = await authApi.post("/verify-email", verificationData);
-  return response.data;
+  const response = await apiClient.post<VerifyEmailResponse>("/api/users/verify-email", verificationData);
+  return response;
 };
 
 export const resendVerificationCode = async (email: string): Promise<ResendVerificationResponse> => {
-  const response = await authApi.post("/resend-verification", { email });
-  return response.data;
+  const response = await apiClient.post<ResendVerificationResponse>("/api/users/resend-verification", { email });
+  return response;
 };
 
 export const forgotPassword = async (email: string): Promise<ForgotPasswordResponse> => {
-  const response = await authApi.post("/forgot-password", { email });
-  return response.data;
+  const response = await apiClient.post<ForgotPasswordResponse>("/api/users/forgot-password", { email });
+  return response;
 };
 
 export const resetPassword = async (resetData: ResetPasswordRequest): Promise<ResetPasswordResponse> => {
-  const response = await authApi.post("/reset-password", resetData);
-  return response.data;
+  const response = await apiClient.post<ResetPasswordResponse>("/api/users/reset-password", resetData);
+  return response;
 };
 
 export const refreshToken = async (refreshToken: string): Promise<LoginResponse> => {
-  const response = await authApi.post("/refresh-token", { refreshToken });
-  return response.data;
+  const response = await apiClient.post<LoginResponse>("/api/users/refresh-token", { refreshToken });
+  
+  // Store new tokens if refresh was successful
+  if (response.success && response.data) {
+    apiClient.getTokenManager().setTokens(response.data.token, response.data.refreshToken);
+  }
+  
+  return response;
 };
 
 export const logout = async (): Promise<void> => {
   try {
-    await authApi.post("/logout");
+    await apiClient.post("/api/users/logout");
   } catch (error) {
     // Even if logout fails, clear local storage
     console.error("Logout error:", error);
   } finally {
-    // Always clear local storage
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-    localStorage.setItem('isLoggedIn', 'false');
-    window.location.href = '/auth/login';
+    // Always clear tokens and redirect
+    apiClient.getTokenManager().clearTokens();
+    
+    // Clear user data
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('user');
+      localStorage.setItem('isLoggedIn', 'false');
+      localStorage.removeItem('isAdmin');
+      localStorage.removeItem('isSuperAdmin');
+      localStorage.removeItem('isModerator');
+      localStorage.removeItem('isInstructor');
+      
+      // Redirect to login page
+      window.location.href = '/auth/login';
+    }
   }
 };

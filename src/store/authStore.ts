@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { getSubscription } from "@/utils/localStorage";
-import { login as loginApi, logout as logoutApi, signup as signupApi, refreshToken as refreshTokenApi, LoginResponse, SignupResponse, SignupRequest } from "@/integration/auth";
+import { login as loginApi, logout as logoutApi, signup as signupApi, LoginResponse, SignupResponse, SignupRequest } from "@/integration/auth";
+import apiClient from "@/integration/apiClient";
 
 // Enhanced User type with subscription and permissions
 type User = {
@@ -66,6 +67,11 @@ type AuthStore = {
   hasPermission: (permission: string) => boolean;
   hasSubscription: (tier?: string) => boolean;
   isSubscriptionActive: () => boolean;
+  
+  // Token management
+  checkTokenValidity: () => boolean;
+  getTokenExpirationInfo: () => { isExpired: boolean; expiresIn: number; expiresAt: Date } | null;
+  startTokenMonitoring: () => void;
 };
 
 // Initialize with data from localStorage if available
@@ -89,21 +95,25 @@ export const useAuthStore = create<AuthStore>()(
       lastUserSync: null,
       isSyncingUser: false,
       
-      // Initialize auth state from localStorage
+      // Initialize auth state from localStorage with token validation
       initializeAuth: () => {
         if (typeof window === 'undefined') return;
         
         try {
           const storedUser = localStorage.getItem('user');
           const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-          const isAdmin = localStorage.getItem('isAdmin') === 'true';
-          const isSuperAdmin = localStorage.getItem('isSuperAdmin') === 'true';
-          const isModerator = localStorage.getItem('isModerator') === 'true';
-          const isInstructor = localStorage.getItem('isInstructor') === 'true';
           
-          if (storedUser && isLoggedIn) {
+          // Check if user is actually authenticated with valid tokens
+          const isAuthenticated = apiClient.isAuthenticated();
+          
+          if (storedUser && isLoggedIn && isAuthenticated) {
             const user = JSON.parse(storedUser);
-            console.log('AuthStore: Initializing from localStorage', { user, isLoggedIn });
+            const isAdmin = user.role === 'ADMIN';
+            const isSuperAdmin = user.role === 'SUPER_ADMIN';
+            const isModerator = user.role === 'MODERATOR';
+            const isInstructor = user.role === 'INSTRUCTOR';
+            
+            console.log('AuthStore: Initializing from localStorage with valid tokens', { user, isLoggedIn });
             set({ 
               user, 
               isLoggedIn, 
@@ -113,13 +123,16 @@ export const useAuthStore = create<AuthStore>()(
               isInstructor,
               isLoading: false 
             });
+            
+            // Start token monitoring
+            get().startTokenMonitoring();
           } else {
-            console.log('AuthStore: No stored auth data found');
-            set({ isLoading: false });
+            console.log('AuthStore: No valid auth data found, clearing state');
+            get().clearAuth();
           }
         } catch (error) {
           console.error('AuthStore: Error initializing from localStorage', error);
-          set({ isLoading: false });
+          get().clearAuth();
         }
       },
       
@@ -130,11 +143,7 @@ export const useAuthStore = create<AuthStore>()(
           const response: LoginResponse = await loginApi({ email, password, rememberMe });
           
           if (response.success && response.data) {
-            const { user, token, refreshToken } = response.data;
-            
-            // Store tokens
-            localStorage.setItem('accessToken', token);
-            localStorage.setItem('refreshToken', refreshToken);
+            const { user } = response.data;
             
             // Check if user is admin
             const isAdmin = user.role === 'ADMIN';
@@ -180,6 +189,9 @@ export const useAuthStore = create<AuthStore>()(
             
             // Check subscription status
             get().checkSubscription();
+            
+            // Start token monitoring
+            get().startTokenMonitoring();
             
             // Sync user data from server
             setTimeout(() => {
@@ -281,13 +293,14 @@ export const useAuthStore = create<AuthStore>()(
         
         // Clear from localStorage
         localStorage.removeItem('user');
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
         localStorage.setItem('isLoggedIn', 'false');
         localStorage.removeItem('isAdmin');
         localStorage.removeItem('isSuperAdmin');
         localStorage.removeItem('isModerator');
         localStorage.removeItem('isInstructor');
+        
+        // Clear tokens using the token manager
+        apiClient.getTokenManager().clearTokens();
       },
       
       setUser: (user: User) => {
@@ -337,43 +350,25 @@ export const useAuthStore = create<AuthStore>()(
         set({ isSyncingUser: true });
         
         try {
-          const token = localStorage.getItem('accessToken');
-          if (!token) {
-            set({ isSyncingUser: false });
+          // Check if we're still authenticated
+          if (!apiClient.isAuthenticated()) {
+            console.log('User no longer authenticated during sync');
+            get().clearAuth();
             return false;
           }
           
           // Fetch fresh user data from server
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          });
+          const response = await apiClient.get<{ success: boolean; data?: User; message?: string }>('/api/users/me');
           
-          if (response.ok) {
-            const data = await response.json();
-            if (data.success && data.data) {
-              const updatedUser = {
-                ...data.data,
-                lastDataSync: new Date().toISOString()
-              };
-              
-              get().setUser(updatedUser);
-              set({ isSyncingUser: false, lastUserSync: now });
-              return true;
-            }
-          } else if (response.status === 401) {
-            // Token expired, try to refresh
-            const refreshSuccess = await get().refreshToken();
-            if (refreshSuccess) {
-              // Retry sync with new token
-              return await get().syncUserData();
-            } else {
-              // Refresh failed, logout
-              get().clearAuth();
-              return false;
-            }
+          if (response.success && response.data) {
+            const updatedUser = {
+              ...response.data,
+              lastDataSync: new Date().toISOString()
+            };
+            
+            get().setUser(updatedUser);
+            set({ isSyncingUser: false, lastUserSync: now });
+            return true;
           }
           
           set({ isSyncingUser: false });
@@ -407,22 +402,7 @@ export const useAuthStore = create<AuthStore>()(
       
       refreshToken: async () => {
         try {
-          const refreshToken = localStorage.getItem('refreshToken');
-          if (!refreshToken) {
-            return false;
-          }
-          
-          const response = await refreshTokenApi(refreshToken);
-          if (response.success && response.data) {
-            const { token, refreshToken: newRefreshToken } = response.data;
-            
-            // Update tokens
-            localStorage.setItem('accessToken', token);
-            localStorage.setItem('refreshToken', newRefreshToken);
-            
-            return true;
-          }
-          return false;
+          return await apiClient.refreshTokens();
         } catch (error) {
           console.error('Token refresh failed:', error);
           return false;
@@ -431,6 +411,55 @@ export const useAuthStore = create<AuthStore>()(
       
       setRememberMe: (rememberMe: boolean) => {
         set({ rememberMe });
+      },
+      
+      // Token management methods
+      checkTokenValidity: () => {
+        return apiClient.isAuthenticated();
+      },
+      
+      getTokenExpirationInfo: () => {
+        return apiClient.getTokenExpirationInfo();
+      },
+      
+      // Start monitoring token expiration
+      startTokenMonitoring: () => {
+        if (typeof window === 'undefined') return;
+        
+        // Check token every minute
+        const interval = setInterval(() => {
+          const { isLoggedIn } = get();
+          
+          if (!isLoggedIn) {
+            clearInterval(interval);
+            return;
+          }
+          
+          const expirationInfo = apiClient.getTokenExpirationInfo();
+          
+          if (!expirationInfo) {
+            console.log('No valid token found, logging out');
+            get().clearAuth();
+            clearInterval(interval);
+            return;
+          }
+          
+          // If token expires in less than 5 minutes, refresh it
+          if (expirationInfo.expiresIn < 300 && expirationInfo.expiresIn > 0) {
+            console.log('Token expiring soon, refreshing...');
+            get().refreshToken();
+          }
+          
+          // If token is expired, logout
+          if (expirationInfo.isExpired) {
+            console.log('Token expired, logging out');
+            get().clearAuth();
+            clearInterval(interval);
+          }
+        }, 60000); // Check every minute
+        
+        // Store interval ID for cleanup
+        (window as Window & { __tokenMonitoringInterval?: NodeJS.Timeout }).__tokenMonitoringInterval = interval;
       },
       
       // Access control helpers

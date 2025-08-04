@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { jwtDecode } from 'jwt-decode';
 
 export interface ServerUser {
   id: string;
@@ -16,13 +17,58 @@ export interface ServerUser {
   updatedAt: string;
 }
 
+interface TokenPayload {
+  userId: string;
+  email: string;
+  username: string;
+  role: string;
+  sessionId: string;
+  type: 'access' | 'refresh';
+  exp: number;
+  iat: number;
+}
+
 /**
- * Get authentication token from HTTP-only cookies (server-side)
+ * Get server-side authentication token from cookies
  */
 export async function getServerAuthToken(): Promise<string | null> {
   try {
     const cookieStore = await cookies();
-    return cookieStore.get('auth-token')?.value || null;
+    const token = cookieStore.get('accessToken')?.value;
+    
+    console.log('Server Auth Debug - Cookie names:', Array.from(cookieStore.getAll()).map(c => c.name));
+    console.log('Server Auth Debug - accessToken found:', !!token);
+    
+    if (!token) {
+      return null;
+    }
+
+    // Check if token is expired
+    try {
+      const decoded = jwtDecode<TokenPayload>(token);
+      const now = Math.floor(Date.now() / 1000);
+      
+      console.log('Server Auth Debug - Token expires at:', new Date(decoded.exp * 1000));
+      console.log('Server Auth Debug - Current time:', new Date(now * 1000));
+      console.log('Server Auth Debug - Token expired:', decoded.exp < now);
+      
+      if (decoded.exp < now) {
+        // Token is expired, try to refresh it
+        console.log('Server Auth Debug - Attempting token refresh');
+        const refreshed = await refreshServerToken();
+        if (refreshed) {
+          // Get the new token
+          const newToken = await getServerAuthToken();
+          return newToken;
+        }
+        return null;
+      }
+      
+      return token;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
   } catch (error) {
     console.error('Error getting server auth token:', error);
     return null;
@@ -30,12 +76,31 @@ export async function getServerAuthToken(): Promise<string | null> {
 }
 
 /**
- * Get refresh token from HTTP-only cookies (server-side)
+ * Get server-side refresh token from cookies
  */
 export async function getServerRefreshToken(): Promise<string | null> {
   try {
     const cookieStore = await cookies();
-    return cookieStore.get('refresh-token')?.value || null;
+    const token = cookieStore.get('refreshToken')?.value;
+    
+    if (!token) {
+      return null;
+    }
+
+    // Check if refresh token is expired
+    try {
+      const decoded = jwtDecode<TokenPayload>(token);
+      const now = Math.floor(Date.now() / 1000);
+      
+      if (decoded.exp < now) {
+        return null; // Refresh token is expired
+      }
+      
+      return token;
+    } catch (error) {
+      console.error('Error decoding refresh token:', error);
+      return null;
+    }
   } catch (error) {
     console.error('Error getting server refresh token:', error);
     return null;
@@ -43,28 +108,27 @@ export async function getServerRefreshToken(): Promise<string | null> {
 }
 
 /**
- * Set authentication tokens in HTTP-only cookies (server-side)
- * Note: This should only be used in API routes or server actions
+ * Set server-side authentication tokens in cookies
  */
 export async function setServerAuthTokens(token: string, refreshToken: string) {
   try {
     const cookieStore = await cookies();
     
-    // Set access token (short-lived, 30 minutes)
-    cookieStore.set('auth-token', token, {
-      httpOnly: true,
+    // Set access token (30 minutes)
+    cookieStore.set('accessToken', token, {
+      httpOnly: false, // Allow client-side access
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 30 * 60, // 30 minutes
       path: '/',
     });
-
-    // Set refresh token (long-lived, 14 days)
-    cookieStore.set('refresh-token', refreshToken, {
-      httpOnly: true,
+    
+    // Set refresh token (7 days)
+    cookieStore.set('refreshToken', refreshToken, {
+      httpOnly: false, // Allow client-side access
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 14 * 24 * 60 * 60, // 14 days
+      maxAge: 7 * 24 * 60 * 60, // 7 days
       path: '/',
     });
   } catch (error) {
@@ -73,27 +137,28 @@ export async function setServerAuthTokens(token: string, refreshToken: string) {
 }
 
 /**
- * Clear authentication tokens from HTTP-only cookies (server-side)
+ * Clear server-side authentication tokens
  */
 export async function clearServerAuthTokens() {
   try {
     const cookieStore = await cookies();
     
-    cookieStore.delete('auth-token');
-    cookieStore.delete('refresh-token');
+    cookieStore.delete('accessToken');
+    cookieStore.delete('refreshToken');
   } catch (error) {
     console.error('Error clearing server auth tokens:', error);
   }
 }
 
 /**
- * Fetch user data from the server using server-side authentication
+ * Get server-side user information
  */
 export async function getServerUser(): Promise<ServerUser | null> {
   try {
     const token = await getServerAuthToken();
     
     if (!token) {
+      console.log('Server Auth Debug - No token found, returning null');
       return null;
     }
 
@@ -106,20 +171,24 @@ export async function getServerUser(): Promise<ServerUser | null> {
       cache: 'no-store', // Don't cache user data
     });
 
+    console.log('Server Auth Debug - API response status:', response.status);
+
     if (!response.ok) {
       if (response.status === 401) {
         // Token is invalid, try to refresh
+        console.log('Server Auth Debug - 401 response, attempting refresh');
         const refreshed = await refreshServerToken();
-        if (!refreshed) {
-          return null;
+        if (refreshed) {
+          // Retry the request with the new token
+          return getServerUser();
         }
-        // Retry the request with the new token
-        return getServerUser();
+        return null;
       }
       return null;
     }
 
     const result = await response.json();
+    console.log('Server Auth Debug - API response success:', result.success);
     return result.success ? result.data : null;
   } catch (error) {
     console.error('Error fetching server user:', error);
@@ -135,10 +204,13 @@ async function refreshServerToken(): Promise<boolean> {
     const refreshToken = await getServerRefreshToken();
     
     if (!refreshToken) {
+      console.log('Server Auth Debug - No refresh token available');
       return false;
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/refresh`, {
+    console.log('Server Auth Debug - Attempting to refresh token');
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/refresh-token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -147,16 +219,19 @@ async function refreshServerToken(): Promise<boolean> {
     });
 
     if (!response.ok) {
+      console.log('Server Auth Debug - Refresh token request failed:', response.status);
       return false;
     }
 
     const result = await response.json();
     
     if (result.success && result.data) {
-      await setServerAuthTokens(result.data.accessToken, result.data.refreshToken);
+      await setServerAuthTokens(result.data.token, result.data.refreshToken);
+      console.log('Server Auth Debug - Token refresh successful');
       return true;
     }
 
+    console.log('Server Auth Debug - Token refresh failed - invalid response');
     return false;
   } catch (error) {
     console.error('Error refreshing server token:', error);
@@ -169,12 +244,15 @@ async function refreshServerToken(): Promise<boolean> {
  * Redirects to login if not authenticated
  */
 export async function requireAuth(): Promise<ServerUser> {
+  console.log('Server Auth Debug - requireAuth called');
   const user = await getServerUser();
   
   if (!user) {
+    console.log('Server Auth Debug - No user found, redirecting to login');
     redirect('/auth/login');
   }
   
+  console.log('Server Auth Debug - User authenticated:', user.email);
   return user;
 }
 
@@ -183,12 +261,15 @@ export async function requireAuth(): Promise<ServerUser> {
  * Redirects to login if not authenticated or doesn't have required role
  */
 export async function requireRole(requiredRole: string): Promise<ServerUser> {
+  console.log('Server Auth Debug - requireRole called for:', requiredRole);
   const user = await requireAuth();
   
   if (user.role !== requiredRole && user.role !== 'SUPER_ADMIN') {
+    console.log('Server Auth Debug - User role insufficient, redirecting to login');
     redirect('/auth/login');
   }
   
+  console.log('Server Auth Debug - User has required role');
   return user;
 }
 
@@ -224,11 +305,11 @@ export async function getServerUserById(id: string): Promise<ServerUser | null> 
       if (response.status === 401) {
         // Token is invalid, try to refresh
         const refreshed = await refreshServerToken();
-        if (!refreshed) {
-          return null;
+        if (refreshed) {
+          // Retry the request with the new token
+          return getServerUserById(id);
         }
-        // Retry the request with the new token
-        return getServerUserById(id);
+        return null;
       }
       return null;
     }
