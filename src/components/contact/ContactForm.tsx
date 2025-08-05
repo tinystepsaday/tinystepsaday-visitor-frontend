@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { createContactMessage } from "@/integration/messages";
 
 // Form validation schema
 const formSchema = z.object({
@@ -35,18 +36,38 @@ export const ContactForm = () => {
   });
 
   // Handle form submission
-  const onSubmit = (data: ContactFormValues) => {
+  const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Form submitted:", data);
-      toast.success("Message Sent!", {
-        description: "We'll get back to you as soon as possible.",
+    try {
+      const result = await createContactMessage({
+        name: data.name,
+        email: data.email,
+        subject: data.subject,
+        message: data.message,
+        category: "GENERAL",
+        priority: "MEDIUM",
+        source: "CONTACT_FORM"
       });
-      form.reset();
+
+      if (result.success) {
+        toast.success("Message Sent!", {
+          description: "We'll get back to you as soon as possible.",
+        });
+        form.reset();
+      } else {
+        toast.error("Failed to send message", {
+          description: result.message || "Please try again later.",
+        });
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Failed to send message", {
+        description: error instanceof Error ? error.message : "Please try again later.",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
 
   return (
