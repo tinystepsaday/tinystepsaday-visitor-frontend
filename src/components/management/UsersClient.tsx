@@ -270,9 +270,9 @@ export function UsersClient() {
       } else {
         toast.error("Failed to create user");
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error creating user:", error);
-      toast.error("An error occurred while creating user");
+      toast.error((error as Error).message || "Failed to create user");
     } finally {
       setIsCreateUserLoading(false);
     }
@@ -553,7 +553,7 @@ export function UsersClient() {
                     className="w-full"
                     placeholder="Password"
                   />
-                  <span className="text-xs text-muted-foreground" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "Hide Password" : "Show Password"}</span>
+                  <span className="text-xs text-muted-foreground cursor-pointer" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "Hide Password" : "Show Password"}</span>
                 </div>
               </div>
             </div>
