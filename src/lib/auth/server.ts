@@ -35,10 +35,7 @@ export async function getServerAuthToken(): Promise<string | null> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('accessToken')?.value;
-    
-    console.log('Server Auth Debug - Cookie names:', Array.from(cookieStore.getAll()).map(c => c.name));
-    console.log('Server Auth Debug - accessToken found:', !!token);
-    
+  
     if (!token) {
       return null;
     }
