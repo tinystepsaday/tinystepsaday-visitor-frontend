@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -240,8 +240,7 @@ export function TemplatesClient() {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <CardTitle className="text-lg truncate">{template.name}</CardTitle>
-                    <CardDescription className="truncate">{template.subject}</CardDescription>
+                    <CardTitle className="text-lg text-wrap">{template.name}</CardTitle>
                   </div>
                 </div>
                 <DropdownMenu>

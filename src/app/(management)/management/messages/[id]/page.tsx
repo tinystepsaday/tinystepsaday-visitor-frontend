@@ -7,6 +7,11 @@ interface MessagePageProps {
   params: Promise<{ id: string }>;
 }
 
+export const metadata = {
+  title: "Message Details",
+  description: "View message details",
+};
+
 export default async function MessagePage({ params }: MessagePageProps) {
   const { id } = await params;
 

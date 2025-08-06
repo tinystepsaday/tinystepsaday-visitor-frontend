@@ -10,10 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { 
-  Search, 
-  Mail, 
-  Reply, 
+import {
+  Search,
+  Mail,
+  Reply,
   AlertCircle,
   MessageSquare,
   Phone,
@@ -37,11 +37,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
-  getMessages, 
-  getMessageStatistics, 
-  bulkUpdateMessages, 
-  bulkDeleteMessages, 
+import {
+  getMessages,
+  getMessageStatistics,
+  bulkUpdateMessages,
+  bulkDeleteMessages,
   type ContactMessage,
   type MessageStatistics,
   type MessagesQueryParams,
@@ -82,7 +82,7 @@ const sourceIcons = {
 export function MessagesClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // State
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [stats, setStats] = useState<MessageStatistics | null>(null);
@@ -111,7 +111,7 @@ export function MessagesClient() {
         page: currentPage,
         limit: currentLimit
       };
-      
+
       if (currentSearch) filters.search = currentSearch;
       if (currentStatus !== 'all') filters.status = currentStatus as MessagesQueryParams['status'];
       if (currentCategory !== 'all') filters.category = currentCategory as MessagesQueryParams['category'];
@@ -119,7 +119,7 @@ export function MessagesClient() {
       if (currentSource !== 'all') filters.source = currentSource as MessagesQueryParams['source'];
 
       const response = await getMessages(filters);
-      
+
       if (response && response.success) {
         setMessages(response.data.messages);
         setTotalPages(response.data.totalPages);
@@ -140,7 +140,7 @@ export function MessagesClient() {
     try {
       setIsLoadingStats(true);
       const response = await getMessageStatistics();
-      
+
       if (response) {
         setStats(response);
       } else {
@@ -157,7 +157,7 @@ export function MessagesClient() {
   // Update URL params
   const updateSearchParams = (updates: Record<string, string>) => {
     const params = new URLSearchParams(searchParams.toString());
-    
+
     Object.entries(updates).forEach(([key, value]) => {
       if (value === 'all' || value === '') {
         params.delete(key);
@@ -165,12 +165,12 @@ export function MessagesClient() {
         params.set(key, value);
       }
     });
-    
+
     // Reset to page 1 when filters change
     if (Object.keys(updates).some(key => key !== 'page' && key !== 'limit')) {
       params.set('page', '1');
     }
-    
+
     router.push(`?${params.toString()}`);
   };
 
@@ -282,7 +282,7 @@ export function MessagesClient() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="px-4">
             <div className="flex items-center space-x-2">
               <Mail className="h-4 w-4 text-muted-foreground" />
               <div>
@@ -295,7 +295,7 @@ export function MessagesClient() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="px-4">
             <div className="flex items-center space-x-2">
               <Mail className="h-4 w-4 text-blue-600" />
               <div>
@@ -308,7 +308,7 @@ export function MessagesClient() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="px-4">
             <div className="flex items-center space-x-2">
               <AlertCircle className="h-4 w-4 text-red-600" />
               <div>
@@ -321,7 +321,7 @@ export function MessagesClient() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="px-4">
             <div className="flex items-center space-x-2">
               <Reply className="h-4 w-4 text-green-600" />
               <div>
@@ -336,13 +336,13 @@ export function MessagesClient() {
       </div>
 
       {/* Filters and Search */}
-      <Card>
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Filters & Search</CardTitle>
           <CardDescription>Find and filter messages by various criteria</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-col md:flex-row gap-4">
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -355,7 +355,7 @@ export function MessagesClient() {
               </div>
             </div>
             <Select value={currentStatus} onValueChange={(value) => updateSearchParams({ status: value })}>
-              <SelectTrigger className="w-full md:w-[180px]">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -367,7 +367,7 @@ export function MessagesClient() {
               </SelectContent>
             </Select>
             <Select value={currentCategory} onValueChange={(value) => updateSearchParams({ category: value })}>
-              <SelectTrigger className="w-full md:w-[180px]">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
@@ -381,7 +381,7 @@ export function MessagesClient() {
               </SelectContent>
             </Select>
             <Select value={currentPriority} onValueChange={(value) => updateSearchParams({ priority: value })}>
-              <SelectTrigger className="w-full md:w-[180px]">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Priority" />
               </SelectTrigger>
               <SelectContent>
@@ -393,7 +393,7 @@ export function MessagesClient() {
               </SelectContent>
             </Select>
             <Select value={currentSource} onValueChange={(value) => updateSearchParams({ source: value })}>
-              <SelectTrigger className="w-full md:w-[180px]">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Source" />
               </SelectTrigger>
               <SelectContent>
@@ -405,7 +405,7 @@ export function MessagesClient() {
               </SelectContent>
             </Select>
             <Select value={currentLimit.toString()} onValueChange={(value) => updateSearchParams({ limit: value, page: '1' })}>
-              <SelectTrigger className="w-full md:w-[120px]">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Limit" />
               </SelectTrigger>
               <SelectContent>
@@ -422,7 +422,7 @@ export function MessagesClient() {
       {/* Bulk Actions */}
       {selectedMessages.size > 0 && (
         <Card>
-          <CardContent className="p-4">
+          <CardContent>
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium">
                 {selectedMessages.size} message{selectedMessages.size !== 1 ? 's' : ''} selected
@@ -448,7 +448,7 @@ export function MessagesClient() {
                       <ArchiveIcon className="mr-2 h-4 w-4" />
                       Archive
                     </DropdownMenuItem>
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={handleBulkDelete}
                       className="text-destructive"
                     >
@@ -510,9 +510,8 @@ export function MessagesClient() {
                     return (
                       <div
                         key={message.id}
-                        className={`p-4 hover:bg-muted/50 cursor-pointer transition-colors ${
-                          selectedMessage?.id === message.id ? "bg-muted" : ""
-                        } ${message.status === "UNREAD" ? "border-l-4 border-l-blue-500" : ""}`}
+                        className={`p-4 hover:bg-muted/50 cursor-pointer transition-colors ${selectedMessage?.id === message.id ? "bg-muted" : ""
+                          } ${message.status === "UNREAD" ? "border-l-4 border-l-blue-500" : ""}`}
                         onClick={() => handleMessageClick(message)}
                       >
                         <div className="flex items-start space-x-3">
@@ -580,11 +579,10 @@ export function MessagesClient() {
             <Card className="mt-4">
               <CardContent className="px-4">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div className="flex flex-col sm:flex-row items-center gap-2 text-sm text-muted-foreground">
+                  <div className="flex flex-col items-start gap-2 text-sm text-muted-foreground">
                     <span>
                       Showing {((currentPage - 1) * currentLimit) + 1} to {Math.min(currentPage * currentLimit, totalMessages)} of {totalMessages} messages
                     </span>
-                    <span>•</span>
                     <span>Page {currentPage} of {totalPages}</span>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -651,32 +649,7 @@ export function MessagesClient() {
           {selectedMessage ? (
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Message Details</CardTitle>
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleBulkUpdate({ status: "READ" })}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleBulkUpdate({ status: "REPLIED" })}
-                    >
-                      <ReplyIcon className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleBulkUpdate({ status: "ARCHIVED" })}
-                    >
-                      <ArchiveIcon className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
+                <CardTitle className="text-lg">Message Details</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-3">
@@ -688,41 +661,36 @@ export function MessagesClient() {
                     <p className="text-sm text-muted-foreground">{selectedMessage.email}</p>
                   </div>
                 </div>
-
                 <Separator />
-
                 <div>
                   <h4 className="font-medium mb-2">Subject</h4>
                   <p className="text-sm">{selectedMessage.subject}</p>
                 </div>
-
                 <div>
                   <h4 className="font-medium mb-2">Message</h4>
                   <p className="text-sm whitespace-pre-wrap">{selectedMessage.message}</p>
                 </div>
-
                 <Separator />
-
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
+                  <div className="flex flex-col items-start gap-2">
                     <p className="font-medium">Status</p>
                     <Badge className={statusColors[selectedMessage.status]}>
                       {selectedMessage.status}
                     </Badge>
                   </div>
-                  <div>
+                  <div className="flex flex-col items-start gap-2">
                     <p className="font-medium">Priority</p>
                     <Badge className={priorityColors[selectedMessage.priority]}>
                       {selectedMessage.priority}
                     </Badge>
                   </div>
-                  <div>
+                  <div className="flex flex-col items-start gap-2">
                     <p className="font-medium">Category</p>
                     <Badge className={categoryColors[selectedMessage.category]}>
                       {selectedMessage.category}
                     </Badge>
                   </div>
-                  <div>
+                  <div className="flex flex-col items-start gap-2">
                     <p className="font-medium">Source</p>
                     <div className="flex items-center space-x-1">
                       {(() => {

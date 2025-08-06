@@ -2,6 +2,11 @@ import { Suspense } from "react";
 import { DetailPageLoader } from "@/components/ui/loaders";
 import { TemplateFormClient } from "@/components/management/TemplateFormClient";
 
+export const metadata = {
+  title: "Edit Template",
+  description: "Edit your template",
+};
+
 export default function EditTemplatePage() {
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 w-full">

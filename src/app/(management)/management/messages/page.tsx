@@ -2,7 +2,13 @@ import { Suspense } from "react";
 import { MessagesClient } from "@/components/management/MessagesClient";
 import { DetailPageLoader } from "@/components/ui/loaders";
 
+export const metadata = {
+  title: "Messages",
+  description: "Manage your messages",
+};
+
 export default function MessagesPage() {
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
