@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import {
   Star,
   MoreHorizontal
 } from "lucide-react";
-import { getMessageTemplates, type MessageTemplate } from "@/data/messages";
+import { getTemplates, type MessageTemplate } from "@/lib/api/messages";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import {
@@ -42,7 +42,26 @@ export function TemplatesClient() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [templates, setTemplates] = useState<MessageTemplate[]>(getMessageTemplates());
+  const [templates, setTemplates] = useState<MessageTemplate[]>([]);
+
+  // Fetch templates on component mount
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const response = await getTemplates();
+        if (response.success) {
+          setTemplates(response.data.templates);
+        } else {
+          toast.error('Failed to fetch templates');
+        }
+      } catch (error) {
+        console.error('Error fetching templates:', error);
+        toast.error('Failed to fetch templates');
+      }
+    };
+    
+    fetchTemplates();
+  }, []);
 
   const filteredTemplates = templates.filter(template => {
     const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

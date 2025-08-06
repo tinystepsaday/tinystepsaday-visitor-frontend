@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ import {
   AlertCircle,
   Eye
 } from "lucide-react";
-import { getRepliesByMessageId, getMessageTemplates, type ContactMessage } from "@/data/messages";
+import { getMessageReplies, getTemplates, type ContactMessage, type MessageReply, type MessageTemplate } from "@/lib/api/messages";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 
@@ -66,8 +66,32 @@ export function MessageDetailClient({ message }: MessageDetailClientProps) {
   const [isReplying, setIsReplying] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
 
-  const replies = getRepliesByMessageId(message.id);
-  const templates = getMessageTemplates();
+  const [replies, setReplies] = useState<MessageReply[]>([]);
+  const [templates, setTemplates] = useState<MessageTemplate[]>([]);
+
+  // Fetch replies and templates
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [repliesResponse, templatesResponse] = await Promise.all([
+          getMessageReplies(message.id),
+          getTemplates()
+        ]);
+        
+        if (repliesResponse.success) {
+          setReplies(repliesResponse.data);
+        }
+        
+        if (templatesResponse.success) {
+          setTemplates(templatesResponse.data.templates);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [message.id]);
 
   const getInitials = (name: string) => {
     return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -37,15 +37,43 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
-  getMessages, 
-  getMessageStats, 
-  bulkUpdateMessages, 
-  bulkDeleteMessages, 
-  type ContactMessage,
-  type MessageStats,
-  type MessageFilters 
-} from "@/lib/api/messages";
+import { apiClient } from "@/integration/apiClient";
+
+// Types
+interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: 'unread' | 'read' | 'replied' | 'archived';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  category: 'general' | 'support' | 'mentorship' | 'billing' | 'technical' | 'feedback';
+  source: 'contact-form' | 'email' | 'phone' | 'chat';
+  tags: string[];
+  createdAt: string;
+  readAt?: string;
+  repliedAt?: string;
+  ipAddress?: string;
+  assignedTo?: string;
+}
+
+interface MessageStats {
+  total: number;
+  unread: number;
+  urgent: number;
+  replied: number;
+  byCategory: Record<string, number>;
+  byPriority: Record<string, number>;
+  byStatus: Record<string, number>;
+}
+
+interface MessagesResponse {
+  messages: ContactMessage[];
+  total: number;
+  totalPages: number;
+  currentPage: number;
+}
 
 const priorityColors = {
   low: "bg-gray-100 text-gray-800",
@@ -89,8 +117,6 @@ export function MessagesClient() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
   const [isBulkUpdating, setIsBulkUpdating] = useState(false);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalMessages, setTotalMessages] = useState(0);
 
   // Get current filters from URL
   const currentSearch = searchParams.get('search') || '';
@@ -102,26 +128,23 @@ export function MessagesClient() {
   const currentLimit = parseInt(searchParams.get('limit') || '20');
 
   // Fetch messages
-  const fetchMessages = useCallback(async () => {
+  const fetchMessages = async () => {
     try {
       setIsLoading(true);
-      const filters: MessageFilters = {
-        page: currentPage,
-        limit: currentLimit
-      };
+      const params = new URLSearchParams();
       
-      if (currentSearch) filters.search = currentSearch;
-      if (currentStatus !== 'all') filters.status = currentStatus;
-      if (currentCategory !== 'all') filters.category = currentCategory;
-      if (currentPriority !== 'all') filters.priority = currentPriority;
-      if (currentSource !== 'all') filters.source = currentSource;
+      if (currentSearch) params.append('search', currentSearch);
+      if (currentStatus !== 'all') params.append('status', currentStatus);
+      if (currentCategory !== 'all') params.append('category', currentCategory);
+      if (currentPriority !== 'all') params.append('priority', currentPriority);
+      if (currentSource !== 'all') params.append('source', currentSource);
+      params.append('page', currentPage.toString());
+      params.append('limit', currentLimit.toString());
 
-      const response = await getMessages(filters);
+      const response = await apiClient.get<MessagesResponse>(`/api/messages/messages?${params.toString()}`);
       
-      if (response.success) {
-        setMessages(response.data.messages);
-        setTotalPages(response.data.totalPages);
-        setTotalMessages(response.data.total);
+      if (response.data.success) {
+        setMessages(response.data.data.messages);
       } else {
         toast.error('Failed to fetch messages');
       }
@@ -131,16 +154,16 @@ export function MessagesClient() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentSearch, currentStatus, currentCategory, currentPriority, currentSource, currentPage, currentLimit]);
+  };
 
   // Fetch stats
   const fetchStats = async () => {
     try {
       setIsLoadingStats(true);
-      const response = await getMessageStats();
+      const response = await apiClient.get<{ success: boolean; data: MessageStats }>('/api/messages/messages/stats');
       
-      if (response.success) {
-        setStats(response.data);
+      if (response.data.success) {
+        setStats(response.data.data);
       } else {
         toast.error('Failed to fetch stats');
       }
@@ -181,10 +204,13 @@ export function MessagesClient() {
 
     try {
       setIsBulkUpdating(true);
-      const response = await bulkUpdateMessages(Array.from(selectedMessages), updates);
+      const response = await apiClient.post('/api/messages/messages/bulk/update', {
+        messageIds: Array.from(selectedMessages),
+        updates
+      });
 
-      if (response.success) {
-        toast.success(response.message);
+      if (response.data.success) {
+        toast.success(response.data.message);
         setSelectedMessages(new Set());
         fetchMessages();
         fetchStats();
@@ -211,10 +237,12 @@ export function MessagesClient() {
 
     try {
       setIsBulkUpdating(true);
-      const response = await bulkDeleteMessages(Array.from(selectedMessages));
+      const response = await apiClient.post('/api/messages/messages/bulk/delete', {
+        messageIds: Array.from(selectedMessages)
+      });
 
-      if (response.success) {
-        toast.success(response.message);
+      if (response.data.success) {
+        toast.success(response.data.message);
         setSelectedMessages(new Set());
         fetchMessages();
         fetchStats();
@@ -251,7 +279,7 @@ export function MessagesClient() {
   // Effects
   useEffect(() => {
     fetchMessages();
-  }, [fetchMessages]);
+  }, [currentSearch, currentStatus, currentCategory, currentPriority, currentSource, currentPage, currentLimit]);
 
   useEffect(() => {
     fetchStats();
@@ -265,6 +293,7 @@ export function MessagesClient() {
     setSelectedMessage(message);
   };
 
+  const totalPages = Math.ceil((stats?.total || 0) / currentLimit);
   const isAllSelected = messages.length > 0 && selectedMessages.size === messages.length;
   const isIndeterminate = selectedMessages.size > 0 && selectedMessages.size < messages.length;
 
@@ -410,7 +439,7 @@ export function MessagesClient() {
               <div className="flex items-center space-x-2">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" disabled={isBulkUpdating}>
+                    <Button variant="outline" size="sm">
                       <MoreHorizontal className="mr-2 h-4 w-4" />
                       Bulk Actions
                     </Button>
@@ -458,13 +487,13 @@ export function MessagesClient() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>
-                  Messages ({isLoading ? '...' : `${messages.length} of ${totalMessages}`})
+                  Messages ({isLoading ? '...' : `${messages.length} of ${stats?.total || 0}`})
                 </CardTitle>
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     checked={isAllSelected}
                     ref={(el) => {
-                      if (el) (el as HTMLInputElement).indeterminate = isIndeterminate;
+                      if (el) el.indeterminate = isIndeterminate;
                     }}
                     onCheckedChange={handleSelectAll}
                   />
@@ -561,7 +590,7 @@ export function MessagesClient() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-muted-foreground">
-                    Page {currentPage} of {totalPages} ({totalMessages} total messages)
+                    Page {currentPage} of {totalPages} ({stats?.total || 0} total messages)
                   </p>
                   <div className="flex items-center space-x-2">
                     <Button
