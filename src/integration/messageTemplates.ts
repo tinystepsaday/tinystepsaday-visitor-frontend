@@ -108,7 +108,7 @@ export async function getTemplates(params: TemplatesQueryParams = {}): Promise<M
 
     // Build query string from params
     const queryParams = new URLSearchParams();
-    if (params.category) queryParams.append('category', params.category);
+    if (params.category && params.category !== 'all') queryParams.append('category', params.category);
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/api/messages/templates?${queryParams.toString()}`;
 

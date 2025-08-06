@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,9 +17,11 @@ import {
   Trash2,
   MessageSquare,
   Star,
-  MoreHorizontal
+  MoreHorizontal,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
-import { getTemplates, deleteTemplate, type MessageTemplate } from "@/integration/messageTemplates";
+import { getTemplates, deleteTemplate, type MessageTemplate, type TemplatesQueryParams } from "@/integration/messageTemplates";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import {
@@ -40,36 +42,89 @@ const categoryColors = {
 
 export function TemplatesClient() {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const searchParams = useSearchParams();
+  
+  // Get current filters from URL
+  const currentSearch = searchParams.get('search') || '';
+  const currentCategory = searchParams.get('category') || 'all';
+  const currentPage = parseInt(searchParams.get('page') || '1');
+  const currentLimit = parseInt(searchParams.get('limit') || '10');
+  
+  // State
   const [templates, setTemplates] = useState<MessageTemplate[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalTemplates, setTotalTemplates] = useState(0);
 
-  // Fetch templates on component mount
-  useEffect(() => {
-    const fetchTemplates = async () => {
-      try {
-        const response = await getTemplates();
-        if (response) {
-          setTemplates(response);
-        } else {
-          toast.error('Failed to fetch templates');
+  // Fetch all templates and handle client-side pagination
+  const fetchTemplates = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const params: TemplatesQueryParams = {};
+      
+      if (currentCategory !== 'all') params.category = currentCategory as TemplatesQueryParams['category'];
+
+      const response = await getTemplates(params);
+      if (response) {
+        // Client-side filtering and pagination
+        let filteredTemplates = response;
+        
+        // Apply search filter
+        if (currentSearch) {
+          filteredTemplates = filteredTemplates.filter(template => 
+            template.name.toLowerCase().includes(currentSearch.toLowerCase()) ||
+            template.subject.toLowerCase().includes(currentSearch.toLowerCase()) ||
+            template.content.toLowerCase().includes(currentSearch.toLowerCase())
+          );
         }
-      } catch (error) {
-        console.error('Error fetching templates:', error);
+        
+        setTotalTemplates(filteredTemplates.length);
+        setTotalPages(Math.ceil(filteredTemplates.length / currentLimit));
+        
+        // Apply pagination
+        const startIndex = (currentPage - 1) * currentLimit;
+        const endIndex = startIndex + currentLimit;
+        const paginatedTemplates = filteredTemplates.slice(startIndex, endIndex);
+        
+        setTemplates(paginatedTemplates);
+      } else {
         toast.error('Failed to fetch templates');
       }
-    };
-    
-    fetchTemplates();
-  }, []);
+    } catch (error) {
+      console.error('Error fetching templates:', error);
+      toast.error('Failed to fetch templates');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentSearch, currentCategory, currentPage, currentLimit]);
 
-  const filteredTemplates = templates.filter(template => {
-    const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         template.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         template.content.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || template.category === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
+  // Update URL params
+  const updateSearchParams = (updates: Record<string, string>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === 'all' || value === '') {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+    });
+    
+    // Reset to page 1 when filters change
+    if (Object.keys(updates).some(key => key !== 'page' && key !== 'limit')) {
+      params.set('page', '1');
+    }
+    
+    router.push(`?${params.toString()}`);
+  };
+
+  // Effects
+  useEffect(() => {
+    fetchTemplates();
+  }, [fetchTemplates]);
+
+  // Since we're now using server-side filtering, we don't need client-side filtering
+  const filteredTemplates = templates;
 
   const handleCopyTemplate = (template: MessageTemplate) => {
     const templateText = `Subject: ${template.subject}\n\nContent:\n${template.content}`;
@@ -125,14 +180,14 @@ export function TemplatesClient() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search templates..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={currentSearch}
+                  onChange={(e) => updateSearchParams({ search: e.target.value })}
                   className="pl-10"
                 />
               </div>
             </div>
-            <div className="w-full sm:w-48">
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <div className="flex gap-2 items-center flex-wrap">
+              <Select value={currentCategory} onValueChange={(value) => updateSearchParams({ category: value })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Filter by category" />
                 </SelectTrigger>
@@ -146,18 +201,39 @@ export function TemplatesClient() {
                   <SelectItem value="FEEDBACK">Feedback</SelectItem>
                 </SelectContent>
               </Select>
+              <Select value={currentLimit.toString()} onValueChange={(value) => updateSearchParams({ limit: value, page: '1' })}>
+                <SelectTrigger className="w-fit">
+                  <SelectValue placeholder="Limit" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5 per page</SelectItem>
+                  <SelectItem value="10">10 per page</SelectItem>
+                  <SelectItem value="20">20 per page</SelectItem>
+                  <SelectItem value="50">50 per page</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Templates Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredTemplates.map((template) => (
+      {isLoading ? (
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading templates...</p>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {filteredTemplates.map((template) => (
           <Card key={template.id} className="relative">
             <CardHeader>
               <div className="flex items-start justify-between">
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3 flex-wrap">
                   <Avatar className="h-10 w-10">
                     <AvatarFallback>
                       <MessageSquare className="h-5 w-5" />
@@ -245,26 +321,97 @@ export function TemplatesClient() {
             </CardContent>
           </Card>
         ))}
-      </div>
+        </div>
+      )}
 
-      {filteredTemplates.length === 0 && (
+      {filteredTemplates.length === 0 && !isLoading && (
         <Card>
           <CardContent className="pt-6">
             <div className="text-center py-8">
               <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">No templates found</h3>
               <p className="text-muted-foreground mb-4">
-                {searchQuery || categoryFilter !== "all" 
+                {currentSearch || currentCategory !== "all" 
                   ? "Try adjusting your search or filter criteria"
                   : "Get started by creating your first message template"
                 }
               </p>
-              {!searchQuery && categoryFilter === "all" && (
+              {!currentSearch && currentCategory === "all" && (
                 <Button onClick={() => router.push("/management/templates/create")}>
                   <Plus className="mr-2 h-4 w-4" />
                   Create Template
                 </Button>
               )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <Card>
+          <CardContent className="px-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex flex-col sm:flex-row items-center gap-2 text-sm text-muted-foreground">
+                <span>
+                  Showing {((currentPage - 1) * currentLimit) + 1} to {Math.min(currentPage * currentLimit, totalTemplates)} of {totalTemplates} templates
+                </span>
+                <span>•</span>
+                <span>Page {currentPage} of {totalPages}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => updateSearchParams({ page: '1' })}
+                  disabled={currentPage <= 1}
+                >
+                  First
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => updateSearchParams({ page: (currentPage - 1).toString() })}
+                  disabled={currentPage <= 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <div className="flex items-center space-x-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                    if (pageNum > totalPages) return null;
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={pageNum === currentPage ? "default" : "outline"}
+                        size="sm"
+                        className="w-8 h-8 p-0"
+                        onClick={() => updateSearchParams({ page: pageNum.toString() })}
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  })}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => updateSearchParams({ page: (currentPage + 1).toString() })}
+                  disabled={currentPage >= totalPages}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => updateSearchParams({ page: totalPages.toString() })}
+                  disabled={currentPage >= totalPages}
+                >
+                  Last
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

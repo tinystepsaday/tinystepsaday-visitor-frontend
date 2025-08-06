@@ -184,7 +184,7 @@ const data = {
       items: [
         {
           title: 'All Messages',
-          url: '/management/messages',
+          url: '/management/messages?limit=5&page=1',
         },
         {
           title: 'Create Message',
@@ -202,7 +202,7 @@ const data = {
       items: [
         {
           title: 'All Templates',
-          url: '/management/templates',
+          url: '/management/templates?limit=5&page=1',
         },
         {
           title: 'Create Template',

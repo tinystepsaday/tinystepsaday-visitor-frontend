@@ -101,7 +101,7 @@ export function MessagesClient() {
   const currentPriority = searchParams.get('priority') || 'all';
   const currentSource = searchParams.get('source') || 'all';
   const currentPage = parseInt(searchParams.get('page') || '1');
-  const currentLimit = parseInt(searchParams.get('limit') || '20');
+  const currentLimit = parseInt(searchParams.get('limit') || '10');
 
   // Fetch messages
   const fetchMessages = useCallback(async () => {
@@ -404,6 +404,17 @@ export function MessagesClient() {
                 <SelectItem value="CHAT">Chat</SelectItem>
               </SelectContent>
             </Select>
+            <Select value={currentLimit.toString()} onValueChange={(value) => updateSearchParams({ limit: value, page: '1' })}>
+              <SelectTrigger className="w-full md:w-[120px]">
+                <SelectValue placeholder="Limit" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5 per page</SelectItem>
+                <SelectItem value="10">10 per page</SelectItem>
+                <SelectItem value="20">20 per page</SelectItem>
+                <SelectItem value="50">50 per page</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
@@ -566,13 +577,25 @@ export function MessagesClient() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">
-                    Page {currentPage} of {totalPages} ({totalMessages} total messages)
-                  </p>
+            <Card className="mt-4">
+              <CardContent className="px-4">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row items-center gap-2 text-sm text-muted-foreground">
+                    <span>
+                      Showing {((currentPage - 1) * currentLimit) + 1} to {Math.min(currentPage * currentLimit, totalMessages)} of {totalMessages} messages
+                    </span>
+                    <span>•</span>
+                    <span>Page {currentPage} of {totalPages}</span>
+                  </div>
                   <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateSearchParams({ page: '1' })}
+                      disabled={currentPage <= 1}
+                    >
+                      First
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
@@ -582,6 +605,23 @@ export function MessagesClient() {
                       <ChevronLeft className="h-4 w-4" />
                       Previous
                     </Button>
+                    <div className="flex items-center space-x-1">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                        if (pageNum > totalPages) return null;
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={pageNum === currentPage ? "default" : "outline"}
+                            size="sm"
+                            className="w-8 h-8 p-0"
+                            onClick={() => updateSearchParams({ page: pageNum.toString() })}
+                          >
+                            {pageNum}
+                          </Button>
+                        );
+                      })}
+                    </div>
                     <Button
                       variant="outline"
                       size="sm"
@@ -590,6 +630,14 @@ export function MessagesClient() {
                     >
                       Next
                       <ChevronRight className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateSearchParams({ page: totalPages.toString() })}
+                      disabled={currentPage >= totalPages}
+                    >
+                      Last
                     </Button>
                   </div>
                 </div>
