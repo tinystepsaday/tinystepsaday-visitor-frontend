@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,45 +12,71 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Save, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import { type MessageTemplate } from "@/data/messages";
+import { 
+  getTemplateById, 
+  createTemplate, 
+  updateTemplate, 
+  type MessageTemplate 
+} from "@/integration/messageTemplates";
 
 const categories = [
-  { value: "general", label: "General" },
-  { value: "support", label: "Support" },
-  { value: "mentorship", label: "Mentorship" },
-  { value: "billing", label: "Billing" },
-  { value: "technical", label: "Technical" },
-  { value: "feedback", label: "Feedback" }
+  { value: "GENERAL", label: "General" },
+  { value: "SUPPORT", label: "Support" },
+  { value: "MENTORSHIP", label: "Mentorship" },
+  { value: "BILLING", label: "Billing" },
+  { value: "TECHNICAL", label: "Technical" },
+  { value: "FEEDBACK", label: "Feedback" }
 ];
 
-interface TemplateFormClientProps {
-  template?: MessageTemplate;
-}
-
-export function TemplateFormClient({ template }: TemplateFormClientProps) {
+export function TemplateFormClient() {
   const router = useRouter();
-  const isEditing = !!template;
+  const params = useParams();
+  const templateId = params?.id as string;
+  const isEditing = !!templateId;
+  
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(isEditing);
   const [showPreview, setShowPreview] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     subject: "",
     content: "",
-    category: "general",
+    category: "GENERAL" as MessageTemplate['category'],
     isDefault: false
   });
 
+  // Fetch template data if editing
   useEffect(() => {
-    if (template) {
-      setFormData({
-        name: template.name,
-        subject: template.subject,
-        content: template.content,
-        category: template.category,
-        isDefault: template.isDefault
-      });
+    if (isEditing && templateId) {
+      const fetchTemplate = async () => {
+        try {
+          const template = await getTemplateById(templateId);
+          if (template) {
+            setFormData({
+              name: template.name,
+              subject: template.subject,
+              content: template.content,
+              category: template.category,
+              isDefault: template.isDefault
+            });
+          } else {
+            toast.error("Template not found");
+            router.push("/management/templates");
+          }
+        } catch (error) {
+          console.error("Error fetching template:", error);
+          toast.error("Failed to load template");
+          router.push("/management/templates");
+        } finally {
+          setIsInitialLoading(false);
+        }
+      };
+
+      fetchTemplate();
+    } else {
+      setIsInitialLoading(false);
     }
-  }, [template]);
+  }, [isEditing, templateId, router]);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({
@@ -69,21 +95,52 @@ export function TemplateFormClient({ template }: TemplateFormClientProps) {
 
     setIsLoading(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      if (isEditing) {
+        const result = await updateTemplate(templateId, {
+          name: formData.name,
+          subject: formData.subject,
+          content: formData.content,
+          category: formData.category,
+          isDefault: formData.isDefault
+        });
 
-    if (isEditing) {
-      console.log("Updating template:", formData);
-      toast.success("Template updated successfully!");
-    } else {
-      console.log("Creating template:", formData);
-      toast.success("Template created successfully!");
+        if (result.success) {
+          toast.success("Template updated successfully!");
+          router.push("/management/templates");
+        }
+      } else {
+        const result = await createTemplate({
+          name: formData.name,
+          subject: formData.subject,
+          content: formData.content,
+          category: formData.category,
+          isDefault: formData.isDefault
+        });
+
+        if (result.success) {
+          toast.success("Template created successfully!");
+          router.push("/management/templates");
+        }
+      }
+    } catch (error) {
+      console.error("Error saving template:", error);
+      toast.error(isEditing ? "Failed to update template" : "Failed to create template");
+    } finally {
+      setIsLoading(false);
     }
-
-    router.push("/management/templates");
   };
 
   const previewContent = formData.content.replace(/\{\{name\}\}/g, "John Doe");
+
+  if (isInitialLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <span className="ml-2">Loading template...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -142,7 +199,7 @@ export function TemplateFormClient({ template }: TemplateFormClientProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="category">Category</Label>
-                <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)}>
+                <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value as MessageTemplate['category'])}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>

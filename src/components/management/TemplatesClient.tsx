@@ -19,7 +19,7 @@ import {
   Star,
   MoreHorizontal
 } from "lucide-react";
-import { getTemplates, type MessageTemplate } from "@/lib/api/messages";
+import { getTemplates, deleteTemplate, type MessageTemplate } from "@/integration/messageTemplates";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import {
@@ -30,12 +30,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const categoryColors = {
-  general: "bg-purple-100 text-purple-800",
-  support: "bg-blue-100 text-blue-800",
-  mentorship: "bg-green-100 text-green-800",
-  billing: "bg-orange-100 text-orange-800",
-  technical: "bg-red-100 text-red-800",
-  feedback: "bg-pink-100 text-pink-800"
+  GENERAL: "bg-purple-100 text-purple-800",
+  SUPPORT: "bg-blue-100 text-blue-800",
+  MENTORSHIP: "bg-green-100 text-green-800",
+  BILLING: "bg-orange-100 text-orange-800",
+  TECHNICAL: "bg-red-100 text-red-800",
+  FEEDBACK: "bg-pink-100 text-pink-800"
 };
 
 export function TemplatesClient() {
@@ -49,8 +49,8 @@ export function TemplatesClient() {
     const fetchTemplates = async () => {
       try {
         const response = await getTemplates();
-        if (response.success) {
-          setTemplates(response.data.templates);
+        if (response) {
+          setTemplates(response);
         } else {
           toast.error('Failed to fetch templates');
         }
@@ -77,9 +77,19 @@ export function TemplatesClient() {
     toast.success("Template copied to clipboard");
   };
 
-  const handleDeleteTemplate = (templateId: string) => {
-    setTemplates(templates.filter(t => t.id !== templateId));
-    toast.success("Template deleted");
+  const handleDeleteTemplate = async (templateId: string) => {
+    try {
+      const response = await deleteTemplate(templateId);
+      if (response.success) {
+        setTemplates(templates.filter(t => t.id !== templateId));
+        toast.success("Template deleted");
+      } else {
+        toast.error("Failed to delete template");
+      }
+    } catch (error) {
+      console.error('Error deleting template:', error);
+      toast.error("Failed to delete template");
+    }
   };
 
   const handleSetDefault = (templateId: string) => {
@@ -108,7 +118,7 @@ export function TemplatesClient() {
 
       {/* Filters */}
       <Card>
-        <CardContent className="pt-6">
+        <CardContent>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
@@ -128,12 +138,12 @@ export function TemplatesClient() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="general">General</SelectItem>
-                  <SelectItem value="support">Support</SelectItem>
-                  <SelectItem value="mentorship">Mentorship</SelectItem>
-                  <SelectItem value="billing">Billing</SelectItem>
-                  <SelectItem value="technical">Technical</SelectItem>
-                  <SelectItem value="feedback">Feedback</SelectItem>
+                  <SelectItem value="GENERAL">General</SelectItem>
+                  <SelectItem value="SUPPORT">Support</SelectItem>
+                  <SelectItem value="MENTORSHIP">Mentorship</SelectItem>
+                  <SelectItem value="BILLING">Billing</SelectItem>
+                  <SelectItem value="TECHNICAL">Technical</SelectItem>
+                  <SelectItem value="FEEDBACK">Feedback</SelectItem>
                 </SelectContent>
               </Select>
             </div>

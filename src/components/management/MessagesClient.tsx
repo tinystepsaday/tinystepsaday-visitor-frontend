@@ -39,42 +39,44 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { 
   getMessages, 
-  getMessageStats, 
+  getMessageStatistics, 
   bulkUpdateMessages, 
   bulkDeleteMessages, 
   type ContactMessage,
-  type MessageStats,
-  type MessageFilters 
-} from "@/lib/api/messages";
+  type MessageStatistics,
+  type MessagesQueryParams,
+  type BulkUpdateData,
+  type BulkDeleteData
+} from "@/integration/messages";
 
 const priorityColors = {
-  low: "bg-gray-100 text-gray-800",
-  medium: "bg-blue-100 text-blue-800",
-  high: "bg-orange-100 text-orange-800",
-  urgent: "bg-red-100 text-red-800"
+  LOW: "bg-gray-100 text-gray-800",
+  MEDIUM: "bg-blue-100 text-blue-800",
+  HIGH: "bg-orange-100 text-orange-800",
+  URGENT: "bg-red-100 text-red-800"
 };
 
 const statusColors = {
-  unread: "bg-blue-100 text-blue-800",
-  read: "bg-gray-100 text-gray-800",
-  replied: "bg-green-100 text-green-800",
-  archived: "bg-yellow-100 text-yellow-800"
+  UNREAD: "bg-blue-100 text-blue-800",
+  READ: "bg-gray-100 text-gray-800",
+  REPLIED: "bg-green-100 text-green-800",
+  ARCHIVED: "bg-yellow-100 text-yellow-800"
 };
 
 const categoryColors = {
-  general: "bg-purple-100 text-purple-800",
-  support: "bg-blue-100 text-blue-800",
-  mentorship: "bg-green-100 text-green-800",
-  billing: "bg-orange-100 text-orange-800",
-  technical: "bg-red-100 text-red-800",
-  feedback: "bg-pink-100 text-pink-800"
+  GENERAL: "bg-purple-100 text-purple-800",
+  SUPPORT: "bg-blue-100 text-blue-800",
+  MENTORSHIP: "bg-green-100 text-green-800",
+  BILLING: "bg-orange-100 text-orange-800",
+  TECHNICAL: "bg-red-100 text-red-800",
+  FEEDBACK: "bg-pink-100 text-pink-800"
 };
 
 const sourceIcons = {
-  "contact-form": Mail,
-  email: Mail,
-  phone: Phone,
-  chat: MessageSquare
+  CONTACT_FORM: Mail,
+  EMAIL: Mail,
+  PHONE: Phone,
+  CHAT: MessageSquare
 };
 
 export function MessagesClient() {
@@ -83,7 +85,7 @@ export function MessagesClient() {
   
   // State
   const [messages, setMessages] = useState<ContactMessage[]>([]);
-  const [stats, setStats] = useState<MessageStats | null>(null);
+  const [stats, setStats] = useState<MessageStatistics | null>(null);
   const [selectedMessages, setSelectedMessages] = useState<Set<string>>(new Set());
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -105,20 +107,20 @@ export function MessagesClient() {
   const fetchMessages = useCallback(async () => {
     try {
       setIsLoading(true);
-      const filters: MessageFilters = {
+      const filters: MessagesQueryParams = {
         page: currentPage,
         limit: currentLimit
       };
       
       if (currentSearch) filters.search = currentSearch;
-      if (currentStatus !== 'all') filters.status = currentStatus;
-      if (currentCategory !== 'all') filters.category = currentCategory;
-      if (currentPriority !== 'all') filters.priority = currentPriority;
-      if (currentSource !== 'all') filters.source = currentSource;
+      if (currentStatus !== 'all') filters.status = currentStatus as MessagesQueryParams['status'];
+      if (currentCategory !== 'all') filters.category = currentCategory as MessagesQueryParams['category'];
+      if (currentPriority !== 'all') filters.priority = currentPriority as MessagesQueryParams['priority'];
+      if (currentSource !== 'all') filters.source = currentSource as MessagesQueryParams['source'];
 
       const response = await getMessages(filters);
       
-      if (response.success) {
+      if (response && response.success) {
         setMessages(response.data.messages);
         setTotalPages(response.data.totalPages);
         setTotalMessages(response.data.total);
@@ -137,10 +139,10 @@ export function MessagesClient() {
   const fetchStats = async () => {
     try {
       setIsLoadingStats(true);
-      const response = await getMessageStats();
+      const response = await getMessageStatistics();
       
-      if (response.success) {
-        setStats(response.data);
+      if (response) {
+        setStats(response);
       } else {
         toast.error('Failed to fetch stats');
       }
@@ -181,7 +183,11 @@ export function MessagesClient() {
 
     try {
       setIsBulkUpdating(true);
-      const response = await bulkUpdateMessages(Array.from(selectedMessages), updates);
+      const bulkData: BulkUpdateData = {
+        messageIds: Array.from(selectedMessages),
+        updates
+      };
+      const response = await bulkUpdateMessages(bulkData);
 
       if (response.success) {
         toast.success(response.message);
@@ -211,7 +217,10 @@ export function MessagesClient() {
 
     try {
       setIsBulkUpdating(true);
-      const response = await bulkDeleteMessages(Array.from(selectedMessages));
+      const bulkData: BulkDeleteData = {
+        messageIds: Array.from(selectedMessages)
+      };
+      const response = await bulkDeleteMessages(bulkData);
 
       if (response.success) {
         toast.success(response.message);
@@ -351,10 +360,10 @@ export function MessagesClient() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="unread">Unread</SelectItem>
-                <SelectItem value="read">Read</SelectItem>
-                <SelectItem value="replied">Replied</SelectItem>
-                <SelectItem value="archived">Archived</SelectItem>
+                <SelectItem value="UNREAD">Unread</SelectItem>
+                <SelectItem value="READ">Read</SelectItem>
+                <SelectItem value="REPLIED">Replied</SelectItem>
+                <SelectItem value="ARCHIVED">Archived</SelectItem>
               </SelectContent>
             </Select>
             <Select value={currentCategory} onValueChange={(value) => updateSearchParams({ category: value })}>
@@ -363,12 +372,12 @@ export function MessagesClient() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="general">General</SelectItem>
-                <SelectItem value="support">Support</SelectItem>
-                <SelectItem value="mentorship">Mentorship</SelectItem>
-                <SelectItem value="billing">Billing</SelectItem>
-                <SelectItem value="technical">Technical</SelectItem>
-                <SelectItem value="feedback">Feedback</SelectItem>
+                <SelectItem value="GENERAL">General</SelectItem>
+                <SelectItem value="SUPPORT">Support</SelectItem>
+                <SelectItem value="MENTORSHIP">Mentorship</SelectItem>
+                <SelectItem value="BILLING">Billing</SelectItem>
+                <SelectItem value="TECHNICAL">Technical</SelectItem>
+                <SelectItem value="FEEDBACK">Feedback</SelectItem>
               </SelectContent>
             </Select>
             <Select value={currentPriority} onValueChange={(value) => updateSearchParams({ priority: value })}>
@@ -377,10 +386,10 @@ export function MessagesClient() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Priorities</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="urgent">Urgent</SelectItem>
+                <SelectItem value="LOW">Low</SelectItem>
+                <SelectItem value="MEDIUM">Medium</SelectItem>
+                <SelectItem value="HIGH">High</SelectItem>
+                <SelectItem value="URGENT">Urgent</SelectItem>
               </SelectContent>
             </Select>
             <Select value={currentSource} onValueChange={(value) => updateSearchParams({ source: value })}>
@@ -389,10 +398,10 @@ export function MessagesClient() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Sources</SelectItem>
-                <SelectItem value="contact-form">Contact Form</SelectItem>
-                <SelectItem value="email">Email</SelectItem>
-                <SelectItem value="phone">Phone</SelectItem>
-                <SelectItem value="chat">Chat</SelectItem>
+                <SelectItem value="CONTACT_FORM">Contact Form</SelectItem>
+                <SelectItem value="EMAIL">Email</SelectItem>
+                <SelectItem value="PHONE">Phone</SelectItem>
+                <SelectItem value="CHAT">Chat</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -416,15 +425,15 @@ export function MessagesClient() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleBulkUpdate({ status: 'read' })}>
+                    <DropdownMenuItem onClick={() => handleBulkUpdate({ status: 'READ' })}>
                       <Eye className="mr-2 h-4 w-4" />
                       Mark as Read
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleBulkUpdate({ status: 'replied' })}>
+                    <DropdownMenuItem onClick={() => handleBulkUpdate({ status: 'REPLIED' })}>
                       <ReplyIcon className="mr-2 h-4 w-4" />
                       Mark as Replied
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleBulkUpdate({ status: 'archived' })}>
+                    <DropdownMenuItem onClick={() => handleBulkUpdate({ status: 'ARCHIVED' })}>
                       <ArchiveIcon className="mr-2 h-4 w-4" />
                       Archive
                     </DropdownMenuItem>
@@ -492,7 +501,7 @@ export function MessagesClient() {
                         key={message.id}
                         className={`p-4 hover:bg-muted/50 cursor-pointer transition-colors ${
                           selectedMessage?.id === message.id ? "bg-muted" : ""
-                        } ${message.status === "unread" ? "border-l-4 border-l-blue-500" : ""}`}
+                        } ${message.status === "UNREAD" ? "border-l-4 border-l-blue-500" : ""}`}
                         onClick={() => handleMessageClick(message)}
                       >
                         <div className="flex items-start space-x-3">
@@ -508,7 +517,7 @@ export function MessagesClient() {
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-2">
                                 <p className="font-medium truncate">{message.name}</p>
-                                {message.status === "unread" && (
+                                {message.status === "UNREAD" && (
                                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                                 )}
                               </div>
@@ -531,7 +540,7 @@ export function MessagesClient() {
                               <div className="flex items-center space-x-4 text-xs text-muted-foreground">
                                 <div className="flex items-center space-x-1">
                                   <SourceIcon className="h-3 w-3" />
-                                  <span>{message.source}</span>
+                                  <span>{message.source.replace('_', ' ').toLowerCase()}</span>
                                 </div>
                                 <div className="flex items-center space-x-1">
                                   <Calendar className="h-3 w-3" />
@@ -600,21 +609,21 @@ export function MessagesClient() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleBulkUpdate({ status: "read" })}
+                      onClick={() => handleBulkUpdate({ status: "READ" })}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleBulkUpdate({ status: "replied" })}
+                      onClick={() => handleBulkUpdate({ status: "REPLIED" })}
                     >
                       <ReplyIcon className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleBulkUpdate({ status: "archived" })}
+                      onClick={() => handleBulkUpdate({ status: "ARCHIVED" })}
                     >
                       <ArchiveIcon className="h-4 w-4" />
                     </Button>
@@ -672,7 +681,7 @@ export function MessagesClient() {
                         const SourceIcon = sourceIcons[selectedMessage.source];
                         return <SourceIcon className="h-4 w-4" />;
                       })()}
-                      <span className="capitalize">{selectedMessage.source}</span>
+                      <span className="capitalize">{selectedMessage.source.replace('_', ' ').toLowerCase()}</span>
                     </div>
                   </div>
                 </div>

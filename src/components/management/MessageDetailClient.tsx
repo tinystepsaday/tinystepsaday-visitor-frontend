@@ -21,114 +21,169 @@ import {
   AlertCircle,
   Eye
 } from "lucide-react";
-import { getMessageReplies, getTemplates, type ContactMessage, type MessageReply, type MessageTemplate } from "@/lib/api/messages";
+import { 
+  getMessageById, 
+  updateMessage, 
+  type ContactMessage 
+} from "@/integration/messages";
+import { 
+  getTemplates, 
+  type MessageTemplate 
+} from "@/integration/messageTemplates";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 
 const priorityColors = {
-  low: "bg-gray-100 text-gray-800",
-  medium: "bg-blue-100 text-blue-800",
-  high: "bg-orange-100 text-orange-800",
-  urgent: "bg-red-100 text-red-800"
+  LOW: "bg-gray-100 text-gray-800",
+  MEDIUM: "bg-blue-100 text-blue-800",
+  HIGH: "bg-orange-100 text-orange-800",
+  URGENT: "bg-red-100 text-red-800"
 };
 
 const statusColors = {
-  unread: "bg-blue-100 text-blue-800",
-  read: "bg-gray-100 text-gray-800",
-  replied: "bg-green-100 text-green-800",
-  archived: "bg-yellow-100 text-yellow-800"
+  UNREAD: "bg-blue-100 text-blue-800",
+  READ: "bg-gray-100 text-gray-800",
+  REPLIED: "bg-green-100 text-green-800",
+  ARCHIVED: "bg-yellow-100 text-yellow-800"
 };
 
 const categoryColors = {
-  general: "bg-purple-100 text-purple-800",
-  support: "bg-blue-100 text-blue-800",
-  mentorship: "bg-green-100 text-green-800",
-  billing: "bg-orange-100 text-orange-800",
-  technical: "bg-red-100 text-red-800",
-  feedback: "bg-pink-100 text-pink-800"
+  GENERAL: "bg-purple-100 text-purple-800",
+  SUPPORT: "bg-blue-100 text-blue-800",
+  MENTORSHIP: "bg-green-100 text-green-800",
+  BILLING: "bg-orange-100 text-orange-800",
+  TECHNICAL: "bg-red-100 text-red-800",
+  FEEDBACK: "bg-pink-100 text-pink-800"
 };
 
 const sourceIcons = {
-  "contact-form": Mail,
-  email: Mail,
-  phone: Phone,
-  chat: MessageSquare
+  CONTACT_FORM: Mail,
+  EMAIL: Mail,
+  PHONE: Phone,
+  CHAT: MessageSquare
 };
 
 interface MessageDetailClientProps {
-  message: ContactMessage;
+  messageId: string;
 }
 
-export function MessageDetailClient({ message }: MessageDetailClientProps) {
+export function MessageDetailClient({ messageId }: MessageDetailClientProps) {
   const router = useRouter();
+  const [message, setMessage] = useState<ContactMessage | null>(null);
+  const [templates, setTemplates] = useState<MessageTemplate[]>([]);
   const [replyContent, setReplyContent] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [isReplying, setIsReplying] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [showReplyForm, setShowReplyForm] = useState(false);
 
-  const [replies, setReplies] = useState<MessageReply[]>([]);
-  const [templates, setTemplates] = useState<MessageTemplate[]>([]);
-
-  // Fetch replies and templates
+  // Fetch message and templates
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
-        const [repliesResponse, templatesResponse] = await Promise.all([
-          getMessageReplies(message.id),
+        const [messageData, templatesData] = await Promise.all([
+          getMessageById(messageId),
           getTemplates()
         ]);
         
-        if (repliesResponse.success) {
-          setReplies(repliesResponse.data);
+        if (messageData) {
+          setMessage(messageData);
+        } else {
+          toast.error("Message not found");
+          router.push("/management/messages");
         }
         
-        if (templatesResponse.success) {
-          setTemplates(templatesResponse.data.templates);
+        if (templatesData) {
+          setTemplates(templatesData);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
+        toast.error("Failed to load message details");
+        router.push("/management/messages");
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchData();
-  }, [message.id]);
+  }, [messageId, router]);
 
   const getInitials = (name: string) => {
     return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
   };
 
-  const handleStatusChange = (newStatus: ContactMessage['status']) => {
-    // In a real app, this would update the message status via API
-    console.log(`Updating message ${message.id} status to ${newStatus}`);
-    toast.success(`Message marked as ${newStatus}`);
+  const handleStatusChange = async (newStatus: ContactMessage['status']) => {
+    if (!message) return;
+
+    try {
+      const result = await updateMessage(message.id, { status: newStatus });
+      if (result.success) {
+        setMessage(prev => prev ? { ...prev, status: newStatus } : null);
+        toast.success(`Message marked as ${newStatus.toLowerCase()}`);
+      }
+    } catch (error) {
+      console.error("Error updating message status:", error);
+      toast.error("Failed to update message status");
+    }
   };
 
   const handleTemplateSelect = (templateId: string) => {
     const template = templates.find(t => t.id === templateId);
-    if (template) {
+    if (template && message) {
       setReplyContent(template.content.replace('{{name}}', message.name));
       setSelectedTemplate(templateId);
     }
   };
 
   const handleSendReply = async () => {
-    if (!replyContent.trim()) {
+    if (!replyContent.trim() || !message) {
       toast.error("Please enter a reply message");
       return;
     }
 
     setIsReplying(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    console.log("Sending reply:", replyContent);
-    toast.success("Reply sent successfully!");
-
-    setReplyContent("");
-    setShowReplyForm(false);
-    setIsReplying(false);
+    try {
+      // In a real implementation, you would send the reply via API
+      // For now, we'll just update the message status to REPLIED
+      const result = await updateMessage(message.id, { 
+        status: "REPLIED" 
+      });
+      
+      if (result.success) {
+        setMessage(prev => prev ? { ...prev, status: "REPLIED" } : null);
+        toast.success("Reply sent successfully!");
+        setReplyContent("");
+        setShowReplyForm(false);
+      }
+    } catch (error) {
+      console.error("Error sending reply:", error);
+      toast.error("Failed to send reply");
+    } finally {
+      setIsReplying(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <span className="ml-2">Loading message details...</span>
+      </div>
+    );
+  }
+
+  if (!message) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">Message not found</p>
+        <Button onClick={() => router.push("/management/messages")} className="mt-4">
+          Back to Messages
+        </Button>
+      </div>
+    );
+  }
 
   const SourceIcon = sourceIcons[message.source];
 
@@ -147,7 +202,7 @@ export function MessageDetailClient({ message }: MessageDetailClientProps) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handleStatusChange("read")}
+              onClick={() => handleStatusChange("READ")}
             >
               <Eye className="mr-2 h-4 w-4" />
               Mark Read
@@ -155,7 +210,7 @@ export function MessageDetailClient({ message }: MessageDetailClientProps) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handleStatusChange("archived")}
+              onClick={() => handleStatusChange("ARCHIVED")}
             >
               <Archive className="mr-2 h-4 w-4" />
               Archive
@@ -224,7 +279,7 @@ export function MessageDetailClient({ message }: MessageDetailClientProps) {
                   <p className="font-medium">Source</p>
                   <div className="flex items-center space-x-1">
                     <SourceIcon className="h-4 w-4" />
-                    <span className="capitalize">{message.source}</span>
+                    <span className="capitalize">{message.source.replace('_', ' ').toLowerCase()}</span>
                   </div>
                 </div>
               </div>
@@ -280,7 +335,7 @@ export function MessageDetailClient({ message }: MessageDetailClientProps) {
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">Original Message</CardTitle>
                 <div className="flex items-center space-x-2">
-                  {message.priority === "urgent" && (
+                  {message.priority === "URGENT" && (
                     <AlertCircle className="h-4 w-4 text-red-500" />
                   )}
                   <Badge className={priorityColors[message.priority]}>
@@ -315,30 +370,30 @@ export function MessageDetailClient({ message }: MessageDetailClientProps) {
           </Card>
 
           {/* Replies */}
-          {replies.length > 0 && (
+          {message.replies.length > 0 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Replies ({replies.length})</h3>
-              {replies.map((reply) => (
+              <h3 className="text-lg font-semibold">Replies ({message.replies.length})</h3>
+              {message.replies.map((reply) => (
                 <Card key={reply.id}>
                   <CardContent className="p-4">
                     <div className="flex items-start space-x-3">
                       <Avatar className="h-10 w-10">
                         <AvatarFallback>
-                          {reply.sentBy === "admin" ? "AD" : getInitials(message.name)}
+                          {reply.sentBy === "ADMIN" ? "AD" : getInitials(message.name)}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
                             <p className="font-medium">
-                              {reply.sentBy === "admin" ? "Admin" : message.name}
+                              {reply.sentBy === "ADMIN" ? "Admin" : message.name}
                             </p>
-                            <Badge variant={reply.sentBy === "admin" ? "default" : "outline"}>
-                              {reply.sentBy === "admin" ? "Staff" : "Customer"}
+                            <Badge variant={reply.sentBy === "ADMIN" ? "default" : "outline"}>
+                              {reply.sentBy === "ADMIN" ? "Staff" : "Customer"}
                             </Badge>
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {formatDistanceToNow(new Date(reply.sentAt), { addSuffix: true })}
+                            {formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })}
                           </div>
                         </div>
                         <div className="mt-3">
