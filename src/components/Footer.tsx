@@ -1,12 +1,27 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, Instagram, Linkedin, Facebook, XIcon } from "lucide-react";
 import Link from "next/link";
 import Logo from "./Logo";
+import { useNewsletterSubscription } from "@/hooks/useNewsletterSubscription";
 
 const Footer = () => {
+  const [email, setEmail] = useState("");
+  const { subscribe, isLoading } = useNewsletterSubscription();
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    
+    const success = await subscribe(email.trim(), "FOOTER");
+    if (success) {
+      setEmail("");
+    }
+  };
+
   return (
     <footer className="bg-muted py-16 w-full">
       <div className="max-w-7xl mx-auto px-6 md:px-2">
@@ -20,14 +35,19 @@ const Footer = () => {
             
             <div className="space-y-3">
               <h4 className="font-medium">Join our mindful community</h4>
-              <div className="flex gap-x-2">
+              <form onSubmit={handleSubscribe} className="flex gap-x-2">
                 <Input 
                   type="email" 
                   placeholder="Enter your email" 
                   className="max-w-xs rounded-full"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
-                <Button>Subscribe</Button>
-              </div>
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading ? "Subscribing..." : "Subscribe"}
+                </Button>
+              </form>
               <p className="text-xs text-muted-foreground">
                 Get weekly insights and inspiration. No spam, ever.
               </p>

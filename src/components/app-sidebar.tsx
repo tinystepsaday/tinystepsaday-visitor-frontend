@@ -20,6 +20,7 @@ import {
   MessageSquare,
   DollarSign,
   User,
+  Mail,
 } from "lucide-react"
 
 import {
@@ -61,6 +62,21 @@ const data = {
       title: "Notifications",
       url: "/management/notifications",
       icon: Bell,
+    },
+    {
+      title: 'Reviews',
+      icon: Star,
+      url: '/management/reviews',
+    },
+    {
+      title: "Users",
+      url: "/management/users",
+      icon: Users,
+    },
+    {
+      title: 'Subscribers',
+      icon: Mail,
+      url: '/management/subscribers',
     },
   ],
   navContent: [
@@ -308,16 +324,6 @@ const data = {
     }
   ],
   navManagement: [
-    {
-      title: 'Reviews',
-      icon: Star,
-      url: '/management/reviews',
-    },
-    {
-      title: "Users",
-      url: "/management/users",
-      icon: Users,
-    },
     {
       title: "Settings",
       url: "/management/settings",
