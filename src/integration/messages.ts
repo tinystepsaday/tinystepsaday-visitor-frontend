@@ -143,6 +143,56 @@ export interface BulkDeleteData {
   messageIds: string[];
 }
 
+export interface CreateReplyData {
+  content: string;
+}
+
+export interface ReplyResponse {
+  success: boolean;
+  message: string;
+  data?: MessageReply;
+  error?: string;
+}
+
+/**
+ * Create a reply to a contact message
+ */
+export async function createMessageReply(messageId: string, data: CreateReplyData): Promise<ReplyResponse> {
+  try {
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/messages/messages/${messageId}/replies`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Authentication failed');
+      }
+      throw new Error(`Failed to create reply: ${response.statusText}`);
+    }
+
+    const result: ReplyResponse = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to create reply');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error creating reply:', error);
+    throw error;
+  }
+}
+
 /**
  * Create a new contact message (public endpoint)
  */

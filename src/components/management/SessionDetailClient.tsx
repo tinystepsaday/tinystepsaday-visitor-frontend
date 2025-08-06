@@ -46,6 +46,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Input } from "../ui/input";
 
 const statusColors = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -497,11 +498,11 @@ export function SessionDetailClient({ session }: SessionDetailClientProps) {
           <div className="space-y-4 py-4">
             <div>
               <label className="text-sm font-medium">New Date</label>
-              <input
+              <Input
                 type="date"
                 value={newDate}
                 onChange={(e) => handleDateChange(e.target.value)}
-                className="w-full mt-1 px-3 py-2 border border-input rounded-md"
+                className="w-full mt-1"
                 min={new Date().toISOString().split('T')[0]}
               />
             </div>

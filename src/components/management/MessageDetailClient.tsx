@@ -24,7 +24,8 @@ import {
 import { 
   getMessageById, 
   updateMessage, 
-  type ContactMessage 
+  createMessageReply,
+  type ContactMessage,
 } from "@/integration/messages";
 import { 
   getTemplates, 
@@ -131,7 +132,13 @@ export function MessageDetailClient({ messageId }: MessageDetailClientProps) {
   const handleTemplateSelect = (templateId: string) => {
     const template = templates.find(t => t.id === templateId);
     if (template && message) {
-      setReplyContent(template.content.replace('{{name}}', message.name));
+      // Replace template placeholders with actual values
+      let content = template.content;
+      content = content.replace(/\{\{name\}\}/g, message.name);
+      content = content.replace(/\{\{email\}\}/g, message.email);
+      content = content.replace(/\{\{subject\}\}/g, message.subject);
+      
+      setReplyContent(content);
       setSelectedTemplate(templateId);
     }
   };
@@ -145,21 +152,28 @@ export function MessageDetailClient({ messageId }: MessageDetailClientProps) {
     setIsReplying(true);
 
     try {
-      // In a real implementation, you would send the reply via API
-      // For now, we'll just update the message status to REPLIED
-      const result = await updateMessage(message.id, { 
-        status: "REPLIED" 
+      // Send the actual reply via API
+      const result = await createMessageReply(message.id, {
+        content: replyContent
       });
       
-      if (result.success) {
-        setMessage(prev => prev ? { ...prev, status: "REPLIED" } : null);
+      if (result.success && result.data) {
+        // Refresh the message data to get the latest state
+        const updatedMessage = await getMessageById(messageId);
+        if (updatedMessage) {
+          setMessage(updatedMessage);
+        }
+        
         toast.success("Reply sent successfully!");
         setReplyContent("");
         setShowReplyForm(false);
+        setSelectedTemplate("");
+      } else {
+        toast.error(result.message || "Failed to send reply");
       }
     } catch (error) {
       console.error("Error sending reply:", error);
-      toast.error("Failed to send reply");
+      toast.error(error instanceof Error ? error.message : "Failed to send reply");
     } finally {
       setIsReplying(false);
     }
@@ -379,14 +393,20 @@ export function MessageDetailClient({ messageId }: MessageDetailClientProps) {
                     <div className="flex items-start space-x-3">
                       <Avatar className="h-10 w-10">
                         <AvatarFallback>
-                          {reply.sentBy === "ADMIN" ? "AD" : getInitials(message.name)}
+                          {reply.sentBy === "ADMIN" 
+                            ? (reply.user ? getInitials(`${reply.user.firstName} ${reply.user.lastName}`) : "AD")
+                            : getInitials(message.name)
+                          }
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
                             <p className="font-medium">
-                              {reply.sentBy === "ADMIN" ? "Admin" : message.name}
+                              {reply.sentBy === "ADMIN" 
+                                ? (reply.user ? `${reply.user.firstName} ${reply.user.lastName}` : "Admin")
+                                : message.name
+                              }
                             </p>
                             <Badge variant={reply.sentBy === "ADMIN" ? "default" : "outline"}>
                               {reply.sentBy === "ADMIN" ? "Staff" : "Customer"}
