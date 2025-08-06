@@ -271,25 +271,25 @@ export function MessageDetailClient({ messageId }: MessageDetailClientProps) {
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
+                <div className="flex flex-col items-start gap-2">
                   <p className="font-medium">Status</p>
                   <Badge className={statusColors[message.status]}>
                     {message.status}
                   </Badge>
                 </div>
-                <div>
+                <div className="flex flex-col items-start gap-2">
                   <p className="font-medium">Priority</p>
                   <Badge className={priorityColors[message.priority]}>
                     {message.priority}
                   </Badge>
                 </div>
-                <div>
+                <div className="flex flex-col items-start gap-2">
                   <p className="font-medium">Category</p>
                   <Badge className={categoryColors[message.category]}>
                     {message.category}
                   </Badge>
                 </div>
-                <div>
+                <div className="flex flex-col items-start gap-2">
                   <p className="font-medium">Source</p>
                   <div className="flex items-center space-x-1">
                     <SourceIcon className="h-4 w-4" />
@@ -299,7 +299,7 @@ export function MessageDetailClient({ messageId }: MessageDetailClientProps) {
               </div>
 
               {message.tags.length > 0 && (
-                <div>
+                <div className="flex flex-col items-start gap-2">
                   <h4 className="font-medium mb-2">Tags</h4>
                   <div className="flex flex-wrap gap-1">
                     {message.tags.map((tag, index) => (
@@ -389,7 +389,7 @@ export function MessageDetailClient({ messageId }: MessageDetailClientProps) {
               <h3 className="text-lg font-semibold">Replies ({message.replies.length})</h3>
               {message.replies.map((reply) => (
                 <Card key={reply.id}>
-                  <CardContent className="p-4">
+                  <CardContent>
                     <div className="flex items-start space-x-3">
                       <Avatar className="h-10 w-10">
                         <AvatarFallback>
