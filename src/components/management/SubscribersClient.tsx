@@ -250,7 +250,7 @@ export function SubscribersClient() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               <Label htmlFor="search">Search Email</Label>
               <Input
                 id="search"
@@ -259,10 +259,10 @@ export function SubscribersClient() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               <Label htmlFor="subscribingTo">Subscription Type</Label>
               <Select value={subscribingToFilter} onValueChange={setSubscribingToFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="All types" />
                 </SelectTrigger>
                 <SelectContent>
@@ -273,10 +273,10 @@ export function SubscribersClient() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               <Label htmlFor="status">Status</Label>
               <Select value={isActiveFilter} onValueChange={setIsActiveFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="All statuses" />
                 </SelectTrigger>
                 <SelectContent>
@@ -286,10 +286,10 @@ export function SubscribersClient() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               <Label htmlFor="dateRange">Date Range</Label>
               <Select value={dateRangeFilter} onValueChange={setDateRangeFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="All time" />
                 </SelectTrigger>
                 <SelectContent>
@@ -303,7 +303,7 @@ export function SubscribersClient() {
               </Select>
             </div>
           </div>
-          <div className="flex justify-between items-center mt-4">
+          <div className="flex flex-col md:flex-row justify-start md:justify-between items-center mt-4 gap-2 md:gap-0">
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={clearFilters}>
                 <X className="mr-2 h-4 w-4" />
