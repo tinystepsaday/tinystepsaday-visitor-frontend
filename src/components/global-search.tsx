@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Search, FileText, GraduationCap, ImageIcon } from "lucide-react"
-import { useGlobalSearch } from "@/lib/api"
+import { Search, ImageIcon, GraduationCap } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import {
   CommandDialog,
   CommandEmpty,
@@ -11,7 +11,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
-import { Button } from "@/components/ui/button"
+import { useGlobalSearch } from "@/lib/api"
+import { formatBytes } from "@/lib/utils"
 
 export default function GlobalSearch() {
   const [open, setOpen] = useState(false)
@@ -39,22 +40,6 @@ export default function GlobalSearch() {
         <CommandList>
           <CommandEmpty>{isLoading ? "Searching..." : "No results found."}</CommandEmpty>
 
-          {searchResults?.posts && searchResults.posts.length > 0 && (
-            <CommandGroup heading="Blog Posts">
-              {searchResults.posts.map((post) => (
-                <CommandItem key={post.id} value={post.title}>
-                  <FileText className="mr-2 h-4 w-4" />
-                  <div className="flex flex-col">
-                    <span>{post.title}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {post.status} • {post.createdAt.toLocaleDateString()}
-                    </span>
-                  </div>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          )}
-
           {searchResults?.courses && searchResults.courses.length > 0 && (
             <CommandGroup heading="Courses">
               {searchResults.courses.map((course) => (
@@ -63,7 +48,7 @@ export default function GlobalSearch() {
                   <div className="flex flex-col">
                     <span>{course.title}</span>
                     <span className="text-xs text-muted-foreground">
-                      {course.category} • ${course.price}
+                      {course.duration} min • {course.category}
                     </span>
                   </div>
                 </CommandItem>
@@ -74,12 +59,12 @@ export default function GlobalSearch() {
           {searchResults?.media && searchResults.media.length > 0 && (
             <CommandGroup heading="Media Files">
               {searchResults.media.map((file) => (
-                <CommandItem key={file.id} value={file.name}>
+                <CommandItem key={file.id} value={file.filename}>
                   <ImageIcon className="mr-2 h-4 w-4" />
                   <div className="flex flex-col">
-                    <span>{file.name}</span>
+                    <span>{file.filename}</span>
                     <span className="text-xs text-muted-foreground">
-                      {file.type} • {(file.size / 1024).toFixed(1)} KB
+                      {file.type} • {formatBytes(file.size)}
                     </span>
                   </div>
                 </CommandItem>

@@ -1,10 +1,10 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
-import { Upload, ImageIcon, X } from "lucide-react"
-import { useMediaFiles, useUploadMedia } from "@/lib/api"
+import Image from "next/image"
+import { ImageIcon, X, Grid, List } from "lucide-react"
+import { useFiles } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -14,78 +14,130 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import type { MediaFile } from "@/lib/types"
-import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { FileUpload } from "@/components/file-management/file-upload"
+import { FileGrid } from "@/components/file-management/file-grid"
+import { FileFilters } from "@/components/file-management/file-filters"
+import type { MediaFile, FileQueryParams } from "@/lib/types"
+import { useToast } from "@/hooks/use-toast"
 
 interface MediaSelectorProps {
   onSelect: (media: { url: string; alt?: string; caption?: string }) => void
   trigger?: React.ReactNode
+  multiple?: boolean
+  maxFiles?: number
+  acceptedTypes?: string[]
 }
 
-export function MediaSelector({ onSelect, trigger }: MediaSelectorProps) {
+export function MediaSelector({ 
+  onSelect, 
+  trigger, 
+  multiple = false,
+  maxFiles = 1,
+  acceptedTypes = ['image/*']
+}: MediaSelectorProps) {
   const [open, setOpen] = useState(false)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [linkUrl, setLinkUrl] = useState("")
-  const [alt, setAlt] = useState("")
-  const [caption, setCaption] = useState("")
-  const [selectedMedia, setSelectedMedia] = useState<MediaFile | null>(null)
+  const [selectedFiles, setSelectedFiles] = useState<MediaFile[]>([])
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [filters, setFilters] = useState<FileQueryParams>({
+    page: 1,
+    limit: 20,
+    type: 'IMAGE', // Default to images for media selector
+  })
+  const { toast } = useToast()
 
-  const { data: mediaFiles = [] } = useMediaFiles()
-  const uploadMutation = useUploadMedia()
+  const { data: filesResponse, isLoading, refetch } = useFiles(filters)
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      setSelectedFile(file)
-    }
-  }
+  const files = filesResponse?.data || []
+  const pagination = filesResponse?.pagination
 
-  const handleUpload = async () => {
-    if (!selectedFile) return
-
-    try {
-      const result = await uploadMutation.mutateAsync({
-        file: selectedFile,
-        alt,
-        caption,
+  const handleFileSelect = (file: MediaFile) => {
+    if (multiple) {
+      setSelectedFiles(prev => {
+        const isSelected = prev.some(f => f.id === file.id)
+        if (isSelected) {
+          return prev.filter(f => f.id !== file.id)
+        } else {
+          if (prev.length >= maxFiles) {
+            toast({
+              title: "Selection Limit Reached",
+              description: `You can only select up to ${maxFiles} file${maxFiles !== 1 ? 's' : ''}.`,
+              variant: "destructive",
+            })
+            return prev
+          }
+          return [...prev, file]
+        }
       })
-      onSelect({ url: result.url, alt: result.alt, caption: result.caption })
-      setOpen(false)
-      resetForm()
-    } catch (error) {
-      console.error("Upload failed:", error)
+    } else {
+      setSelectedFiles([file])
     }
   }
 
-  const handleLinkSubmit = () => {
-    if (!linkUrl) return
-    onSelect({ url: linkUrl, alt, caption })
-    setOpen(false)
-    resetForm()
+  const handleFileAction = (action: string, file: MediaFile) => {
+    switch (action) {
+      case 'view':
+        window.open(file.url, '_blank')
+        break
+      case 'download':
+        const link = document.createElement('a')
+        link.href = file.url
+        link.download = file.filename
+        link.click()
+        break
+      case 'select':
+        handleFileSelect(file)
+        break
+    }
   }
 
-  const handleMediaSelect = () => {
-    if (!selectedMedia) return
-    onSelect({
-      url: selectedMedia.url,
-      alt: selectedMedia.alt,
-      caption: selectedMedia.caption,
+  const handleUploadComplete = (file: unknown) => {
+    // Type guard to ensure file is MediaFile
+    if (file && typeof file === 'object' && 'id' in file && 'url' in file) {
+      const mediaFile = file as MediaFile
+      // Auto-select the uploaded file
+      if (!multiple) {
+        setSelectedFiles([mediaFile])
+      } else if (selectedFiles.length < maxFiles) {
+        setSelectedFiles(prev => [...prev, mediaFile])
+      }
+      
+      // Refetch files to show the new upload
+      refetch()
+    }
+  }
+
+  const handleConfirmSelection = () => {
+    if (selectedFiles.length === 0) {
+      toast({
+        title: "No Files Selected",
+        description: "Please select at least one file.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Call onSelect for each selected file
+    selectedFiles.forEach(file => {
+      onSelect({
+        url: file.url,
+        alt: file.alt,
+        caption: file.caption,
+      })
     })
+
     setOpen(false)
-    resetForm()
+    setSelectedFiles([])
   }
 
-  const resetForm = () => {
-    setSelectedFile(null)
-    setLinkUrl("")
-    setAlt("")
-    setCaption("")
-    setSelectedMedia(null)
+  const handleFiltersChange = (newFilters: FileQueryParams) => {
+    setFilters({ ...newFilters, page: 1 }) // Reset to first page when filters change
+  }
+
+  const handlePageChange = (page: number) => {
+    setFilters(prev => ({ ...prev, page }))
   }
 
   return (
@@ -98,151 +150,175 @@ export function MediaSelector({ onSelect, trigger }: MediaSelectorProps) {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-w-6xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Select Media</DialogTitle>
-          <DialogDescription>Choose from your existing media, upload a new file, or add a link.</DialogDescription>
+          <DialogDescription>
+            Choose from your existing media or upload new files.
+            {multiple && ` You can select up to ${maxFiles} file${maxFiles !== 1 ? 's' : ''}.`}
+          </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="existing" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="existing">Existing Media</TabsTrigger>
-            <TabsTrigger value="upload">Upload File</TabsTrigger>
-            <TabsTrigger value="link">Add Link</TabsTrigger>
+            <TabsTrigger value="upload">Upload New</TabsTrigger>
           </TabsList>
 
           <TabsContent value="existing" className="space-y-4">
-            <ScrollArea className="h-[400px]">
-              <div className="grid grid-cols-4 gap-4 p-4">
-                {mediaFiles.map((file) => (
-                  <div
-                    key={file.id}
-                    className={`relative cursor-pointer rounded-lg border-2 p-2 transition-colors ${
-                      selectedMedia?.id === file.id ? "border-primary" : "border-muted hover:border-muted-foreground"
-                    }`}
-                    onClick={() => setSelectedMedia(file)}
-                  >
-                    <Image
-                      src={file.url || "/placeholder.svg"}
-                      alt={file.alt || file.name}
-                      width={100}
-                      height={100}
-                      className="aspect-square w-full rounded object-cover"
-                    />
-                    <p className="mt-2 truncate text-xs">{file.name}</p>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-            {selectedMedia && (
-              <div className="space-y-2">
-                <Label htmlFor="existing-alt">Alt Text</Label>
-                <Input
-                  id="existing-alt"
-                  value={selectedMedia.alt || ""}
-                  onChange={(e) => setSelectedMedia({ ...selectedMedia, alt: e.target.value })}
-                  placeholder="Describe the image for accessibility"
-                />
-                <Label htmlFor="existing-caption">Caption</Label>
-                <Textarea
-                  id="existing-caption"
-                  value={selectedMedia.caption || ""}
-                  onChange={(e) => setSelectedMedia({ ...selectedMedia, caption: e.target.value })}
-                  placeholder="Optional caption for the image"
-                />
-                <Button onClick={handleMediaSelect} className="w-full">
-                  Use Selected Media
+            {/* Filters */}
+            <FileFilters
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              onClearFilters={() => setFilters({ page: 1, limit: 20, type: 'IMAGE' })}
+            />
+
+            {/* View controls */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={viewMode === 'grid' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('grid')}
+                >
+                  <Grid className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === 'list' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('list')}
+                >
+                  <List className="h-4 w-4" />
                 </Button>
               </div>
-            )}
-          </TabsContent>
 
-          <TabsContent value="upload" className="space-y-4">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="file-upload">Choose File</Label>
-                <Input
-                  id="file-upload"
-                  type="file"
-                  accept="image/*,video/*,.pdf,.doc,.docx"
-                  onChange={handleFileSelect}
-                />
-              </div>
-
-              {selectedFile && (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Upload className="h-4 w-4" />
-                    <span className="text-sm">{selectedFile.name}</span>
-                    <Button variant="ghost" size="sm" onClick={() => setSelectedFile(null)}>
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="upload-alt">Alt Text</Label>
-                    <Input
-                      id="upload-alt"
-                      value={alt}
-                      onChange={(e) => setAlt(e.target.value)}
-                      placeholder="Describe the image for accessibility"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="upload-caption">Caption</Label>
-                    <Textarea
-                      id="upload-caption"
-                      value={caption}
-                      onChange={(e) => setCaption(e.target.value)}
-                      placeholder="Optional caption for the image"
-                    />
-                  </div>
-
-                  <Button onClick={handleUpload} disabled={uploadMutation.isPending} className="w-full">
-                    {uploadMutation.isPending ? "Uploading..." : "Upload & Use"}
+              {selectedFiles.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary">
+                    {selectedFiles.length} selected
+                  </Badge>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedFiles([])}
+                  >
+                    Clear
                   </Button>
                 </div>
               )}
             </div>
-          </TabsContent>
 
-          <TabsContent value="link" className="space-y-4">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="link-url">Image URL</Label>
-                <Input
-                  id="link-url"
-                  value={linkUrl}
-                  onChange={(e) => setLinkUrl(e.target.value)}
-                  placeholder="https://example.com/image.jpg"
+            {/* Files grid/list */}
+            <ScrollArea className="h-[400px]">
+              {isLoading ? (
+                <div className="flex items-center justify-center h-64">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                    <p className="text-sm text-muted-foreground">Loading files...</p>
+                  </div>
+                </div>
+              ) : files.length === 0 ? (
+                <div className="flex items-center justify-center h-64">
+                  <div className="text-center">
+                    <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">No files found</p>
+                  </div>
+                </div>
+              ) : (
+                <FileGrid
+                  files={files}
+                  selectedFiles={selectedFiles.map(f => f.id)}
+                  onFileSelect={(fileId) => {
+                    const file = files.find(f => f.id === fileId)
+                    if (file) {
+                      handleFileSelect(file)
+                    }
+                  }}
+                  onFileAction={handleFileAction}
+                  viewMode={viewMode}
+                  showSelection={true}
                 />
-              </div>
+              )}
+            </ScrollArea>
 
-              <div className="space-y-2">
-                <Label htmlFor="link-alt">Alt Text</Label>
-                <Input
-                  id="link-alt"
-                  value={alt}
-                  onChange={(e) => setAlt(e.target.value)}
-                  placeholder="Describe the image for accessibility"
-                />
+            {/* Pagination */}
+            {pagination && pagination.totalPages > 1 && (
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">
+                  Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
+                  {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
+                  {pagination.total} files
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={!pagination.hasPrev}
+                    onClick={() => handlePageChange(pagination.page - 1)}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={!pagination.hasNext}
+                    onClick={() => handlePageChange(pagination.page + 1)}
+                  >
+                    Next
+                  </Button>
+                </div>
               </div>
+            )}
 
-              <div className="space-y-2">
-                <Label htmlFor="link-caption">Caption</Label>
-                <Textarea
-                  id="link-caption"
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  placeholder="Optional caption for the image"
-                />
+            {/* Selection summary */}
+            {selectedFiles.length > 0 && (
+              <div className="border rounded-lg p-4 space-y-2">
+                <h4 className="font-medium">Selected Files:</h4>
+                <div className="space-y-2">
+                  {selectedFiles.map((file) => (
+                    <div key={file.id} className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Image
+                          src={file.url}
+                          alt={file.alt || file.filename}
+                          width={32}
+                          height={32}
+                          className="w-8 h-8 rounded object-cover"
+                        />
+                        <span className="text-sm">{file.filename}</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedFiles(prev => prev.filter(f => f.id !== file.id))}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
               </div>
+            )}
 
-              <Button onClick={handleLinkSubmit} disabled={!linkUrl} className="w-full">
-                Use Link
+            {/* Actions */}
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleConfirmSelection} disabled={selectedFiles.length === 0}>
+                {multiple ? `Select ${selectedFiles.length} File${selectedFiles.length !== 1 ? 's' : ''}` : 'Select File'}
               </Button>
             </div>
+          </TabsContent>
+
+          <TabsContent value="upload" className="space-y-4">
+            <FileUpload
+              onUploadComplete={handleUploadComplete}
+              onClose={() => setOpen(false)}
+              multiple={multiple}
+              maxFiles={maxFiles}
+              acceptedTypes={acceptedTypes}
+            />
           </TabsContent>
         </Tabs>
       </DialogContent>

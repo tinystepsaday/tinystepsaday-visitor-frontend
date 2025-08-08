@@ -176,13 +176,128 @@ export interface Task {
 
 export interface MediaFile {
   id: string
-  name: string
   url: string
-  type: string
+  alt?: string
+  type: "IMAGE" | "VIDEO" | "DOCUMENT" | "AUDIO" | "OTHER"
+  caption?: string
+  filename: string
+  originalName: string
+  mimeType: string
   size: number
+  width?: number
+  height?: number
+  duration?: number
+  uploadedBy?: string
+  isPublic: boolean
+  tags: string[]
+  metadata?: Record<string, unknown>
+  createdAt: Date
+  updatedAt: Date
+  uploadedByUser?: {
+    id: string
+    username: string
+    email: string
+    firstName?: string
+    lastName?: string
+  }
+}
+
+// File query parameters
+export interface FileQueryParams {
+  page?: number
+  limit?: number
+  search?: string
+  type?: "IMAGE" | "VIDEO" | "DOCUMENT" | "AUDIO" | "OTHER" | "all"
+  uploadedBy?: string
+  isPublic?: boolean | "all"
+  tags?: string[]
+  sortBy?: "createdAt" | "updatedAt" | "filename" | "size" | "originalName" | "type" | "mimeType"
+  sortOrder?: "asc" | "desc"
+  minSize?: number
+  maxSize?: number
+  startDate?: string
+  endDate?: string
+  mimeType?: string
+}
+
+// Paginated file response
+export interface PaginatedFileResponse {
+  success: boolean
+  message: string
+  data: MediaFile[]
+  pagination: {
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+    hasNext: boolean
+    hasPrev: boolean
+  }
+  analytics: {
+    totalFiles: number
+    totalSize: number
+    filesByType: Record<string, number>
+    publicFiles: number
+    privateFiles: number
+  }
+}
+
+// File upload data
+export interface FileUploadData {
+  file: File
   alt?: string
   caption?: string
-  createdAt: Date
+  isPublic?: boolean
+  tags?: string[]
+  metadata?: Record<string, unknown>
+}
+
+// File update data
+export interface FileUpdateData {
+  alt?: string
+  caption?: string
+  isPublic?: boolean
+  tags?: string[]
+  metadata?: Record<string, unknown>
+}
+
+// File statistics
+export interface FileStatistics {
+  totalFiles: number
+  totalSize: number
+  filesByType: Record<string, number>
+  publicFiles: number
+  privateFiles: number
+  averageFileSize: number
+  largestFile: MediaFile | null
+  mostRecentFile: MediaFile | null
+}
+
+// Bulk file operation data
+export interface BulkFileOperationData {
+  fileIds: string[]
+  operation: "delete" | "makePublic" | "makePrivate" | "addTags" | "removeTags"
+  tags?: string[]
+}
+
+// Upload progress
+export interface UploadProgress {
+  progress: number
+  uploaded: number
+  total: number
+  speed: number
+  timeRemaining: number
+}
+
+// File upload response
+export interface FileUploadResponse {
+  success: boolean
+  message: string
+  data: {
+    file: MediaFile
+    uploadUrl?: string
+    presignedUrl?: string
+  }
 }
 
 export interface Notification {

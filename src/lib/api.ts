@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { finalMockBlogPosts, mockCourses, mockMediaFiles, mockNotifications, mockAnalytics } from "@/data/mock-data"
-import type { BlogPost, MediaFile } from "@/lib/types"
+import type { BlogPost, MediaFile, FileQueryParams, FileUploadData, FileUpdateData, BulkFileOperationData } from "@/lib/types"
+import { fileAPI } from "@/integration/files"
 
 // Simulate API delays
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -98,7 +99,11 @@ export const useCourses = (filters?: {
       let courses = [...mockCourses]
 
       if (filters?.search) {
-        courses = courses.filter((course) => course.title.toLowerCase().includes(filters.search!.toLowerCase()))
+        courses = courses.filter(
+          (course) =>
+            course.title.toLowerCase().includes(filters.search!.toLowerCase()) ||
+            course.description.toLowerCase().includes(filters.search!.toLowerCase()),
+        )
       }
 
       if (filters?.status) {
@@ -114,7 +119,118 @@ export const useCourses = (filters?: {
   })
 }
 
-// Media Files API
+// File Management API
+export const useFiles = (params: FileQueryParams = {}) => {
+  return useQuery({
+    queryKey: ["files", params],
+    queryFn: () => fileAPI.getFiles(params),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
+export const useFile = (id: string) => {
+  return useQuery({
+    queryKey: ["file", id],
+    queryFn: () => fileAPI.getFileById(id),
+    enabled: !!id,
+  })
+}
+
+export const useFileStatistics = () => {
+  return useQuery({
+    queryKey: ["fileStatistics"],
+    queryFn: () => fileAPI.getFileStatistics(),
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  })
+}
+
+export const useMyFiles = (limit: number = 20) => {
+  return useQuery({
+    queryKey: ["myFiles", limit],
+    queryFn: () => fileAPI.getMyFiles(limit),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
+export const useFilesByType = (type: string, limit: number = 10) => {
+  return useQuery({
+    queryKey: ["filesByType", type, limit],
+    queryFn: () => fileAPI.getFilesByType(type, limit),
+    enabled: !!type,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
+export const useSearchFiles = (query: string, limit: number = 20) => {
+  return useQuery({
+    queryKey: ["searchFiles", query, limit],
+    queryFn: () => fileAPI.searchFiles(query, limit),
+    enabled: !!query && query.length > 0,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}
+
+export const useUploadFile = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (uploadData: FileUploadData) => {
+      return fileAPI.uploadFile(uploadData)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["files"] })
+      queryClient.invalidateQueries({ queryKey: ["myFiles"] })
+      queryClient.invalidateQueries({ queryKey: ["fileStatistics"] })
+    },
+  })
+}
+
+export const useUpdateFile = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: FileUpdateData }) => {
+      return fileAPI.updateFile(id, data)
+    },
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ["files"] })
+      queryClient.invalidateQueries({ queryKey: ["file", id] })
+      queryClient.invalidateQueries({ queryKey: ["myFiles"] })
+    },
+  })
+}
+
+export const useDeleteFile = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      return fileAPI.deleteFile(id)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["files"] })
+      queryClient.invalidateQueries({ queryKey: ["myFiles"] })
+      queryClient.invalidateQueries({ queryKey: ["fileStatistics"] })
+    },
+  })
+}
+
+export const useBulkFileOperation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (operationData: BulkFileOperationData) => {
+      return fileAPI.bulkFileOperation(operationData)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["files"] })
+      queryClient.invalidateQueries({ queryKey: ["myFiles"] })
+      queryClient.invalidateQueries({ queryKey: ["fileStatistics"] })
+    },
+  })
+}
+
+// Legacy media files hook (for backward compatibility)
 export const useMediaFiles = (filters?: {
   search?: string
   type?: string
@@ -126,10 +242,12 @@ export const useMediaFiles = (filters?: {
       let files = [...mockMediaFiles]
 
       if (filters?.search) {
-        files = files.filter((file) => file.name.toLowerCase().includes(filters.search!.toLowerCase()))
+        files = files.filter((file) =>
+          file.filename.toLowerCase().includes(filters.search!.toLowerCase()),
+        )
       }
 
-      if (filters?.type) {
+      if (filters?.type && filters.type !== "all") {
         files = files.filter((file) => file.type === filters.type)
       }
 
@@ -143,16 +261,21 @@ export const useUploadMedia = () => {
 
   return useMutation({
     mutationFn: async (data: { file: File; alt?: string; caption?: string }) => {
-      await delay(2000) // Simulate upload time
+      await delay(2000)
       const newFile: MediaFile = {
         id: Date.now().toString(),
-        name: data.file.name,
+        filename: data.file.name,
+        originalName: data.file.name,
         url: URL.createObjectURL(data.file),
-        type: data.file.type.startsWith("image/") ? "image" : "document",
+        type: data.file.type.startsWith("image/") ? "IMAGE" : "DOCUMENT",
+        mimeType: data.file.type,
         size: data.file.size,
         alt: data.alt,
         caption: data.caption,
+        isPublic: true,
+        tags: [],
         createdAt: new Date(),
+        updatedAt: new Date(),
       }
       mockMediaFiles.push(newFile)
       return newFile
@@ -163,7 +286,6 @@ export const useUploadMedia = () => {
   })
 }
 
-// Notifications API
 export const useNotifications = () => {
   return useQuery({
     queryKey: ["notifications"],
@@ -174,45 +296,31 @@ export const useNotifications = () => {
   })
 }
 
-// Analytics API
 export const useAnalytics = (dateRange?: { from: Date; to: Date }) => {
   return useQuery({
     queryKey: ["analytics", dateRange],
     queryFn: async () => {
-      await delay(800)
+      await delay(500)
       return mockAnalytics
     },
   })
 }
 
-// Global Search API
 export const useGlobalSearch = (query: string) => {
   return useQuery({
     queryKey: ["globalSearch", query],
     queryFn: async () => {
-      await delay(400)
-      if (!query) return { posts: [], courses: [], media: [] }
-
-      const posts = finalMockBlogPosts.filter(
-        (post) =>
-          post.title.toLowerCase().includes(query.toLowerCase()) ||
-          post.content.toLowerCase().includes(query.toLowerCase()),
-      )
-
-      const courses = mockCourses.filter(
-        (course) =>
-          course.title.toLowerCase().includes(query.toLowerCase()) ||
-          course.description.toLowerCase().includes(query.toLowerCase()),
-      )
-
-      const media = mockMediaFiles.filter(
-        (file) =>
-          file.name.toLowerCase().includes(query.toLowerCase()) ||
-          file.alt?.toLowerCase().includes(query.toLowerCase()),
-      )
-
-      return { posts, courses, media }
+      await delay(300)
+      const results = {
+        courses: mockCourses.filter((course) =>
+          course.title.toLowerCase().includes(query.toLowerCase()),
+        ),
+        media: mockMediaFiles.filter((file) =>
+          file.filename.toLowerCase().includes(query.toLowerCase()),
+        ),
+      }
+      return results
     },
-    enabled: query.length > 2,
+    enabled: query.length > 0,
   })
 } 
