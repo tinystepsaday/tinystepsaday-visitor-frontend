@@ -373,7 +373,7 @@ export default function CreateBlogPostPage() {
                         height={100}
                         className="w-full h-32 object-cover rounded-md"
                       />
-                      <Button type="button" variant="outline" size="sm" onClick={() => setFeaturedImage("")}>
+                      <Button variant="outline" size="sm" onClick={() => setFeaturedImage("")}>
                         Remove Image
                       </Button>
                     </div>
@@ -381,7 +381,7 @@ export default function CreateBlogPostPage() {
                     <MediaSelector
                       onSelect={(media) => setFeaturedImage(media.url)}
                       trigger={
-                        <Button type="button" variant="outline" className="w-full bg-transparent">
+                        <Button variant="outline" className="w-full bg-transparent">
                           Select Featured Image
                         </Button>
                       }
@@ -402,7 +402,7 @@ export default function CreateBlogPostPage() {
                       onChange={(e) => setNewTag(e.target.value)}
                       onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
                     />
-                    <Button type="button" size="sm" onClick={addTag}>
+                    <Button variant="outline" size="sm" onClick={addTag}>
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>

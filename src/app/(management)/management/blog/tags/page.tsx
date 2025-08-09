@@ -171,7 +171,7 @@ export default function TagsPage() {
                   Color
                 </Label>
                 <div className="col-span-3 flex items-center space-x-2">
-                  <input
+                  <Input
                     type="color"
                     id="color"
                     value={newTag.color}

@@ -351,7 +351,7 @@ export default function EditTeamMemberPage() {
                     onChange={(e) => setNewSkill(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
                   />
-                  <Button type="button" onClick={addSkill} disabled={!newSkill.trim()}>
+                  <Button variant="outline" onClick={addSkill} disabled={!newSkill.trim()}>
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
@@ -359,13 +359,14 @@ export default function EditTeamMemberPage() {
                   {formData.skills.map((skill, index) => (
                     <Badge key={index} variant="secondary" className="flex items-center gap-1">
                       {skill}
-                      <button
-                        type="button"
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => removeSkill(skill)}
                         className="ml-1 hover:text-destructive"
                       >
                         <X className="h-3 w-3" />
-                      </button>
+                      </Button>
                     </Badge>
                   ))}
                 </div>

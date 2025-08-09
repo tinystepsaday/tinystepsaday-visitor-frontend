@@ -72,18 +72,31 @@ export default function MediaPage() {
       page: parseInt(searchParams.get('page') || '1'),
       limit: parseInt(searchParams.get('limit') || '20'),
       search: searchParams.get('search') || undefined,
-      type: (searchParams.get('type') as "IMAGE" | "VIDEO" | "DOCUMENT" | "AUDIO" | "OTHER" | "all") || undefined,
+      type: (() => {
+        const typeParam = searchParams.get('type')
+        if (typeParam === 'all' || !typeParam) return undefined
+        return typeParam as "IMAGE" | "VIDEO" | "DOCUMENT" | "AUDIO" | "OTHER"
+      })(),
       isPublic: searchParams.get('isPublic') === 'true' ? true : searchParams.get('isPublic') === 'false' ? false : undefined,
       sortBy: (searchParams.get('sortBy') as "createdAt" | "updatedAt" | "filename" | "size" | "originalName" | "type" | "mimeType") || 'createdAt',
       sortOrder: (searchParams.get('sortOrder') as "asc" | "desc") || 'desc',
     }
     
-    // Only update if filters actually changed
-    const filtersChanged = JSON.stringify(newFilters) !== JSON.stringify(filters)
-    if (filtersChanged) {
-      setFilters(newFilters)
-    }
-  }, [filters, searchParams])
+    // Use a ref to track the previous filters to avoid circular dependency
+    setFilters(prevFilters => {
+      // Deep comparison to avoid unnecessary updates
+      const filtersChanged = 
+        prevFilters.page !== newFilters.page ||
+        prevFilters.limit !== newFilters.limit ||
+        prevFilters.search !== newFilters.search ||
+        prevFilters.type !== newFilters.type ||
+        prevFilters.isPublic !== newFilters.isPublic ||
+        prevFilters.sortBy !== newFilters.sortBy ||
+        prevFilters.sortOrder !== newFilters.sortOrder
+      
+      return filtersChanged ? newFilters : prevFilters
+    })
+  }, [searchParams])
 
   // Update URL when filters change
   useEffect(() => {
@@ -91,7 +104,9 @@ export default function MediaPage() {
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         if (Array.isArray(value)) {
-          params.set(key, value.join(','))
+          if (value.length > 0) {
+            params.set(key, value.join(','))
+          }
         } else {
           params.set(key, String(value))
         }
@@ -144,6 +159,14 @@ export default function MediaPage() {
         break
       case 'delete':
         setFileToDelete(file)
+        break
+      case 'updated':
+        // Refresh the file list when a file is updated
+        refetch()
+        toast({
+          title: "File Updated",
+          description: "File has been updated successfully.",
+        })
         break
     }
   }
@@ -260,7 +283,7 @@ export default function MediaPage() {
                 Upload Files
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-h-[90vh]">
+            <DialogContent className="max-h-[90vh] min-w-[800px]">
               <DialogHeader>
                 <DialogTitle>Upload Files</DialogTitle>
                 <DialogDescription>
@@ -282,7 +305,7 @@ export default function MediaPage() {
       {analytics && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-sm font-medium">Total Files</CardTitle>
             </CardHeader>
             <CardContent>
@@ -294,7 +317,7 @@ export default function MediaPage() {
           </Card>
           
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-sm font-medium">Public Files</CardTitle>
             </CardHeader>
             <CardContent>
@@ -306,7 +329,7 @@ export default function MediaPage() {
           </Card>
           
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-sm font-medium">Private Files</CardTitle>
             </CardHeader>
             <CardContent>

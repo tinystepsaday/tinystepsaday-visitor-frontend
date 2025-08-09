@@ -6,6 +6,7 @@ import { Upload, X, File, Image, Video, Music, FileText, AlertCircle, CheckCircl
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
@@ -60,55 +61,23 @@ export function FileUpload({
   const uploadMutation = useUploadFile()
 
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: unknown[]) => {
-    const uploadFile = async (file: File, index: number) => {
-      try {
-        const uploadData: FileUploadData = {
-          file,
-          alt: alt || undefined,
-          caption: caption || undefined,
-          isPublic,
-          tags: tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : undefined,
-        }
+    // Check if alt text and caption are provided
+    if (!alt.trim()) {
+      toast({
+        title: "Alt Text Required",
+        description: "Please provide alt text for accessibility before uploading files.",
+        variant: "destructive",
+      })
+      return
+    }
 
-        const uploadedFile = await uploadMutation.mutateAsync(uploadData)
-
-        // Update file status to completed
-        setUploadingFiles(prev => 
-          prev.map((item, i) => 
-            i === index 
-              ? { ...item, status: 'completed' as const, uploadedFile }
-              : item
-          )
-        )
-
-        onUploadComplete?.(uploadedFile)
-
-        toast({
-          title: "Upload Successful",
-          description: `File ${file.name} uploaded successfully.`,
-        })
-
-      } catch (error) {
-        console.error('Upload failed:', error)
-        
-        setUploadingFiles(prev => 
-          prev.map((item, i) => 
-            i === index 
-              ? { 
-                  ...item, 
-                  status: 'error' as const, 
-                  error: error instanceof Error ? error.message : 'Upload failed'
-                }
-              : item
-          )
-        )
-
-        toast({
-          title: "Upload Failed",
-          description: `Failed to upload ${file.name}. Please try again.`,
-          variant: "destructive",
-        })
-      }
+    if (!caption.trim()) {
+      toast({
+        title: "Caption Required",
+        description: "Please provide a caption for the file before uploading.",
+        variant: "destructive",
+      })
+      return
     }
 
     // Handle rejected files
@@ -151,11 +120,59 @@ export function FileUpload({
       setUploadingFiles(prev => [...prev, ...newUploadingFiles])
 
       // Upload each file
-      acceptedFiles.forEach((file, index) => {
-        uploadFile(file, newUploadingFiles.length - acceptedFiles.length + index)
+      acceptedFiles.forEach(async (file, index) => {
+        const uploadIndex = newUploadingFiles.length - acceptedFiles.length + index
+        try {
+          const uploadData: FileUploadData = {
+            file,
+            alt: alt.trim(),
+            caption: caption.trim(),
+            isPublic,
+            tags: tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : undefined,
+          }
+
+          const uploadedFile = await uploadMutation.mutateAsync(uploadData)
+
+          // Update file status to completed
+          setUploadingFiles(prev => 
+            prev.map((item, i) => 
+              i === uploadIndex 
+                ? { ...item, status: 'completed' as const, uploadedFile }
+                : item
+            )
+          )
+
+          onUploadComplete?.(uploadedFile)
+
+          toast({
+            title: "Upload Successful",
+            description: `File ${file.name} uploaded successfully.`,
+          })
+
+        } catch (error) {
+          console.error('Upload failed:', error)
+          
+          setUploadingFiles(prev => 
+            prev.map((item, i) => 
+              i === uploadIndex 
+                ? { 
+                    ...item, 
+                    status: 'error' as const, 
+                    error: error instanceof Error ? error.message : 'Upload failed'
+                  }
+                : item
+            )
+          )
+
+          toast({
+            title: "Upload Failed",
+            description: `Failed to upload ${file.name}. Please try again.`,
+            variant: "destructive",
+          })
+        }
       })
     }
-  }, [maxSize, toast, uploadMutation, alt, caption, isPublic, tags, onUploadComplete])
+  }, [alt, caption, isPublic, tags, maxSize, toast, uploadMutation, onUploadComplete])
 
   const removeFile = (index: number) => {
     setUploadingFiles(prev => prev.filter((_, i) => i !== index))
@@ -205,12 +222,12 @@ export function FileUpload({
   const errorCount = uploadingFiles.filter(f => f.status === 'error').length
 
   return (
-    <div className="space-y-6 overflow-y-auto max-h-[90vh]">
+    <div className="space-y-4 max-h-[90vh] min-w-[600px] overflow-y-scroll scrollbar-thin scrollbar-thumb-muted-foreground/25 scrollbar-track-muted-foreground/10">
       {/* Upload area */}
       <div
         {...getRootProps()}
         className={`
-          border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
+          border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors
           ${isDragActive 
             ? 'border-primary bg-primary/5' 
             : 'border-muted-foreground/25 hover:border-muted-foreground/50'
@@ -218,7 +235,7 @@ export function FileUpload({
         `}
       >
         <input {...getInputProps()} />
-        <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+        <Upload className="mx-auto h-9 w-9 text-muted-foreground mb-4" />
         <p className="text-lg font-medium mb-2">
           {isDragActive ? 'Drop files here' : 'Drag & drop files here'}
         </p>
@@ -241,22 +258,32 @@ export function FileUpload({
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="alt">Alt Text</Label>
-            <Input
+            <Label htmlFor="alt">Alt Text *</Label>
+            <Textarea
               id="alt"
-              placeholder="Describe the file for accessibility"
+              placeholder="Describe the file for accessibility (required)"
               value={alt}
               onChange={(e) => setAlt(e.target.value)}
+              required
+              className="min-h-[60px]"
             />
+            <p className="text-xs text-muted-foreground">
+              Alt text is required for accessibility and SEO purposes.
+            </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="caption">Caption</Label>
-            <Input
+            <Label htmlFor="caption">Caption *</Label>
+            <Textarea
               id="caption"
-              placeholder="Optional caption for the file"
+              placeholder="Provide a caption for the file (required)"
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
+              required
+              className="min-h-[60px]"
             />
+            <p className="text-xs text-muted-foreground">
+              Caption helps users understand the context of the file.
+            </p>
           </div>
         </div>
 
@@ -283,7 +310,7 @@ export function FileUpload({
 
       {/* Upload progress */}
       {uploadingFiles.length > 0 && (
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium">Upload Progress</h3>
             <div className="flex gap-2 text-sm text-muted-foreground">
@@ -299,9 +326,9 @@ export function FileUpload({
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-1">
             {uploadingFiles.map((item, index) => (
-              <div key={index} className="border rounded-lg p-4">
+              <div key={index} className="border rounded-lg p-2">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3">
                     {getFileIcon(item.file)}
