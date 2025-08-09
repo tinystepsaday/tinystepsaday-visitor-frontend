@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useToast } from "@/hooks/use-toast"
 import type { FileQueryParams, MediaFile } from "@/lib/types"
+import { formatBytes } from "@/lib/utils"
 
 export default function MediaPage() {
   const searchParams = useSearchParams()
@@ -44,7 +45,8 @@ export default function MediaPage() {
   const [showUploadDialog, setShowUploadDialog] = useState(false)
   const [showStatsDialog, setShowStatsDialog] = useState(false)
   const [fileToDelete, setFileToDelete] = useState<MediaFile | null>(null)
-  const [filters, setFilters] = useState<FileQueryParams>({
+  // Initialize filters from URL params
+  const [filters, setFilters] = useState<FileQueryParams>(() => ({
     page: parseInt(searchParams.get('page') || '1'),
     limit: parseInt(searchParams.get('limit') || '20'),
     search: searchParams.get('search') || undefined,
@@ -52,7 +54,7 @@ export default function MediaPage() {
     isPublic: searchParams.get('isPublic') === 'true' ? true : searchParams.get('isPublic') === 'false' ? false : undefined,
     sortBy: (searchParams.get('sortBy') as "createdAt" | "updatedAt" | "filename" | "size" | "originalName" | "type" | "mimeType") || 'createdAt',
     sortOrder: (searchParams.get('sortOrder') as "asc" | "desc") || 'desc',
-  })
+  }))
 
   // API hooks
   const { data: filesResponse, isLoading, refetch } = useFiles(filters)
@@ -63,6 +65,25 @@ export default function MediaPage() {
   const files = filesResponse?.data || []
   const pagination = filesResponse?.pagination
   const analytics = filesResponse?.analytics
+
+  // Sync filters with URL params when they change (e.g., browser back/forward)
+  useEffect(() => {
+    const newFilters: FileQueryParams = {
+      page: parseInt(searchParams.get('page') || '1'),
+      limit: parseInt(searchParams.get('limit') || '20'),
+      search: searchParams.get('search') || undefined,
+      type: (searchParams.get('type') as "IMAGE" | "VIDEO" | "DOCUMENT" | "AUDIO" | "OTHER" | "all") || undefined,
+      isPublic: searchParams.get('isPublic') === 'true' ? true : searchParams.get('isPublic') === 'false' ? false : undefined,
+      sortBy: (searchParams.get('sortBy') as "createdAt" | "updatedAt" | "filename" | "size" | "originalName" | "type" | "mimeType") || 'createdAt',
+      sortOrder: (searchParams.get('sortOrder') as "asc" | "desc") || 'desc',
+    }
+    
+    // Only update if filters actually changed
+    const filtersChanged = JSON.stringify(newFilters) !== JSON.stringify(filters)
+    if (filtersChanged) {
+      setFilters(newFilters)
+    }
+  }, [filters, searchParams])
 
   // Update URL when filters change
   useEffect(() => {
@@ -78,8 +99,13 @@ export default function MediaPage() {
     })
     
     const newUrl = `${pathname}?${params.toString()}`
-    router.push(newUrl)
-  }, [filters, pathname, router])
+    const currentUrl = `${pathname}?${searchParams.toString()}`
+    
+    // Only update URL if it's actually different
+    if (newUrl !== currentUrl) {
+      router.push(newUrl, { scroll: false })
+    }
+  }, [filters, pathname, router, searchParams])
 
   // Handlers
   const handleFiltersChange = (newFilters: FileQueryParams) => {
@@ -234,7 +260,7 @@ export default function MediaPage() {
                 Upload Files
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh]">
+            <DialogContent className="max-h-[90vh]">
               <DialogHeader>
                 <DialogTitle>Upload Files</DialogTitle>
                 <DialogDescription>
@@ -412,7 +438,7 @@ export default function MediaPage() {
 
       {/* Statistics Dialog */}
       <Dialog open={showStatsDialog} onOpenChange={setShowStatsDialog}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="min-w-4xl">
           <DialogHeader>
             <DialogTitle>File Statistics</DialogTitle>
             <DialogDescription>
@@ -442,13 +468,4 @@ export default function MediaPage() {
       </AlertDialog>
     </div>
   )
-}
-
-// Helper function to format bytes
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }

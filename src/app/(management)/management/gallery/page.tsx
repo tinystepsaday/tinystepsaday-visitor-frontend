@@ -252,7 +252,7 @@ export default function GalleryManagementPage() {
                   />
                   <span className="text-sm text-muted-foreground">or</span>
                   <Input
-                    placeholder="https://example.com/image.jpg"
+                    placeholder="https://firebasestorage.googleapis.com/v0/b/tiny-steps-a-day-44449.firebasestorage.app/o/cover-image.jpg?alt=media&token=aa7c3056-a542-49dc-91f3-d9ba0271ced9"
                     value={formData.src}
                     onChange={(e) => setFormData(prev => ({ ...prev, src: e.target.value }))}
                   />
@@ -619,7 +619,7 @@ export default function GalleryManagementPage() {
                 />
                 <span className="text-sm text-muted-foreground">or</span>
                 <Input
-                  placeholder="https://example.com/image.jpg"
+                  placeholder="https://firebasestorage.googleapis.com/v0/b/tiny-steps-a-day-44449.firebasestorage.app/o/cover-image.jpg?alt=media&token=aa7c3056-a542-49dc-91f3-d9ba0271ced9"
                   value={formData.src}
                   onChange={(e) => setFormData(prev => ({ ...prev, src: e.target.value }))}
                 />

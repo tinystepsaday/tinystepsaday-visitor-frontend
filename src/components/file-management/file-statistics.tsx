@@ -40,7 +40,7 @@ export function FileStatistics({ statistics }: FileStatisticsProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-y-auto max-h-[80vh]">
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
@@ -240,7 +240,7 @@ export function FileStatistics({ statistics }: FileStatisticsProps) {
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-0">
             <CardTitle className="text-sm font-medium">File Types</CardTitle>
           </CardHeader>
           <CardContent>
@@ -254,7 +254,7 @@ export function FileStatistics({ statistics }: FileStatisticsProps) {
         </Card>
 
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-0">
             <CardTitle className="text-sm font-medium">Average Files per Type</CardTitle>
           </CardHeader>
           <CardContent>
@@ -268,7 +268,7 @@ export function FileStatistics({ statistics }: FileStatisticsProps) {
         </Card>
 
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-0">
             <CardTitle className="text-sm font-medium">Storage Efficiency</CardTitle>
           </CardHeader>
           <CardContent>

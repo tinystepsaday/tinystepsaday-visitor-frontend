@@ -30,9 +30,9 @@ const ACCEPTED_TYPES = {
   'video/*': ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm'],
   'audio/*': ['.mp3', '.wav', '.ogg', '.m4a'],
   'application/pdf': ['.pdf'],
-  'application/msword': ['.doc'],
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-  'text/plain': ['.txt'],
+  // 'application/msword': ['.doc'],
+  // 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+  // 'text/plain': ['.txt'],
 }
 
 interface UploadingFile {
@@ -176,9 +176,10 @@ export function FileUpload({
     const type = getFileType(file.type)
     switch (type) {
       case 'IMAGE':
-        return <Image className="h-8 w-8 text-blue-500" />
+        // eslint-disable-next-line jsx-a11y/alt-text
+        return <Image className="h-8 w-8 text-blue-500" width={32} height={32}/>
       case 'VIDEO':
-        return <Video className="h-8 w-8 text-red-500" />
+        return <Video className="h-8 w-8 text-red-500"/>
       case 'AUDIO':
         return <Music className="h-8 w-8 text-green-500" />
       case 'DOCUMENT':
@@ -204,7 +205,7 @@ export function FileUpload({
   const errorCount = uploadingFiles.filter(f => f.status === 'error').length
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-y-auto max-h-[90vh]">
       {/* Upload area */}
       <div
         {...getRootProps()}

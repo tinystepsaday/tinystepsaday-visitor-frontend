@@ -50,7 +50,19 @@ const nextConfig: NextConfig = {
         hostname: "logoipsum.com",
         port: "",
         pathname: "/**",
-      }
+      },
+      {
+        protocol: "https",
+        hostname: "tiny-steps-a-day-44449.firebasestorage.app",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "example.com",
+        port: "",
+        pathname: "/**",
+      },      
     ]
   },
 };

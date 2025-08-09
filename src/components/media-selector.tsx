@@ -150,7 +150,7 @@ export function MediaSelector({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-6xl max-h-[90vh]">
+      <DialogContent className="min-w-6xl min-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Select Media</DialogTitle>
           <DialogDescription>
