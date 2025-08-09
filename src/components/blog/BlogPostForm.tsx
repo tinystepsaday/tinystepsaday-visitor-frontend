@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
 import { useBlogCategories, useBlogTags } from "@/lib/api/blog"
 import { MediaSelector } from "@/components/media-selector"
+import Image from "next/image"
 import type { BlogPost, BlogCategory, BlogTag } from "@/lib/types"
 
 const blogPostSchema = z.object({
@@ -47,6 +48,7 @@ export function BlogPostForm({ post, onSubmit, isLoading = false }: BlogPostForm
   const [selectedTags, setSelectedTags] = useState<string[]>(post?.tags?.map(t => t.id) || [])
   const [seoKeywords, setSeoKeywords] = useState<string[]>(post?.seoKeywords || [])
   const [keywordInput, setKeywordInput] = useState("")
+  const [selectedImage, setSelectedImage] = useState<string>(post?.featuredImage || "")
   const { toast } = useToast()
 
   const { data: categories = [] } = useBlogCategories()
@@ -99,6 +101,7 @@ export function BlogPostForm({ post, onSubmit, isLoading = false }: BlogPostForm
         ...data,
         tagIds: selectedTags,
         seoKeywords,
+        featuredImage: selectedImage,
       })
     } catch {
       toast({
@@ -128,6 +131,11 @@ export function BlogPostForm({ post, onSubmit, isLoading = false }: BlogPostForm
 
   const removeTag = (tagId: string) => {
     setSelectedTags(selectedTags.filter(id => id !== tagId))
+  }
+
+  const handleImageSelect = (media: { url: string; alt?: string; caption?: string }) => {
+    setSelectedImage(media.url)
+    setValue("featuredImage", media.url)
   }
 
   return (
@@ -318,9 +326,30 @@ export function BlogPostForm({ post, onSubmit, isLoading = false }: BlogPostForm
             <CardHeader>
               <CardTitle>Featured Image</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
+              {selectedImage && (
+                <div className="relative aspect-video rounded-lg overflow-hidden border">
+                  <Image
+                    src={selectedImage}
+                    alt="Featured image"
+                    fill
+                    className="object-cover"
+                  />
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => {
+                      setSelectedImage("")
+                      setValue("featuredImage", "")
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              )}
               <MediaSelector
-                onSelect={(media) => setValue("featuredImage", media.url)}
+                onSelect={handleImageSelect}
               />
             </CardContent>
           </Card>

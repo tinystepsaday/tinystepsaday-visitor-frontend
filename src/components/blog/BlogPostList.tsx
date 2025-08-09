@@ -1,18 +1,19 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { format } from "date-fns"
 import { 
   MoreHorizontal, 
   Edit, 
   Trash2, 
-  Eye, 
   Calendar, 
   User, 
   Heart,
   MessageSquare,
-  Eye as EyeIcon
+  Eye as EyeIcon,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -37,23 +38,115 @@ interface BlogPostListProps {
   filters?: BlogPostQuery
 }
 
-export function BlogPostList({ showActions = true, limit, filters }: BlogPostListProps) {
-  const [search, setSearch] = useState("")
-  const [statusFilter, setStatusFilter] = useState<string>("all")
+export function BlogPostList({ showActions = true, limit = 10, filters }: BlogPostListProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { toast } = useToast()
 
-  const { data: postsData, isLoading, refetch } = useBlogPosts({
+  // Initialize state from URL params or props
+  const [search, setSearch] = useState(searchParams.get("search") || "")
+  const [statusFilter, setStatusFilter] = useState<string>(searchParams.get("status") || "all")
+  const [categoryFilter, setCategoryFilter] = useState<string>(searchParams.get("category") || "all")
+  const [tagFilter, setTagFilter] = useState<string>(searchParams.get("tag") || "all")
+  const [sortBy, setSortBy] = useState<string>(searchParams.get("sortBy") || "createdAt")
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
+    (searchParams.get("sortOrder") as "asc" | "desc") || "desc"
+  )
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get("page") || "1"))
+
+  // Sync state with URL params when they change
+  useEffect(() => {
+    const searchParam = searchParams.get("search") || ""
+    const statusParam = searchParams.get("status") || "all"
+    const categoryParam = searchParams.get("category") || "all"
+    const tagParam = searchParams.get("tag") || "all"
+    const sortByParam = searchParams.get("sortBy") || "createdAt"
+    const sortOrderParam = (searchParams.get("sortOrder") as "asc" | "desc") || "desc"
+    const pageParam = parseInt(searchParams.get("page") || "1")
+
+    setSearch(searchParam)
+    setStatusFilter(statusParam)
+    setCategoryFilter(categoryParam)
+    setTagFilter(tagParam)
+    setSortBy(sortByParam)
+    setSortOrder(sortOrderParam)
+    setCurrentPage(pageParam)
+  }, [searchParams])
+
+  // Build query object
+  const query: BlogPostQuery = {
     ...filters,
     search: search || undefined,
     status: statusFilter === "all" ? undefined : statusFilter as "DRAFT" | "PUBLISHED" | "ARCHIVED" | "SCHEDULED",
-    limit: limit || 10,
-  })
+    category: categoryFilter === "all" ? undefined : categoryFilter,
+    tag: tagFilter === "all" ? undefined : tagFilter,
+    page: currentPage,
+    limit,
+    sortBy: sortBy as "createdAt" | "updatedAt" | "publishedAt" | "title" | "views" | "likesCount" | "commentsCount",
+    sortOrder,
+  }
 
+  const { data: postsData, isLoading, refetch } = useBlogPosts(query)
   const deleteMutation = useDeleteBlogPost()
 
   const posts = postsData?.posts || []
   const pagination = postsData?.pagination
+
+  // Update URL when filters change
+  const updateSearchParams = (newParams: Record<string, string>) => {
+    const params = new URLSearchParams(searchParams.toString())
+    
+    Object.entries(newParams).forEach(([key, value]) => {
+      if (value && value !== "all") {
+        params.set(key, value)
+      } else {
+        params.delete(key)
+      }
+    })
+
+    const newUrl = `${window.location.pathname}?${params.toString()}`
+    router.push(newUrl)
+  }
+
+  // Handle filter changes
+  const handleSearchChange = (value: string) => {
+    setSearch(value)
+    setCurrentPage(1)
+    updateSearchParams({ search: value, page: "1" })
+  }
+
+  const handleStatusFilterChange = (value: string) => {
+    setStatusFilter(value)
+    setCurrentPage(1)
+    updateSearchParams({ status: value, page: "1" })
+  }
+
+  const handleCategoryFilterChange = (value: string) => {
+    setCategoryFilter(value)
+    setCurrentPage(1)
+    updateSearchParams({ category: value, page: "1" })
+  }
+
+  const handleTagFilterChange = (value: string) => {
+    setTagFilter(value)
+    setCurrentPage(1)
+    updateSearchParams({ tag: value, page: "1" })
+  }
+
+  const handleSortChange = (value: string) => {
+    setSortBy(value)
+    updateSearchParams({ sortBy: value })
+  }
+
+  const handleSortOrderChange = (value: "asc" | "desc") => {
+    setSortOrder(value)
+    updateSearchParams({ sortOrder: value })
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    updateSearchParams({ page: page.toString() })
+  }
 
   const handleDelete = async (id: string) => {
     try {
@@ -121,22 +214,65 @@ export function BlogPostList({ showActions = true, limit, filters }: BlogPostLis
           <Input
             placeholder="Search posts..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="max-w-sm"
           />
         </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="DRAFT">Draft</SelectItem>
-            <SelectItem value="PUBLISHED">Published</SelectItem>
-            <SelectItem value="ARCHIVED">Archived</SelectItem>
-            <SelectItem value="SCHEDULED">Scheduled</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex gap-2">
+          <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="DRAFT">Draft</SelectItem>
+              <SelectItem value="PUBLISHED">Published</SelectItem>
+              <SelectItem value="ARCHIVED">Archived</SelectItem>
+              <SelectItem value="SCHEDULED">Scheduled</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={categoryFilter} onValueChange={handleCategoryFilterChange}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Filter by category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {/* Add categories here when available */}
+            </SelectContent>
+          </Select>
+          <Select value={tagFilter} onValueChange={handleTagFilterChange}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Filter by tag" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Tags</SelectItem>
+              {/* Add tags here when available */}
+            </SelectContent>
+          </Select>
+          <Select value={sortBy} onValueChange={handleSortChange}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="createdAt">Created Date</SelectItem>
+              <SelectItem value="updatedAt">Updated Date</SelectItem>
+              <SelectItem value="publishedAt">Published Date</SelectItem>
+              <SelectItem value="title">Title</SelectItem>
+              <SelectItem value="views">Views</SelectItem>
+              <SelectItem value="likesCount">Likes</SelectItem>
+              <SelectItem value="commentsCount">Comments</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sortOrder} onValueChange={handleSortOrderChange}>
+            <SelectTrigger className="w-[100px]">
+              <SelectValue placeholder="Order" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="desc">Desc</SelectItem>
+              <SelectItem value="asc">Asc</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Posts List */}
@@ -196,12 +332,6 @@ export function BlogPostList({ showActions = true, limit, filters }: BlogPostLis
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem
-                            onClick={() => router.push(`/blog/${post.slug}`)}
-                          >
-                            <Eye className="mr-2 h-4 w-4" />
-                            View
-                          </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => router.push(`/management/blog/${post.id}/edit`)}
                           >
@@ -268,26 +398,44 @@ export function BlogPostList({ showActions = true, limit, filters }: BlogPostLis
             {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
             {pagination.total} results
           </p>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
               disabled={pagination.page === 1}
-              onClick={() => {
-                // Handle pagination
-              }}
+              onClick={() => handlePageChange(pagination.page - 1)}
             >
+              <ChevronLeft className="h-4 w-4 mr-2" />
               Previous
             </Button>
+            
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                const pageNum = Math.max(1, Math.min(pagination.totalPages - 4, pagination.page - 2)) + i;
+                if (pageNum > pagination.totalPages) return null;
+                
+                return (
+                  <Button
+                    key={pageNum}
+                    variant={pageNum === pagination.page ? "default" : "outline"}
+                    size="sm"
+                    className="w-8 h-8 p-0"
+                    onClick={() => handlePageChange(pageNum)}
+                  >
+                    {pageNum}
+                  </Button>
+                );
+              })}
+            </div>
+            
             <Button
               variant="outline"
               size="sm"
               disabled={pagination.page === pagination.totalPages}
-              onClick={() => {
-                // Handle pagination
-              }}
+              onClick={() => handlePageChange(pagination.page + 1)}
             >
               Next
+              <ChevronRight className="h-4 w-4 ml-2" />
             </Button>
           </div>
         </div>

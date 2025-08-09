@@ -28,6 +28,7 @@ export default function CreateBlogPostPage() {
   const createMutation = useCreateBlogPost()
 
   const handleSubmit = async (data: BlogPostFormData) => {
+    console.log(data)
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await createMutation.mutateAsync(data as any)
