@@ -47,26 +47,157 @@ export interface UserPermissions {
   canViewAnalytics: boolean
 }
 
+// Blog Types
 export interface BlogPost {
   id: string
   title: string
   slug: string
   content: string
-  excerpt: string
-  thumbnail?: string
-  status: "draft" | "published" | "archived"
-  author: User
-  category: string
-  tags: string[]
+  excerpt?: string
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED" | "SCHEDULED"
+  featuredImage?: string
+  readTime?: number
+  views: number
+  likesCount: number
+  commentsCount: number
+  sharesCount: number
+  isFeatured: boolean
+  isPublished: boolean
+  publishedAt?: Date
+  seoTitle?: string
+  seoDescription?: string
+  seoKeywords: string[]
+  author: {
+    id: string
+    name: string
+    avatar?: string
+  }
+  category?: {
+    id: string
+    name: string
+    slug: string
+    color?: string
+  }
+  tags: Array<{
+    id: string
+    name: string
+    slug: string
+    color?: string
+  }>
   createdAt: Date
   updatedAt: Date
+}
+
+export interface BlogPostUpdate {
+  title?: string
+  slug?: string
+  content?: string
+  excerpt?: string
+  status?: "DRAFT" | "PUBLISHED" | "ARCHIVED" | "SCHEDULED"
+  featuredImage?: string
+  readTime?: number
+  isFeatured?: boolean
+  isPublished?: boolean
   publishedAt?: Date
-  seo: {
-    metaTitle: string
-    metaDescription: string
-    altText: string
-    caption: string
+  seoTitle?: string
+  seoDescription?: string
+  seoKeywords?: string[]
+  categoryId?: string
+  tagIds?: string[]
+}
+
+export interface BlogCategory {
+  id: string
+  name: string
+  slug: string
+  description?: string
+  color?: string
+  isActive: boolean
+  sortOrder: number
+  postsCount: number
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface BlogCategoryUpdate {
+  name?: string
+  slug?: string
+  description?: string
+  color?: string
+  isActive?: boolean
+  sortOrder?: number
+}
+
+export interface BlogTag {
+  id: string
+  name: string
+  slug: string
+  color?: string
+  isActive: boolean
+  postsCount: number
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface BlogTagUpdate {
+  name?: string
+  slug?: string
+  color?: string
+  isActive?: boolean
+}
+
+export interface BlogComment {
+  id: string
+  content: string
+  isApproved: boolean
+  isSpam: boolean
+  postId: string
+  author: {
+    id: string
+    name: string
+    avatar?: string
   }
+  parentId?: string
+  replies: BlogComment[]
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface BlogCommentUpdate {
+  content?: string
+  isApproved?: boolean
+  isSpam?: boolean
+}
+
+export interface BlogCommentCreate {
+  content: string
+  postId: string
+  parentId?: string
+}
+
+export interface BlogLike {
+  postId: string
+}
+
+export interface BlogPostQuery {
+  search?: string
+  status?: "DRAFT" | "PUBLISHED" | "ARCHIVED" | "SCHEDULED"
+  category?: string
+  author?: string
+  isFeatured?: boolean
+  page?: number
+  limit?: number
+  sortBy?: "createdAt" | "updatedAt" | "publishedAt" | "title" | "views" | "likesCount" | "commentsCount"
+  sortOrder?: "asc" | "desc"
+}
+
+export interface BlogCommentQuery {
+  postId: string
+  isApproved?: boolean
+  page?: number
+  limit?: number
+  sortBy?: "createdAt" | "updatedAt"
+  sortOrder?: "asc" | "desc"
 }
 
 export interface Course {

@@ -70,16 +70,16 @@ export default function BlogDetailsPage() {
                   <CardTitle className="text-2xl">{post.title}</CardTitle>
                   <CardDescription className="text-lg mt-2">{post.excerpt}</CardDescription>
                 </div>
-                <Badge variant={post.status === "published" ? "default" : "secondary"}>
+                <Badge variant={post.status === "PUBLISHED" ? "default" : "secondary"}>
                   {post.status}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
-              {post.thumbnail && (
+              {post.featuredImage && (
                 <div className="mb-6">
                   <Image
-                    src={post.thumbnail}
+                    src={post.featuredImage}
                     alt={post.title}
                     width={800}
                     height={400}
@@ -102,20 +102,16 @@ export default function BlogDetailsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Meta Title</label>
-                <p className="text-sm text-muted-foreground">{post.seo.metaTitle || "Not set"}</p>
+                <label className="text-sm font-medium">SEO Title</label>
+                <p className="text-sm text-muted-foreground">{post.seoTitle || "Not set"}</p>
               </div>
               <div>
-                <label className="text-sm font-medium">Meta Description</label>
-                <p className="text-sm text-muted-foreground">{post.seo.metaDescription || "Not set"}</p>
+                <label className="text-sm font-medium">SEO Description</label>
+                <p className="text-sm text-muted-foreground">{post.seoDescription || "Not set"}</p>
               </div>
               <div>
-                <label className="text-sm font-medium">Alt Text</label>
-                <p className="text-sm text-muted-foreground">{post.seo.altText || "Not set"}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium">Caption</label>
-                <p className="text-sm text-muted-foreground">{post.seo.caption || "Not set"}</p>
+                <label className="text-sm font-medium">SEO Keywords</label>
+                <p className="text-sm text-muted-foreground">{post.seoKeywords?.join(", ") || "Not set"}</p>
               </div>
             </CardContent>
           </Card>
@@ -180,7 +176,7 @@ export default function BlogDetailsPage() {
             <CardContent>
               <div className="flex items-center space-x-2">
                 <FolderOpen className="h-4 w-4 text-muted-foreground" />
-                <Badge variant="outline">{post.category}</Badge>
+                <Badge variant="outline">{post.category?.name || "No category"}</Badge>
               </div>
             </CardContent>
           </Card>
@@ -193,8 +189,8 @@ export default function BlogDetailsPage() {
             <CardContent>
               <div className="flex flex-wrap gap-2">
                 {post.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary">
-                    {tag}
+                  <Badge key={tag.id} variant="secondary">
+                    {tag.name}
                   </Badge>
                 ))}
               </div>
