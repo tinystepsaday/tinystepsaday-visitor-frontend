@@ -71,7 +71,6 @@ export const useCreateBlogPost = () => {
         commentsCount: data.commentsCount || 0,
         sharesCount: data.sharesCount || 0,
         isFeatured: data.isFeatured || false,
-        isPublished: data.isPublished || false,
         publishedAt: data.publishedAt || undefined,
         seoTitle: data.seoTitle || "",
         seoDescription: data.seoDescription || "",

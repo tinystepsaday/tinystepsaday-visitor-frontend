@@ -350,7 +350,6 @@ export const mockBlogPosts: BlogPost[] = (blogPosts || []).map((post) => {
     commentsCount: Math.floor(Math.random() * 50) + 5,
     sharesCount: Math.floor(Math.random() * 20) + 2,
     isFeatured: Math.random() > 0.7, // 30% chance of being featured
-    isPublished: true,
     publishedAt: parseDate(post.date),
     seoTitle: post.title,
     seoDescription: post.excerpt,
@@ -393,7 +392,6 @@ const fallbackBlogPosts: BlogPost[] = [
     commentsCount: 23,
     sharesCount: 12,
     isFeatured: true,
-    isPublished: true,
     publishedAt: new Date("2024-04-15"),
     seoTitle: "Finding Inner Peace in a Chaotic World",
     seoDescription: "Discover practical methods to maintain calm and balance in today's fast-paced environment.",
@@ -431,7 +429,6 @@ const fallbackBlogPosts: BlogPost[] = [
     commentsCount: 15,
     sharesCount: 8,
     isFeatured: false,
-    isPublished: true,
     publishedAt: new Date("2024-04-10"),
     seoTitle: "5 Mindful Meditation Techniques for Beginners",
     seoDescription: "Start your meditation journey with these simple yet powerful techniques anyone can master.",

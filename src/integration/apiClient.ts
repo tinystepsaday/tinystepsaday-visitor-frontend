@@ -50,8 +50,10 @@ class TokenManager {
     
     // Also set cookies for server-side authentication
     // Use httpOnly: false so server-side can read them
-    document.cookie = `accessToken=${accessToken}; path=/; max-age=1800; SameSite=Lax; secure=${window.location.protocol === 'https:'}`;
-    document.cookie = `refreshToken=${refreshToken}; path=/; max-age=604800; SameSite=Lax; secure=${window.location.protocol === 'https:'}`;
+    if (typeof document !== 'undefined') {
+      document.cookie = `accessToken=${accessToken}; path=/; max-age=1800; SameSite=Lax; secure=${window.location.protocol === 'https:'}`;
+      document.cookie = `refreshToken=${refreshToken}; path=/; max-age=604800; SameSite=Lax; secure=${window.location.protocol === 'https:'}`;
+    }
     
     console.log('Frontend Debug - Tokens set in localStorage and cookies');
     console.log('Frontend Debug - accessToken length:', accessToken.length);
@@ -64,8 +66,10 @@ class TokenManager {
     localStorage.removeItem('refreshToken');
     
     // Also clear cookies
-    document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    if (typeof document !== 'undefined') {
+      document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    }
   }
 
   getTokenInfo(token: string): TokenInfo | null {

@@ -90,7 +90,8 @@ export const usePublicBlogPost = (slug: string) => {
   return useQuery({
     queryKey: ["publicBlogPost", slug],
     queryFn: async () => {
-      const response = await apiClient.get<BlogPost>(`/api/blog/public/posts/${slug}`)
+      const response = await apiClient.get<BlogPost>(`/api/blog/public/posts/${slug}`);
+      console.log("response", response);
       return response
     },
     enabled: !!slug,

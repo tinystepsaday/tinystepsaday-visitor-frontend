@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,16 +15,12 @@ import {
   Calendar, 
   Heart,
   MessageSquare,
-  Mail,
-  Share2,
-  Twitter,
-  Facebook,
-  Linkedin
+  Share2
 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { BlogPost, getRelatedPosts } from "@/data/blogs";
 import { sanitizeHtml } from "@/lib/html-sanitizer";
+import type { BlogPost } from "@/lib/types";
 
 // Schema for comment form
 const commentSchema = z.object({
@@ -41,8 +37,7 @@ interface BlogPostClientProps {
 
 const BlogPostClient = ({ post }: BlogPostClientProps) => {
   const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(post.likes);
-  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
+  const [likesCount, setLikesCount] = useState(post.likesCount || 0);
 
   // Form setup for comments
   const form = useForm<CommentFormValues>({
@@ -53,17 +48,6 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
       comment: ""
     }
   });
-
-  // Fetch related posts
-  useEffect(() => {
-    const fetchRelatedPosts = async () => {
-      if (post && post.related) {
-        const related = await getRelatedPosts(post.id);
-        setRelatedPosts(related);
-      }
-    };
-    fetchRelatedPosts();
-  }, [post]);
 
   // Handle like action
   const handleLike = () => {
@@ -140,11 +124,13 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
           ← Back to Blog
         </Link>
         <div className="flex items-center gap-2 mb-4">
-          <span className="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full">
-            {post.category}
-          </span>
+          {post.category && (
+            <span className="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full">
+              {post.category.name}
+            </span>
+          )}
           <span className="text-sm text-muted-foreground">
-            {post.readTime}
+            {post.readTime || 5} min read
           </span>
         </div>
         
@@ -152,9 +138,11 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
           {post.title}
         </h1>
         
-        <p className="text-xl text-muted-foreground mb-8">
-          {post.excerpt}
-        </p>
+        {post.excerpt && (
+          <p className="text-xl text-muted-foreground mb-8">
+            {post.excerpt}
+          </p>
+        )}
         
         <div className="flex items-center justify-between md:flex-row flex-col">
           <div className="flex items-center gap-4">
@@ -164,29 +152,30 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
             </Avatar>
             <div>
               <p className="font-semibold">{post.author.name}</p>
-              <p className="text-sm text-muted-foreground">{post.author.bio}</p>
             </div>
           </div>
           
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4" />
-            <span>{post.date}</span>
+            <span>{new Date(post.createdAt).toLocaleDateString()}</span>
           </div>
         </div>
       </div>
 
       {/* Featured Image */}
-      <div className="max-w-4xl mx-auto mb-12">
-        <div className="rounded-2xl overflow-hidden">
-          <Image 
-            src={post.image} 
-            alt={post.title} 
-            className="w-full h-auto"
-            width={1200}
-            height={600}
-          />
+      {post.featuredImage && (
+        <div className="max-w-4xl mx-auto mb-12">
+          <div className="rounded-2xl overflow-hidden">
+            <Image 
+              src={post.featuredImage} 
+              alt={post.title} 
+              className="w-full h-auto"
+              width={1200}
+              height={600}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Article Content */}
       <div className="max-w-3xl mx-auto mb-12">
@@ -214,7 +203,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
             
             <div className="flex items-center gap-2 text-muted-foreground">
               <MessageSquare className="h-4 w-4" />
-              <span>{post.comments.length} comments</span>
+              <span>{post.commentsCount || 0} comments</span>
             </div>
           </div>
           
@@ -224,18 +213,18 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
               Share
             </Button>
             
-            <div className="flex gap-1">
+            <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => handleShare("twitter")}>
-                <Twitter className="h-4 w-4" />
+                <Share2 className="h-4 w-4" />
               </Button>
               <Button variant="outline" size="sm" onClick={() => handleShare("facebook")}>
-                <Facebook className="h-4 w-4" />
+                <Share2 className="h-4 w-4" />
               </Button>
               <Button variant="outline" size="sm" onClick={() => handleShare("linkedin")}>
-                <Linkedin className="h-4 w-4" />
+                <Share2 className="h-4 w-4" />
               </Button>
               <Button variant="outline" size="sm" onClick={() => handleShare("email")}>
-                <Mail className="h-4 w-4" />
+                <Share2 className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -244,7 +233,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
 
       {/* Comments Section */}
       <div className="max-w-4xl mx-auto mb-12">
-        <h3 className="text-2xl font-semibold mb-6">Comments ({post.comments.length})</h3>
+        <h3 className="text-2xl font-semibold mb-6">Comments ({post.commentsCount || 0})</h3>
         
         {/* Comment Form */}
         <Card className="mb-8">
@@ -302,65 +291,13 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
           </CardContent>
         </Card>
         
-        {/* Existing Comments */}
+        {/* Existing Comments - This would be populated by API */}
         <div className="space-y-6">
-          {post.comments.map((comment) => (
-            <div key={comment.id} className="flex gap-4">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={comment.author.avatar} alt={comment.author.name} />
-                <AvatarFallback>{comment.author.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <p className="font-semibold text-sm">{comment.author.name}</p>
-                  <span className="text-xs text-muted-foreground">{comment.date}</span>
-                </div>
-                <p className="text-sm">{comment.content}</p>
-              </div>
-            </div>
-          ))}
+          <p className="text-center text-muted-foreground py-8">
+            Be the first to comment on this article!
+          </p>
         </div>
       </div>
-
-      {/* Related Posts */}
-      {relatedPosts.length > 0 && (
-        <div className="max-w-4xl mx-auto">
-          <h3 className="text-2xl font-semibold mb-6">Related Articles</h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {relatedPosts.map((relatedPost) => (
-              <Link key={relatedPost.id} href={`/blog/${relatedPost.slug}`} className="group">
-                <Card className="h-full hover:shadow-lg transition-shadow">
-                  <div className="h-40 overflow-hidden">
-                    <Image 
-                      src={relatedPost.image} 
-                      alt={relatedPost.title} 
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      width={300}
-                      height={160}
-                    />
-                  </div>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
-                        {relatedPost.category}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {relatedPost.readTime}
-                      </span>
-                    </div>
-                    <h4 className="font-semibold text-sm mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                      {relatedPost.title}
-                    </h4>
-                    <p className="text-xs text-muted-foreground line-clamp-2">
-                      {relatedPost.excerpt}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

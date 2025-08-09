@@ -15,7 +15,6 @@ type BlogPostFormData = {
   featuredImage?: string
   readTime?: number
   isFeatured?: boolean
-  isPublished?: boolean
   seoTitle?: string
   seoDescription?: string
   seoKeywords?: string[]

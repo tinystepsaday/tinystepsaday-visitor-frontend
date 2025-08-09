@@ -62,7 +62,6 @@ export interface BlogPost {
   commentsCount: number
   sharesCount: number
   isFeatured: boolean
-  isPublished: boolean
   publishedAt?: Date
   seoTitle?: string
   seoDescription?: string
@@ -97,7 +96,6 @@ export interface BlogPostUpdate {
   featuredImage?: string
   readTime?: number
   isFeatured?: boolean
-  isPublished?: boolean
   publishedAt?: Date
   seoTitle?: string
   seoDescription?: string

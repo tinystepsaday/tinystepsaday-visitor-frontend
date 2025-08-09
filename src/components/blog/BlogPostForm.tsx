@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -16,8 +16,10 @@ import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
 import { useBlogCategories, useBlogTags } from "@/lib/api/blog"
 import { MediaSelector } from "@/components/media-selector"
+import { sanitizeHtml } from "@/lib/html-sanitizer"
 import Image from "next/image"
 import type { BlogPost, BlogCategory, BlogTag } from "@/lib/types"
+import JoditEditor from 'jodit-react'
 
 const blogPostSchema = z.object({
   title: z.string().min(1, "Title is required").max(200, "Title must be less than 200 characters"),
@@ -28,7 +30,6 @@ const blogPostSchema = z.object({
   featuredImage: z.string().optional(),
   readTime: z.number().int().min(1).optional(),
   isFeatured: z.boolean().optional(),
-  isPublished: z.boolean().optional(),
   seoTitle: z.string().max(60, "SEO title must be less than 60 characters").optional(),
   seoDescription: z.string().max(160, "SEO description must be less than 160 characters").optional(),
   seoKeywords: z.array(z.string()).optional(),
@@ -49,10 +50,35 @@ export function BlogPostForm({ post, onSubmit, isLoading = false }: BlogPostForm
   const [seoKeywords, setSeoKeywords] = useState<string[]>(post?.seoKeywords || [])
   const [keywordInput, setKeywordInput] = useState("")
   const [selectedImage, setSelectedImage] = useState<string>(post?.featuredImage || "")
+  const [editorContent, setEditorContent] = useState(post?.content || "")
+  const editor = useRef(null)
   const { toast } = useToast()
 
   const { data: categories = [] } = useBlogCategories()
   const { data: tags = [] } = useBlogTags()
+
+  // Jodit editor configuration
+  const editorConfig = useMemo(() => ({
+    readonly: false,
+    placeholder: 'Start writing your blog post...',
+    height: 500,
+    toolbarAdaptive: false,
+    toolbarSticky: true,
+    spellcheck: true,
+    language: "en",
+    colorPickerDefaultTab: "background" as const,
+    imageDefaultWidth: 300,
+    removeButtons: ['about'],
+    uploader: {
+      insertImageAsBase64URI: true
+    },
+    events: {
+      beforeEnter: function() {
+        // Allow normal behavior
+        return true;
+      }
+    }
+  }), [])
 
   const {
     register,
@@ -71,7 +97,6 @@ export function BlogPostForm({ post, onSubmit, isLoading = false }: BlogPostForm
       featuredImage: post?.featuredImage || "",
       readTime: post?.readTime || undefined,
       isFeatured: post?.isFeatured ?? false,
-      isPublished: post?.isPublished ?? false,
       seoTitle: post?.seoTitle || "",
       seoDescription: post?.seoDescription || "",
       seoKeywords: post?.seoKeywords || [],
@@ -97,8 +122,12 @@ export function BlogPostForm({ post, onSubmit, isLoading = false }: BlogPostForm
 
   const handleFormSubmit = async (data: BlogPostFormData) => {
     try {
+      // Sanitize the content before submitting
+      const sanitizedContent = sanitizeHtml(editorContent)
+      
       await onSubmit({
         ...data,
+        content: sanitizedContent,
         tagIds: selectedTags,
         seoKeywords,
         featuredImage: selectedImage,
@@ -187,12 +216,21 @@ export function BlogPostForm({ post, onSubmit, isLoading = false }: BlogPostForm
 
               <div className="space-y-2">
                 <Label htmlFor="content">Content *</Label>
-                <Textarea
-                  id="content"
-                  {...register("content")}
-                  placeholder="Write your post content here..."
-                  rows={15}
-                />
+                <div className="border rounded-md">
+                  <JoditEditor
+                    ref={editor}
+                    value={editorContent}
+                    config={editorConfig}
+                    onBlur={(newContent) => {
+                      setEditorContent(newContent)
+                      setValue("content", newContent)
+                    }}
+                    onChange={(newContent) => {
+                      setEditorContent(newContent)
+                      setValue("content", newContent)
+                    }}
+                  />
+                </div>
                 {errors.content && (
                   <p className="text-sm text-red-500">{errors.content.message}</p>
                 )}
@@ -234,15 +272,6 @@ export function BlogPostForm({ post, onSubmit, isLoading = false }: BlogPostForm
                   onCheckedChange={(checked) => setValue("isFeatured", checked)}
                 />
                 <Label htmlFor="isFeatured">Featured Post</Label>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="isPublished"
-                  checked={watch("isPublished")}
-                  onCheckedChange={(checked) => setValue("isPublished", checked)}
-                />
-                <Label htmlFor="isPublished">Published</Label>
               </div>
 
               <div className="space-y-2">

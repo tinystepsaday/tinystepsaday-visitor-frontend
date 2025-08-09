@@ -38,24 +38,12 @@ export const blogPosts: BlogPost[] = [
     title: "Finding Inner Peace in a Chaotic World",
     excerpt: "Discover practical methods to maintain calm and balance in today's fast-paced environment.",
     content: `
-      <p>In today's fast-paced world, finding inner peace can feel like an impossible task. We're constantly bombarded with notifications, deadlines, and responsibilities that leave little room for reflection and tranquility.</p>
-      
-      <h2>The Importance of Finding Balance</h2>
-      <p>Our modern lifestyles often prioritize productivity and achievement over well-being and balance. We find ourselves caught in a cycle of constant doing, rarely giving ourselves permission to simply be.</p>
-      
-      <h2>Practical Methods for Cultivating Inner Peace</h2>
-      
-      <h3>1. Mindful Breathing</h3>
-      <p>One of the simplest ways to center yourself is through mindful breathing. Take a few moments throughout your day to focus solely on your breath.</p>
-      
-      <h3>2. Create Boundaries with Technology</h3>
+      <p>In today's fast-paced world, finding inner peace can feel like an impossible task. We're constantly bombarded with notifications, deadlines, and responsibilities that leave little room for reflection and tranquility.</p><h2>The Importance of Finding Balance</h2>
+      <p>Our modern lifestyles often prioritize productivity and achievement over well-being and balance. We find ourselves caught in a cycle of constant doing, rarely giving ourselves permission to simply be.</p><h2>Practical Methods for Cultivating Inner Peace</h2>
+      <h3>1. Mindful Breathing</h3><p>One of the simplest ways to center yourself is through mindful breathing. Take a few moments throughout your day to focus solely on your breath.</p><h3>2. Create Boundaries with Technology</h3>
       <p>Our devices can be wonderful tools, but they can also be significant sources of stress and distraction.</p>
-      
-      <h3>3. Connect with Nature</h3>
-      <p>Spending time in natural environments has been shown to reduce stress and promote feelings of well-being.</p>
-      
-      <h2>Conclusion</h2>
-      <p>In a world that often seems designed to keep us distracted and off-balance, choosing peace is a radical act.</p>
+      <h3>3. Connect with Nature</h3><p>Spending time in natural environments has been shown to reduce stress and promote feelings of well-being.</p>
+      <h2>Conclusion</h2><p>In a world that often seems designed to keep us distracted and off-balance, choosing peace is a radical act.</p>
     `,
     category: "Mindfulness",
     author: {
