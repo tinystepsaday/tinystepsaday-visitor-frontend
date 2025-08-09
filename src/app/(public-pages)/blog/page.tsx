@@ -3,8 +3,7 @@ import { notFound } from "next/navigation";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 import { 
   MessageSquare, 
   Heart,
@@ -15,18 +14,16 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { 
-  getAllBlogPosts, 
-  getBlogPostsByCategory, 
-  searchBlogPosts, 
-  categories,
-  type BlogPost 
-} from "@/data/blogs";
+import apiClient from "@/integration/apiClient";
+import type { BlogCategory } from "@/lib/types";
+import type { BlogPost } from "@/lib/types";
+import type { BlogTag } from "@/lib/types";
 
 interface BlogPageProps {
   searchParams: Promise<{
     search?: string;
     category?: string;
+    tag?: string;
     page?: string;
   }>;
 }
@@ -94,37 +91,69 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
 
 const POSTS_PER_PAGE = 6;
 
+async function getBlogData(search?: string, category?: string, tag?: string, page: number = 1) {
+  try {
+    const params = new URLSearchParams();
+    if (search) params.append("search", search);
+    if (category && category !== "All Categories") params.append("category", category);
+    if (tag && tag !== "All Tags") params.append("tag", tag);
+    params.append("page", page.toString());
+    params.append("limit", POSTS_PER_PAGE.toString());
+    params.append("sortBy", "createdAt");
+    params.append("sortOrder", "desc");
+
+    const response = await apiClient.get(`/blog/public/posts?${params.toString()}`);
+    return response as { posts: BlogPost[]; pagination: { total: number; page: number; limit: number; totalPages: number } };
+  } catch (error) {
+    console.error("Error fetching blog posts:", error);
+    return { posts: [], pagination: { total: 0, page: 1, limit: POSTS_PER_PAGE, totalPages: 0 } };
+  }
+}
+
+async function getCategories() {
+  try {
+    const response = await apiClient.get("/blog/categories");
+    return response as BlogCategory[] || [];
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return [];
+  }
+}
+
+async function getTags() {
+  try {
+    const response = await apiClient.get("/blog/tags");
+    return response as BlogTag[] || [];
+  } catch (error) {
+    console.error("Error fetching tags:", error);
+    return [];
+  }
+}
+
 export default async function BlogPage({ searchParams }: BlogPageProps) {
-  const { search, category, page } = await searchParams;
+  const { search, category, tag, page } = await searchParams;
   const currentPage = Math.max(1, parseInt(page || "1", 10)) || 1;
   const selectedCategory = category || "All Categories";
+  const selectedTag = tag || "All Tags";
   const searchQuery = search || "";
 
-  // Get filtered posts based on search and category
-  let filteredPosts: BlogPost[];
-  
-  if (searchQuery.trim()) {
-    filteredPosts = await searchBlogPosts(searchQuery);
-  } else if (selectedCategory !== "All Categories") {
-    filteredPosts = await getBlogPostsByCategory(selectedCategory);
-  } else {
-    filteredPosts = await getAllBlogPosts();
-  }
+  // Fetch blog posts, categories, and tags
+  const [blogData, categories, tags] = await Promise.all([
+    getBlogData(searchQuery, selectedCategory, selectedTag, currentPage),
+    getCategories(),
+    getTags()
+  ]);
 
-  // Calculate pagination
-  const totalPosts = filteredPosts.length;
-  const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
-  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
-  const endIndex = Math.min(startIndex + POSTS_PER_PAGE, totalPosts);
-  const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+  const { posts: filteredPosts = [], pagination = { total: 0, page: 1, limit: POSTS_PER_PAGE, totalPages: 0 } } = blogData;
 
   // Redirect to page 1 if currentPage is invalid or exceeds totalPages
-  if (currentPage > totalPages && totalPages > 0) {
+  if (currentPage > pagination.totalPages && pagination.totalPages > 0) {
     const params = new URLSearchParams();
     if (searchQuery) params.set("search", searchQuery);
     if (selectedCategory !== "All Categories") params.set("category", selectedCategory);
+    if (selectedTag !== "All Tags") params.set("tag", selectedTag);
     params.set("page", "1");
-    return notFound(); // Or redirect to page 1
+    return notFound();
   }
 
   // Helper function to build URL with search params
@@ -132,12 +161,17 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     const params = new URLSearchParams();
     if (searchQuery) params.set("search", searchQuery);
     if (selectedCategory !== "All Categories") params.set("category", selectedCategory);
+    if (selectedTag !== "All Tags") params.set("tag", selectedTag);
     Object.entries(newParams).forEach(([key, value]) => {
       if (value) params.set(key, value);
       else params.delete(key);
     });
     return `/blog${params.toString() ? `?${params.toString()}` : ""}`;
   };
+
+  // Prepare categories and tags for display
+  const displayCategories = ["All Categories", ...categories.map((cat: BlogCategory) => cat.name)];
+  const displayTags = ["All Tags", ...tags.map((tag: BlogTag) => tag.name)];
 
   return (
     <div className="container mx-auto px-4 py-16">
@@ -161,11 +195,14 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           {selectedCategory !== "All Categories" && (
             <input type="hidden" name="category" value={selectedCategory} />
           )}
+          {selectedTag !== "All Tags" && (
+            <input type="hidden" name="tag" value={selectedTag} />
+          )}
           <input type="hidden" name="page" value="1" />
         </form>
         
         <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-          {categories.map((cat) => (
+          {displayCategories.map((cat) => (
             <Button
               key={cat}
               variant={selectedCategory === cat ? "default" : "outline"}
@@ -180,17 +217,34 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           ))}
         </div>
       </div>
+
+      {/* Tags Filter */}
+      <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 max-w-7xl mx-auto">
+        {displayTags.map((tag) => (
+          <Button
+            key={tag}
+            variant={selectedTag === tag ? "default" : "outline"}
+            size="sm"
+            asChild
+            className="whitespace-nowrap"
+          >
+            <Link href={buildUrl({ tag: tag === "All Tags" ? "" : tag, page: "1" })}>
+              {tag}
+            </Link>
+          </Button>
+        ))}
+      </div>
       
       {/* Featured Post */}
-      {paginatedPosts.length > 0 && (
+      {filteredPosts.length > 0 && (
         <div className="mb-16 max-w-7xl mx-auto">
-          <Link href={`/blog/${paginatedPosts[0].slug}`} className="group">
+          <Link href={`/blog/${filteredPosts[0].slug}`} className="group">
             <div className="rounded-2xl overflow-hidden bg-card shadow-md hover:shadow-lg transition-shadow">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="h-64 overflow-hidden">
                   <Image 
-                    src={paginatedPosts[0].image} 
-                    alt={paginatedPosts[0].title} 
+                    src={filteredPosts[0].featuredImage || "/placeholder-blog.jpg"} 
+                    alt={filteredPosts[0].title} 
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     width={800}
                     height={400}
@@ -199,40 +253,42 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 </div>
                 <div className="p-6 md:p-8 flex flex-col justify-between">
                   <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full">
-                        {paginatedPosts[0].category}
-                      </span>
+                    <div className="flex items-center gap-2 mb-4">
+                      {filteredPosts[0].category && (
+                        <span 
+                          className="px-3 py-1 text-xs font-medium rounded-full"
+                          style={{ 
+                            backgroundColor: filteredPosts[0].category.color || "#6B7280",
+                            color: "white"
+                          }}
+                        >
+                          {filteredPosts[0].category.name}
+                        </span>
+                      )}
                       <span className="text-sm text-muted-foreground">
-                        {paginatedPosts[0].readTime}
+                        {new Date(filteredPosts[0].createdAt).toLocaleDateString()}
                       </span>
                     </div>
                     <h2 className="text-2xl md:text-3xl font-bold mb-4 group-hover:text-primary transition-colors">
-                      {paginatedPosts[0].title}
+                      {filteredPosts[0].title}
                     </h2>
-                    <p className="text-muted-foreground mb-6">
-                      {paginatedPosts[0].excerpt}
+                    <p className="text-muted-foreground mb-4 line-clamp-3">
+                      {filteredPosts[0].excerpt || filteredPosts[0].content.substring(0, 200) + "..."}
                     </p>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={paginatedPosts[0].author.avatar} alt={paginatedPosts[0].author.name} />
-                        <AvatarFallback>{paginatedPosts[0].author.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium text-sm">{paginatedPosts[0].author.name}</p>
-                        <p className="text-xs text-muted-foreground">{paginatedPosts[0].date}</p>
-                      </div>
-                    </div>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
-                        <MessageSquare className="h-4 w-4" />
-                        <span>{paginatedPosts[0].comments.length}</span>
+                        <Heart className="h-4 w-4" />
+                        <span>{filteredPosts[0].likesCount}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Heart className="h-4 w-4" />
-                        <span>{paginatedPosts[0].likes}</span>
+                        <MessageSquare className="h-4 w-4" />
+                        <span>{filteredPosts[0].commentsCount}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <BookOpen className="h-4 w-4" />
+                        <span>{filteredPosts[0].readTime || 5} min read</span>
                       </div>
                     </div>
                   </div>
@@ -244,132 +300,125 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       )}
       
       {/* Blog Posts Grid */}
-      {paginatedPosts.length > 1 && (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {paginatedPosts.slice(1).map((post) => (
-            <Link key={post.id} href={`/blog/${post.slug}`} className="group">
-              <Card className="h-full hover:shadow-lg transition-shadow">
-                <div className="h-48 overflow-hidden">
-                  <Image 
-                    src={post.image} 
-                    alt={post.title} 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    width={400}
-                    height={200}
-                  />
-                </div>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
-                      {post.category}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {post.readTime}
-                    </span>
+      {filteredPosts.length > 0 ? (
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPosts.slice(1).map((post) => (
+              <Card key={post.id} className="group hover:shadow-lg transition-shadow">
+                <Link href={`/blog/${post.slug}`}>
+                  <div className="h-48 overflow-hidden">
+                    <Image 
+                      src={post.featuredImage || "/placeholder-blog.jpg"} 
+                      alt={post.title} 
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      width={400}
+                      height={200}
+                    />
                   </div>
-                  <h3 className="font-bold text-lg mb-3 group-hover:text-primary transition-colors">
-                    {post.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm mb-4">
-                    {post.excerpt}
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={post.author.avatar} alt={post.author.name} />
-                      <AvatarFallback className="text-xs">{post.author.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium text-sm">{post.author.name}</p>
-                      <p className="text-xs text-muted-foreground">{post.date}</p>
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      {post.category && (
+                        <span 
+                          className="px-2 py-1 text-xs font-medium rounded-full"
+                          style={{ 
+                            backgroundColor: post.category.color || "#6B7280",
+                            color: "white"
+                          }}
+                        >
+                          {post.category.name}
+                        </span>
+                      )}
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(post.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="px-6 pb-6 pt-0">
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground w-full">
-                    <div className="flex items-center gap-1">
-                      <MessageSquare className="h-4 w-4" />
-                      <span>{post.comments.length}</span>
+                    <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                      {post.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                      {post.excerpt || post.content.substring(0, 150) + "..."}
+                    </p>
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1">
+                          <Heart className="h-3 w-3" />
+                          <span>{post.likesCount}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <MessageSquare className="h-3 w-3" />
+                          <span>{post.commentsCount}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <BookOpen className="h-3 w-3" />
+                        <span>{post.readTime || 5} min</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Heart className="h-4 w-4" />
-                      <span>{post.likes}</span>
-                    </div>
-                    <div className="flex items-center gap-1 ml-auto">
-                      <BookOpen className="h-4 w-4" />
-                      <span>Read more</span>
-                    </div>
-                  </div>
-                </CardFooter>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      )}
-      
-      {/* Pagination */}
-      {totalPages > 1 && paginatedPosts.length > 0 && (
-        <div className="flex items-center justify-center gap-2 mt-12">
-          {currentPage > 1 && (
-            <Button variant="outline" size="sm" asChild>
-              <Link href={buildUrl({ page: (currentPage - 1).toString() })}>
-                <ChevronLeft className="h-4 w-4 mr-1" />
-                Previous
-              </Link>
-            </Button>
-          )}
-          
-          <div className="flex items-center gap-1">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-              <Button
-                key={pageNum}
-                variant={pageNum === currentPage ? "default" : "outline"}
-                size="sm"
-                asChild
-                className="w-10 h-10"
-              >
-                <Link href={buildUrl({ page: pageNum.toString() })}>
-                  {pageNum}
+                  </CardContent>
                 </Link>
-              </Button>
+              </Card>
             ))}
           </div>
           
-          {currentPage < totalPages && (
-            <Button variant="outline" size="sm" asChild>
-              <Link href={buildUrl({ page: (currentPage + 1).toString() })}>
-                Next
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Link>
-            </Button>
+          {/* Pagination */}
+          {pagination.totalPages > 1 && (
+            <div className="flex justify-center mt-12">
+              <div className="flex items-center gap-2">
+                {currentPage > 1 && (
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={buildUrl({ page: (currentPage - 1).toString() })}>
+                      <ChevronLeft className="h-4 w-4 mr-2" />
+                      Previous
+                    </Link>
+                  </Button>
+                )}
+                
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                    const pageNum = Math.max(1, Math.min(pagination.totalPages - 4, currentPage - 2)) + i;
+                    if (pageNum > pagination.totalPages) return null;
+                    
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={pageNum === currentPage ? "default" : "outline"}
+                        size="sm"
+                        asChild
+                      >
+                        <Link href={buildUrl({ page: pageNum.toString() })}>
+                          {pageNum}
+                        </Link>
+                      </Button>
+                    );
+                  })}
+                </div>
+                
+                {currentPage < pagination.totalPages && (
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={buildUrl({ page: (currentPage + 1).toString() })}>
+                      Next
+                      <ChevronRight className="h-4 w-4 ml-2" />
+                    </Link>
+                  </Button>
+                )}
+              </div>
+            </div>
           )}
         </div>
-      )}
-      
-      {/* No Results */}
-      {paginatedPosts.length === 0 && (
-        <div className="text-center py-16">
-          <div className="text-6xl mb-4">📝</div>
-          <h3 className="text-xl font-semibold mb-2">No articles found</h3>
-          <p className="text-muted-foreground mb-6">
-            Try adjusting your search terms or browse all categories
-          </p>
-          <Button asChild>
-            <Link href="/blog">
-              View All Articles
-            </Link>
-          </Button>
-        </div>
-      )}
-      
-      {/* Results Summary */}
-      {totalPosts > 0 && (
-        <div className="text-center mt-8 text-sm text-muted-foreground">
-          Showing {startIndex + 1}-{Math.min(endIndex, totalPosts)} of {totalPosts} articles
-          {(searchQuery || selectedCategory !== "All Categories") && (
-            <span>
-              {" "}for {searchQuery ? `"${searchQuery}"` : selectedCategory}
-            </span>
-          )}
+      ) : (
+        <div className="text-center py-12 max-w-7xl mx-auto">
+          <div className="text-muted-foreground">
+            <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <h3 className="text-lg font-semibold mb-2">No articles found</h3>
+            <p className="text-muted-foreground">
+              {searchQuery 
+                ? `No articles found for "${searchQuery}". Try a different search term.`
+                : selectedCategory !== "All Categories"
+                ? `No articles found in the "${selectedCategory}" category.`
+                : "No articles available at the moment. Check back soon!"
+              }
+            </p>
+          </div>
         </div>
       )}
     </div>

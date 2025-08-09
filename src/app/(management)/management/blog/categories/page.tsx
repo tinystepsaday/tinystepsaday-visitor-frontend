@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, Plus, Edit, Trash2 } from "lucide-react"
-import { mockCategories } from "@/data/mock-data"
-import type { Category } from "@/lib/types"
+import { MoreHorizontal, Plus, Edit, Trash2, Eye } from "lucide-react"
+import { useBlogCategories, useCreateBlogCategory, useUpdateBlogCategory, useDeleteBlogCategory } from "@/lib/api/blog"
+import { useToast } from "@/hooks/use-toast"
+import type { BlogCategory, BlogCategoryUpdate } from "@/lib/types"
 import { DataTable } from "@/components/data-table"
 import { Button } from "@/components/ui/button"
 import {
@@ -28,8 +29,14 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
 
-const columns: ColumnDef<Category>[] = [
+interface CategoryWithActions extends BlogCategory {
+  onEdit?: (category: BlogCategory) => void
+  onDelete?: (id: string) => void
+}
+
+const columns: ColumnDef<CategoryWithActions>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -49,22 +56,24 @@ const columns: ColumnDef<Category>[] = [
     cell: ({ row }) => <div className="max-w-[300px] truncate">{row.getValue("description") || "No description"}</div>,
   },
   {
-    accessorKey: "postCount",
+    accessorKey: "postsCount",
     header: "Posts",
-    cell: ({ row }) => <Badge variant="secondary">{row.getValue("postCount")} posts</Badge>,
+    cell: ({ row }) => <Badge variant="secondary">{row.getValue("postsCount")} posts</Badge>,
   },
   {
-    accessorKey: "createdAt",
-    header: "Created",
-    cell: ({ row }) => {
-      const date = row.getValue("createdAt") as Date
-      return <div>{date.toLocaleDateString()}</div>
-    },
+    accessorKey: "isActive",
+    header: "Status",
+    cell: ({ row }) => (
+      <Badge variant={row.getValue("isActive") ? "default" : "secondary"}>
+        {row.getValue("isActive") ? "Active" : "Inactive"}
+      </Badge>
+    ),
   },
   {
     id: "actions",
     enableHiding: false,
-    cell: () => {
+    cell: ({ row }) => {
+      const category = row.original
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -75,13 +84,19 @@ const columns: ColumnDef<Category>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => window.open(`/blog?category=${category.slug}`, '_blank')}>
+              <Eye className="mr-2 h-4 w-4" />
+              View Posts
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => category.onEdit?.(category)}>
               <Edit className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem>View Posts</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
+            <DropdownMenuItem 
+              onClick={() => category.onDelete?.(category.id)}
+              className="text-destructive"
+            >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>
@@ -93,13 +108,22 @@ const columns: ColumnDef<Category>[] = [
 ]
 
 export default function CategoriesPage() {
-  const [categories] = useState<Category[]>(mockCategories)
+  const { toast } = useToast()
+  const { data: categories = [], isLoading, refetch } = useBlogCategories()
+  const createMutation = useCreateBlogCategory()
+  const updateMutation = useUpdateBlogCategory()
+  const deleteMutation = useDeleteBlogCategory()
+
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [newCategory, setNewCategory] = useState({
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [editingCategory, setEditingCategory] = useState<BlogCategory | null>(null)
+  const [formData, setFormData] = useState({
     name: "",
     slug: "",
     description: "",
     color: "#3B82F6",
+    isActive: true,
+    sortOrder: 0,
   })
 
   const generateSlug = (name: string) => {
@@ -112,33 +136,142 @@ export default function CategoriesPage() {
   }
 
   const handleNameChange = (name: string) => {
-    setNewCategory((prev) => ({
+    setFormData((prev) => ({
       ...prev,
       name,
       slug: generateSlug(name),
     }))
   }
 
-  const handleCreateCategory = () => {
-    // Here you would typically call an API to create the category
-    console.log("Creating category:", newCategory)
-    setIsDialogOpen(false)
-    setNewCategory({
+  const resetForm = () => {
+    setFormData({
       name: "",
       slug: "",
       description: "",
       color: "#3B82F6",
+      isActive: true,
+      sortOrder: 0,
     })
+    setIsEditMode(false)
+    setEditingCategory(null)
   }
 
+  const handleCreateCategory = async () => {
+    try {
+      const categoryData = {
+        name: formData.name,
+        slug: formData.slug,
+        description: formData.description,
+        color: formData.color,
+        isActive: formData.isActive,
+        sortOrder: formData.sortOrder,
+      }
+      await createMutation.mutateAsync(categoryData as BlogCategory)
+      toast({
+        title: "Success",
+        description: "Category created successfully.",
+      })
+      setIsDialogOpen(false)
+      resetForm()
+      refetch()
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to create category. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleUpdateCategory = async () => {
+    if (!editingCategory) return
+
+    try {
+      const updateData: BlogCategoryUpdate = {
+        name: formData.name,
+        slug: formData.slug,
+        description: formData.description,
+        color: formData.color,
+        isActive: formData.isActive,
+        sortOrder: formData.sortOrder,
+      }
+      
+      await updateMutation.mutateAsync({
+        id: editingCategory.id,
+        data: updateData,
+      })
+      toast({
+        title: "Success",
+        description: "Category updated successfully.",
+      })
+      setIsDialogOpen(false)
+      resetForm()
+      refetch()
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to update category. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleDeleteCategory = async (id: string) => {
+    try {
+      await deleteMutation.mutateAsync(id)
+      toast({
+        title: "Success",
+        description: "Category deleted successfully.",
+      })
+      refetch()
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to delete category. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleEdit = (category: BlogCategory) => {
+    setEditingCategory(category)
+    setFormData({
+      name: category.name,
+      slug: category.slug,
+      description: category.description || "",
+      color: category.color || "#3B82F6",
+      isActive: category.isActive,
+      sortOrder: category.sortOrder,
+    })
+    setIsEditMode(true)
+    setIsDialogOpen(true)
+  }
+
+  const handleSubmit = () => {
+    if (isEditMode) {
+      handleUpdateCategory()
+    } else {
+      handleCreateCategory()
+    }
+  }
+
+  const categoriesWithActions: CategoryWithActions[] = categories.map(category => ({
+    ...category,
+    onEdit: handleEdit,
+    onDelete: handleDeleteCategory,
+  }))
+
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+    <div className="flex-1 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Categories</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Blog Categories</h2>
           <p className="text-muted-foreground">Organize your blog posts with categories</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open)
+          if (!open) resetForm()
+        }}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
@@ -147,8 +280,10 @@ export default function CategoriesPage() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Create Category</DialogTitle>
-              <DialogDescription>Add a new category to organize your blog posts.</DialogDescription>
+              <DialogTitle>{isEditMode ? "Edit Category" : "Create Category"}</DialogTitle>
+              <DialogDescription>
+                {isEditMode ? "Update the category details." : "Add a new category to organize your blog posts."}
+              </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
@@ -157,7 +292,7 @@ export default function CategoriesPage() {
                 </Label>
                 <Input
                   id="name"
-                  value={newCategory.name}
+                  value={formData.name}
                   onChange={(e) => handleNameChange(e.target.value)}
                   className="col-span-3"
                   placeholder="Category name"
@@ -169,8 +304,8 @@ export default function CategoriesPage() {
                 </Label>
                 <Input
                   id="slug"
-                  value={newCategory.slug}
-                  onChange={(e) => setNewCategory((prev) => ({ ...prev, slug: e.target.value }))}
+                  value={formData.slug}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
                   className="col-span-3"
                   placeholder="category-slug"
                 />
@@ -183,14 +318,39 @@ export default function CategoriesPage() {
                   <Input
                     type="color"
                     id="color"
-                    value={newCategory.color}
-                    onChange={(e) => setNewCategory((prev) => ({ ...prev, color: e.target.value }))}
+                    value={formData.color}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, color: e.target.value }))}
                     className="w-10 h-10 rounded border"
                   />
                   <Input
-                    value={newCategory.color}
-                    onChange={(e) => setNewCategory((prev) => ({ ...prev, color: e.target.value }))}
+                    value={formData.color}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, color: e.target.value }))}
                     placeholder="#3B82F6"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="sortOrder" className="text-right">
+                  Sort Order
+                </Label>
+                <Input
+                  id="sortOrder"
+                  type="number"
+                  value={formData.sortOrder}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, sortOrder: parseInt(e.target.value) || 0 }))}
+                  className="col-span-3"
+                  placeholder="0"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="isActive" className="text-right">
+                  Active
+                </Label>
+                <div className="col-span-3">
+                  <Switch
+                    id="isActive"
+                    checked={formData.isActive}
+                    onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, isActive: checked }))}
                   />
                 </div>
               </div>
@@ -200,23 +360,33 @@ export default function CategoriesPage() {
                 </Label>
                 <Textarea
                   id="description"
-                  value={newCategory.description}
-                  onChange={(e) => setNewCategory((prev) => ({ ...prev, description: e.target.value }))}
+                  value={formData.description}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
                   className="col-span-3"
                   placeholder="Category description..."
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit" onClick={handleCreateCategory}>
-                Create Category
+              <Button 
+                type="submit" 
+                onClick={handleSubmit}
+                disabled={createMutation.isPending || updateMutation.isPending}
+              >
+                {isEditMode ? "Update Category" : "Create Category"}
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
 
-      <DataTable columns={columns} data={categories} searchKey="name" searchPlaceholder="Search categories..." />
+      <DataTable 
+        columns={columns} 
+        data={categoriesWithActions} 
+        searchKey="name" 
+        searchPlaceholder="Search categories..." 
+        isLoading={isLoading}
+      />
     </div>
   )
 }

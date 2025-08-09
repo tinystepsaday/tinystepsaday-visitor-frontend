@@ -183,6 +183,7 @@ export interface BlogPostQuery {
   search?: string
   status?: "DRAFT" | "PUBLISHED" | "ARCHIVED" | "SCHEDULED"
   category?: string
+  tag?: string
   author?: string
   isFeatured?: boolean
   page?: number

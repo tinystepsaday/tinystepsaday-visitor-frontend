@@ -366,13 +366,14 @@ export default function EventEditFormClient({ eventId, initialEvent }: EventEdit
                   {formData.tags.map((tag, index) => (
                     <Badge key={index} variant="secondary" className="flex items-center gap-1">
                       {tag}
-                      <button
-                        type="button"
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => removeTag(tag)}
                         className="ml-1 hover:text-destructive"
                       >
                         <X className="h-3 w-3" />
-                      </button>
+                      </Button>
                     </Badge>
                   ))}
                 </div>

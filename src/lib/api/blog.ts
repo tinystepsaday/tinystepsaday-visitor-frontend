@@ -47,7 +47,7 @@ export const useBlogPosts = (query?: BlogPostQuery) => {
           }
         })
       }
-      const response = await apiClient.get<PaginatedResponse<BlogPost>>(`/blog/posts?${params.toString()}`)
+      const response = await apiClient.get<PaginatedResponse<BlogPost>>(`/api/blog/posts?${params.toString()}`)
       return response
     },
   })
@@ -69,7 +69,7 @@ export const usePublicBlogPosts = (query?: BlogPostQuery) => {
           }
         })
       }
-      const response = await apiClient.get<PaginatedResponse<BlogPost>>(`/blog/public/posts?${params.toString()}`)
+      const response = await apiClient.get<PaginatedResponse<BlogPost>>(`/api/blog/public/posts?${params.toString()}`)
       return response
     },
   })
@@ -79,7 +79,7 @@ export const useBlogPost = (id: string) => {
   return useQuery({
     queryKey: ["blogPost", id],
     queryFn: async () => {
-      const response = await apiClient.get<BlogPost>(`/blog/posts/${id}`)
+      const response = await apiClient.get<BlogPost>(`/api/blog/posts/${id}`)
       return response
     },
     enabled: !!id,
@@ -90,7 +90,7 @@ export const usePublicBlogPost = (slug: string) => {
   return useQuery({
     queryKey: ["publicBlogPost", slug],
     queryFn: async () => {
-      const response = await apiClient.get<BlogPost>(`/blog/public/posts/${slug}`)
+      const response = await apiClient.get<BlogPost>(`/api/blog/public/posts/${slug}`)
       return response
     },
     enabled: !!slug,
@@ -102,7 +102,7 @@ export const useCreateBlogPost = () => {
 
   return useMutation({
     mutationFn: async (data: BlogPost) => {
-      const response = await apiClient.post<BlogPost>("/blog/posts", data)
+      const response = await apiClient.post<BlogPost>("/api/blog/posts", data)
       return response
     },
     onSuccess: () => {
@@ -117,7 +117,7 @@ export const useUpdateBlogPost = () => {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: BlogPostUpdate }) => {
-      const response = await apiClient.put<BlogPost>(`/blog/posts/${id}`, data)
+      const response = await apiClient.put<BlogPost>(`/api/blog/posts/${id}`, data)
       return response
     },
     onSuccess: (data) => {
@@ -134,7 +134,7 @@ export const useDeleteBlogPost = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await apiClient.delete<{ success: boolean; message: string }>(`/blog/posts/${id}`)
+      const response = await apiClient.delete<{ success: boolean; message: string }>(`/api/blog/posts/${id}`)
       return response
     },
     onSuccess: () => {
@@ -149,7 +149,7 @@ export const useBlogCategories = () => {
   return useQuery({
     queryKey: ["blogCategories"],
     queryFn: async () => {
-      const response = await apiClient.get<BlogCategory[]>("/blog/categories")
+      const response = await apiClient.get<BlogCategory[]>("/api/blog/categories")
       return response
     },
   })
@@ -159,7 +159,7 @@ export const useBlogCategory = (id: string) => {
   return useQuery({
     queryKey: ["blogCategory", id],
     queryFn: async () => {
-      const response = await apiClient.get<BlogCategory>(`/blog/categories/${id}`)
+      const response = await apiClient.get<BlogCategory>(`/api/blog/categories/${id}`)
       return response
     },
     enabled: !!id,
@@ -171,7 +171,7 @@ export const useCreateBlogCategory = () => {
 
   return useMutation({
     mutationFn: async (data: BlogCategory) => {
-      const response = await apiClient.post<BlogCategory>("/blog/categories", data)
+      const response = await apiClient.post<BlogCategory>("/api/blog/categories", data)
       return response
     },
     onSuccess: () => {
@@ -185,7 +185,7 @@ export const useUpdateBlogCategory = () => {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: BlogCategoryUpdate }) => {
-      const response = await apiClient.put<BlogCategory>(`/blog/categories/${id}`, data)
+      const response = await apiClient.put<BlogCategory>(`/api/blog/categories/${id}`, data)
       return response
     },
     onSuccess: () => {
@@ -199,7 +199,7 @@ export const useDeleteBlogCategory = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await apiClient.delete<{ success: boolean; message: string }>(`/blog/categories/${id}`)
+      const response = await apiClient.delete<{ success: boolean; message: string }>(`/api/blog/categories/${id}`)
       return response
     },
     onSuccess: () => {
@@ -213,7 +213,7 @@ export const useBlogTags = () => {
   return useQuery({
     queryKey: ["blogTags"],
     queryFn: async () => {
-      const response = await apiClient.get<BlogTag[]>("/blog/tags")
+      const response = await apiClient.get<BlogTag[]>("/api/blog/tags")
       return response
     },
   })
@@ -223,7 +223,7 @@ export const useBlogTag = (id: string) => {
   return useQuery({
     queryKey: ["blogTag", id],
     queryFn: async () => {
-      const response = await apiClient.get<BlogTag>(`/blog/tags/${id}`)
+      const response = await apiClient.get<BlogTag>(`/api/blog/tags/${id}`)
       return response
     },
     enabled: !!id,
@@ -235,7 +235,7 @@ export const useCreateBlogTag = () => {
 
   return useMutation({
     mutationFn: async (data: BlogTag) => {
-      const response = await apiClient.post<BlogTag>("/blog/tags", data)
+      const response = await apiClient.post<BlogTag>("/api/blog/tags", data)
       return response
     },
     onSuccess: () => {
@@ -249,7 +249,7 @@ export const useUpdateBlogTag = () => {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: BlogTagUpdate }) => {
-      const response = await apiClient.put<BlogTag>(`/blog/tags/${id}`, data)
+      const response = await apiClient.put<BlogTag>(`/api/blog/tags/${id}`, data)
       return response
     },
     onSuccess: () => {
@@ -263,7 +263,7 @@ export const useDeleteBlogTag = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await apiClient.delete<{ success: boolean; message: string }>(`/blog/tags/${id}`)
+      const response = await apiClient.delete<{ success: boolean; message: string }>(`/api/blog/tags/${id}`)
       return response
     },
     onSuccess: () => {
@@ -287,7 +287,7 @@ export const useBlogComments = (query: BlogCommentQuery) => {
           }
         }
       })
-      const response = await apiClient.get<PaginatedResponse<BlogComment>>(`/blog/comments?${params.toString()}`)
+      const response = await apiClient.get<PaginatedResponse<BlogComment>>(`/api/blog/comments?${params.toString()}`)
       return response
     },
     enabled: !!query.postId,
@@ -308,7 +308,7 @@ export const usePublicBlogComments = (query: BlogCommentQuery) => {
           }
         }
       })
-      const response = await apiClient.get<PaginatedResponse<BlogComment>>(`/blog/public/comments?${params.toString()}`)
+      const response = await apiClient.get<PaginatedResponse<BlogComment>>(`/api/blog/public/comments?${params.toString()}`)
       return response
     },
     enabled: !!query.postId,
@@ -320,7 +320,7 @@ export const useCreateBlogComment = () => {
 
   return useMutation({
     mutationFn: async (data: BlogCommentCreate) => {
-      const response = await apiClient.post<BlogComment>("/blog/comments", data)
+      const response = await apiClient.post<BlogComment>("/api/blog/comments", data)
       return response
     },
     onSuccess: (data) => {
@@ -337,7 +337,7 @@ export const useUpdateBlogComment = () => {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: BlogCommentUpdate }) => {
-      const response = await apiClient.put<BlogComment>(`/blog/comments/${id}`, data)
+      const response = await apiClient.put<BlogComment>(`/api/blog/comments/${id}`, data)
       return response
     },
     onSuccess: (data) => {
@@ -354,7 +354,7 @@ export const useDeleteBlogComment = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await apiClient.delete<{ success: boolean; message: string }>(`/blog/comments/${id}`)
+      const response = await apiClient.delete<{ success: boolean; message: string }>(`/api/blog/comments/${id}`)
       return response
     },
     onSuccess: () => {
@@ -370,7 +370,7 @@ export const useToggleBlogLike = () => {
 
   return useMutation({
     mutationFn: async (data: BlogLike) => {
-      const response = await apiClient.post<{ success: boolean; message: string }>("/blog/likes", data)
+      const response = await apiClient.post<{ success: boolean; message: string }>("/api/blog/likes", data)
       return response
     },
     onSuccess: (data, variables) => {
@@ -386,7 +386,7 @@ export const useCheckBlogLike = (postId: string) => {
   return useQuery({
     queryKey: ["blogLike", postId],
     queryFn: async () => {
-      const response = await apiClient.get<{ liked: boolean }>(`/blog/likes/${postId}`)
+      const response = await apiClient.get<{ liked: boolean }>(`/api/blog/likes/${postId}`)
       return response
     },
     enabled: !!postId,

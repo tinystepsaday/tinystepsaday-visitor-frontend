@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, Plus, Edit, Trash2, Hash } from "lucide-react"
-import { mockTags } from "@/data/mock-data"
-import type { Tag } from "@/lib/types"
+import { MoreHorizontal, Plus, Edit, Trash2, Hash, Eye } from "lucide-react"
+import { useBlogTags, useCreateBlogTag, useUpdateBlogTag, useDeleteBlogTag } from "@/lib/api/blog"
+import { useToast } from "@/hooks/use-toast"
+import type { BlogTag, BlogTagUpdate } from "@/lib/types"
 import { DataTable } from "@/components/data-table"
 import { Button } from "@/components/ui/button"
 import {
@@ -27,8 +28,14 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 
-const columns: ColumnDef<Tag>[] = [
+interface TagWithActions extends BlogTag {
+  onEdit?: (tag: BlogTag) => void
+  onDelete?: (id: string) => void
+}
+
+const columns: ColumnDef<TagWithActions>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -43,22 +50,24 @@ const columns: ColumnDef<Tag>[] = [
     ),
   },
   {
-    accessorKey: "postCount",
+    accessorKey: "postsCount",
     header: "Posts",
-    cell: ({ row }) => <Badge variant="secondary">{row.getValue("postCount")} posts</Badge>,
+    cell: ({ row }) => <Badge variant="secondary">{row.getValue("postsCount")} posts</Badge>,
   },
   {
-    accessorKey: "createdAt",
-    header: "Created",
-    cell: ({ row }) => {
-      const date = row.getValue("createdAt") as Date
-      return <div>{date.toLocaleDateString()}</div>
-    },
+    accessorKey: "isActive",
+    header: "Status",
+    cell: ({ row }) => (
+      <Badge variant={row.getValue("isActive") ? "default" : "secondary"}>
+        {row.getValue("isActive") ? "Active" : "Inactive"}
+      </Badge>
+    ),
   },
   {
     id: "actions",
     enableHiding: false,
-    cell: () => {
+    cell: ({ row }) => {
+      const tag = row.original
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -69,13 +78,19 @@ const columns: ColumnDef<Tag>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => window.open(`/blog?tag=${tag.slug}`, '_blank')}>
+              <Eye className="mr-2 h-4 w-4" />
+              View Posts
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => tag.onEdit?.(tag)}>
               <Edit className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem>View Posts</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
+            <DropdownMenuItem 
+              onClick={() => tag.onDelete?.(tag.id)}
+              className="text-destructive"
+            >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>
@@ -87,12 +102,20 @@ const columns: ColumnDef<Tag>[] = [
 ]
 
 export default function TagsPage() {
-  const [tags] = useState<Tag[]>(mockTags)
+  const { toast } = useToast()
+  const { data: tags = [], isLoading, refetch } = useBlogTags()
+  const createMutation = useCreateBlogTag()
+  const updateMutation = useUpdateBlogTag()
+  const deleteMutation = useDeleteBlogTag()
+
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [newTag, setNewTag] = useState({
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [editingTag, setEditingTag] = useState<BlogTag | null>(null)
+  const [formData, setFormData] = useState({
     name: "",
     slug: "",
     color: "#3B82F6",
+    isActive: true,
   })
 
   const generateSlug = (name: string) => {
@@ -105,31 +128,134 @@ export default function TagsPage() {
   }
 
   const handleNameChange = (name: string) => {
-    setNewTag((prev) => ({
+    setFormData((prev) => ({
       ...prev,
       name,
       slug: generateSlug(name),
     }))
   }
 
-  const handleCreateTag = () => {
-    console.log("Creating tag:", newTag)
-    setIsDialogOpen(false)
-    setNewTag({
+  const resetForm = () => {
+    setFormData({
       name: "",
       slug: "",
       color: "#3B82F6",
+      isActive: true,
     })
+    setIsEditMode(false)
+    setEditingTag(null)
   }
 
+  const handleCreateTag = async () => {
+    try {
+      const tagData = {
+        name: formData.name,
+        slug: formData.slug,
+        color: formData.color,
+        isActive: formData.isActive,
+      }
+      await createMutation.mutateAsync(tagData as BlogTag)
+      toast({
+        title: "Success",
+        description: "Tag created successfully.",
+      })
+      setIsDialogOpen(false)
+      resetForm()
+      refetch()
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to create tag. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleUpdateTag = async () => {
+    if (!editingTag) return
+
+    try {
+      const updateData: BlogTagUpdate = {
+        name: formData.name,
+        slug: formData.slug,
+        color: formData.color,
+        isActive: formData.isActive,
+      }
+      
+      await updateMutation.mutateAsync({
+        id: editingTag.id,
+        data: updateData,
+      })
+      toast({
+        title: "Success",
+        description: "Tag updated successfully.",
+      })
+      setIsDialogOpen(false)
+      resetForm()
+      refetch()
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to update tag. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleDeleteTag = async (id: string) => {
+    try {
+      await deleteMutation.mutateAsync(id)
+      toast({
+        title: "Success",
+        description: "Tag deleted successfully.",
+      })
+      refetch()
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to delete tag. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleEdit = (tag: BlogTag) => {
+    setEditingTag(tag)
+    setFormData({
+      name: tag.name,
+      slug: tag.slug,
+      color: tag.color || "#3B82F6",
+      isActive: tag.isActive,
+    })
+    setIsEditMode(true)
+    setIsDialogOpen(true)
+  }
+
+  const handleSubmit = () => {
+    if (isEditMode) {
+      handleUpdateTag()
+    } else {
+      handleCreateTag()
+    }
+  }
+
+  const tagsWithActions: TagWithActions[] = tags.map(tag => ({
+    ...tag,
+    onEdit: handleEdit,
+    onDelete: handleDeleteTag,
+  }))
+
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+    <div className="flex-1 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Tags</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Blog Tags</h2>
           <p className="text-muted-foreground">Manage tags for your blog posts</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open)
+          if (!open) resetForm()
+        }}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
@@ -138,8 +264,10 @@ export default function TagsPage() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Create Tag</DialogTitle>
-              <DialogDescription>Add a new tag to categorize your blog posts.</DialogDescription>
+              <DialogTitle>{isEditMode ? "Edit Tag" : "Create Tag"}</DialogTitle>
+              <DialogDescription>
+                {isEditMode ? "Update the tag details." : "Add a new tag to categorize your blog posts."}
+              </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
@@ -148,7 +276,7 @@ export default function TagsPage() {
                 </Label>
                 <Input
                   id="name"
-                  value={newTag.name}
+                  value={formData.name}
                   onChange={(e) => handleNameChange(e.target.value)}
                   className="col-span-3"
                   placeholder="Tag name"
@@ -160,8 +288,8 @@ export default function TagsPage() {
                 </Label>
                 <Input
                   id="slug"
-                  value={newTag.slug}
-                  onChange={(e) => setNewTag((prev) => ({ ...prev, slug: e.target.value }))}
+                  value={formData.slug}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
                   className="col-span-3"
                   placeholder="tag-slug"
                 />
@@ -174,28 +302,50 @@ export default function TagsPage() {
                   <Input
                     type="color"
                     id="color"
-                    value={newTag.color}
-                    onChange={(e) => setNewTag((prev) => ({ ...prev, color: e.target.value }))}
+                    value={formData.color}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, color: e.target.value }))}
                     className="w-10 h-10 rounded border"
                   />
                   <Input
-                    value={newTag.color}
-                    onChange={(e) => setNewTag((prev) => ({ ...prev, color: e.target.value }))}
+                    value={formData.color}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, color: e.target.value }))}
                     placeholder="#3B82F6"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="isActive" className="text-right">
+                  Active
+                </Label>
+                <div className="col-span-3">
+                  <Switch
+                    id="isActive"
+                    checked={formData.isActive}
+                    onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, isActive: checked }))}
                   />
                 </div>
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit" onClick={handleCreateTag}>
-                Create Tag
+              <Button 
+                type="submit" 
+                onClick={handleSubmit}
+                disabled={createMutation.isPending || updateMutation.isPending}
+              >
+                {isEditMode ? "Update Tag" : "Create Tag"}
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
 
-      <DataTable columns={columns} data={tags} searchKey="name" searchPlaceholder="Search tags..." />
+      <DataTable 
+        columns={columns} 
+        data={tagsWithActions} 
+        searchKey="name" 
+        searchPlaceholder="Search tags..." 
+        isLoading={isLoading}
+      />
     </div>
   )
 }
