@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { Button } from "@/components/ui/button";
@@ -20,104 +21,104 @@ const DashboardOverview = () => {
   const stats = [
     {
       title: "Courses in Progress",
-      value: 3,
+      value: 0,
       icon: <BookOpen className="h-5 w-5 text-blue-500" />,
       color: "bg-blue-50 dark:bg-blue-900/20",
       link: "/dashboard/courses"
     },
     {
       title: "Completed Courses",
-      value: 2,
+      value: 0,
       icon: <TrendingUp className="h-5 w-5 text-green-500" />,
       color: "bg-green-50 dark:bg-green-900/20",
       link: "/dashboard/courses"
     },
     {
       title: "Upcoming Sessions",
-      value: 1,
+      value: 0,
       icon: <Calendar className="h-5 w-5 text-purple-500" />,
       color: "bg-purple-50 dark:bg-purple-900/20",
       link: "/dashboard/sessions"
     },
     {
       title: "Saved Articles",
-      value: 7,
+      value: 0,
       icon: <Heart className="h-5 w-5 text-rose-500" />,
       color: "bg-rose-50 dark:bg-rose-900/20",
       link: "/dashboard/reading-list"
     }
   ];
 
-  const coursesInProgress = [
-    {
-      id: 1,
-      title: "Mindful Living Essentials",
-      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      progress: 65,
-      lastActivity: "2 days ago",
-      totalLessons: 32,
-      completedLessons: 21,
-      nextLesson: "Understanding Emotional Reactions",
-      slug: "mindful-living-essentials"
-    },
-    {
-      id: 3,
-      title: "Career Transition Blueprint",
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      progress: 30,
-      lastActivity: "1 week ago",
-      totalLessons: 16,
-      completedLessons: 5,
-      nextLesson: "Identifying Transferable Skills",
-      slug: "career-transition-blueprint"
-    },
-    {
-      id: 8,
-      title: "Self-Confidence Builder",
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      progress: 10,
-      lastActivity: "3 days ago",
-      totalLessons: 10,
-      completedLessons: 1,
-      nextLesson: "Overcoming Imposter Syndrome",
-      slug: "self-confidence-builder"
-    }
+  const coursesInProgress: any[] = [
+    // {
+    //   id: 1,
+    //   title: "Mindful Living Essentials",
+    //   image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    //   progress: 65,
+    //   lastActivity: "2 days ago",
+    //   totalLessons: 32,
+    //   completedLessons: 21,
+    //   nextLesson: "Understanding Emotional Reactions",
+    //   slug: "mindful-living-essentials"
+    // },
+    // {
+    //   id: 3,
+    //   title: "Career Transition Blueprint",
+    //   image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    //   progress: 30,
+    //   lastActivity: "1 week ago",
+    //   totalLessons: 16,
+    //   completedLessons: 5,
+    //   nextLesson: "Identifying Transferable Skills",
+    //   slug: "career-transition-blueprint"
+    // },
+    // {
+    //   id: 8,
+    //   title: "Self-Confidence Builder",
+    //   image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    //   progress: 10,
+    //   lastActivity: "3 days ago",
+    //   totalLessons: 10,
+    //   completedLessons: 1,
+    //   nextLesson: "Overcoming Imposter Syndrome",
+    //   slug: "self-confidence-builder"
+    // }
   ];
 
-  const upcomingSessions = [
-    {
-      id: 1,
-      title: "Career Guidance Session",
-      date: "April 25, 2025",
-      time: "10:00 AM - 11:00 AM",
-      mentor: "Lisa Rodriguez",
-      type: "One-on-One",
-      status: "Confirmed"
-    }
+  const upcomingSessions: any[] = [
+    // {
+    //   id: 1,
+    //   title: "Career Guidance Session",
+    //   date: "April 25, 2025",
+    //   time: "10:00 AM - 11:00 AM",
+    //   mentor: "Lisa Rodriguez",
+    //   type: "One-on-One",
+    //   status: "Confirmed"
+    // }
   ];
 
-  const savedArticles = [
-    {
-      id: 1,
-      title: "Finding Inner Peace in a Chaotic World",
-      date: "April 15, 2025",
-      category: "Mindfulness",
-      slug: "finding-inner-peace"
-    },
-    {
-      id: 5,
-      title: "Practical Anxiety Management in High-Pressure Situations",
-      date: "March 20, 2025",
-      category: "Mental Health",
-      slug: "anxiety-management"
-    },
-    {
-      id: 2,
-      title: "5 Mindful Meditation Techniques for Beginners",
-      date: "April 10, 2025",
-      category: "Meditation",
-      slug: "mindful-meditation-techniques"
-    }
+  const savedArticles: any[] = [
+    // {
+    //   id: 1,
+    //   title: "Finding Inner Peace in a Chaotic World",
+    //   date: "April 15, 2025",
+    //   category: "Mindfulness",
+    //   slug: "finding-inner-peace"
+    // },
+    // {
+    //   id: 5,
+    //   title: "Practical Anxiety Management in High-Pressure Situations",
+    //   date: "March 20, 2025",
+    //   category: "Mental Health",
+    //   slug: "anxiety-management"
+    // },
+    // {
+    //   id: 2,
+    //   title: "5 Mindful Meditation Techniques for Beginners",
+    //   date: "April 10, 2025",
+    //   category: "Meditation",
+    //   slug: "mindful-meditation-techniques"
+    // }
   ];
 
   return (
@@ -307,7 +308,7 @@ const DashboardOverview = () => {
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="rounded-lg bg-muted/50 p-4 flex items-start">
+            {/* <div className="rounded-lg bg-muted/50 p-4 flex items-start">
               <div className="bg-blue-50 p-2 rounded-full mr-3 dark:bg-blue-900/20">
                 <BookOpen className="h-5 w-5 text-blue-500" />
               </div>
@@ -339,7 +340,7 @@ const DashboardOverview = () => {
                   </Link>
                 </Button>
               </div>
-            </div>
+            </div> */}
           </div>
         </CardContent>
       </Card>

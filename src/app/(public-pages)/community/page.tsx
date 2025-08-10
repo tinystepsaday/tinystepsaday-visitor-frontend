@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { SectionHeader } from "@/components/ui/section-header";
 import CommunityCard from "@/components/community/CommunityCard";
 import { Metadata } from "next";
@@ -39,7 +40,22 @@ export const metadata: Metadata = {
 };
 
 const Community = () => {
-  const communities = [
+  const communities: {
+    id: string;
+    name: string;
+    description: string;
+    image: string;
+    totem: string;
+    memberCount: number;
+  }[] = [];
+  const communities2: {
+    id: string;
+    name: string;
+    description: string;
+    image: string;
+    totem: string;
+    memberCount: number;
+  }[] = [
     {
       id: "meditation",
       name: "Meditation Masters",

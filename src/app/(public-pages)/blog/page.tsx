@@ -155,7 +155,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   ]);
 
   const { posts: filteredPosts = [], pagination = { total: 0, page: 1, limit: POSTS_PER_PAGE, totalPages: 0 } } = blogData;
-  console.log(filteredPosts);
 
   // Redirect to page 1 if currentPage is invalid or exceeds totalPages
   if (currentPage > pagination.totalPages && pagination.totalPages > 0) {

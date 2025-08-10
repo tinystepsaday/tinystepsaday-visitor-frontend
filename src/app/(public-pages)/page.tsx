@@ -6,10 +6,13 @@ import HowItWorks from "@/components/sections/HowItWorks";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import Testimonials from "@/components/sections/Testimonials";
 // import TrustedBy from "@/components/sections/TrustedBy";
 import CTASection from "@/components/sections/CTASection";
+import LatestBlogPosts from "@/components/home/LatestBlogPosts";
+import { featuredProducts } from "@/data/featuredProducts";
+import { featuredCourses } from "@/data/featuredCourses";
 
 export const metadata: Metadata = {
   title: "Tiny Steps A Day | Actionable steps and daily habits to improve your life",
@@ -110,7 +113,7 @@ export default function Home() {
       <HowItWorks />
 
       {/* Featured Courses Section */}
-      <section className="py-20 w-full">
+      {featuredCourses.length > 0 && <section className="py-20 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-2">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Featured Courses</h2>
@@ -119,29 +122,7 @@ export default function Home() {
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Mindfulness Mastery",
-                description: "Learn essential mindfulness practices for daily life",
-                image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?fit=crop&w=800&q=80",
-                price: "$199",
-                duration: "8 weeks"
-              },
-              {
-                title: "Emotional Intelligence",
-                description: "Develop deeper self-awareness and stronger relationships",
-                image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?fit=crop&w=800&q=80",
-                price: "$249",
-                duration: "6 weeks"
-              },
-              {
-                title: "Life Purpose Discovery",
-                description: "Align your career and life with your true calling",
-                image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?fit=crop&w=800&q=80",
-                price: "$299",
-                duration: "10 weeks"
-              }
-            ].map((course, index) => (
+            {featuredCourses.map((course, index) => (
               <div key={index} className="group relative overflow-hidden rounded-lg border bg-background shadow-md transition-all hover:shadow-lg">
                 <div className="aspect-video w-full overflow-hidden">
                   <Image
@@ -176,10 +157,10 @@ export default function Home() {
             </Button>
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* Featured Products Section */}
-      <section className="py-20 bg-muted/30 w-full">
+      {featuredProducts.length > 0 && <section className="py-20 bg-muted/30 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Featured Products</h2>
@@ -188,28 +169,7 @@ export default function Home() {
             </p>
           </div>
           <div className="grid md:grid-cols-4 gap-6">
-            {[
-              {
-                title: "Meditation Cushion Set",
-                price: "$89",
-                image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?fit=crop&w=800&q=80"
-              },
-              {
-                title: "Mindfulness Journal",
-                price: "$29",
-                image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?fit=crop&w=800&q=80"
-              },
-              {
-                title: "Essential Oil Kit",
-                price: "$49",
-                image: "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?fit=crop&w=800&q=80"
-              },
-              {
-                title: "Yoga Mat Premium",
-                price: "$79",
-                image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?fit=crop&w=800&q=80"
-              }
-            ].map((product, index) => (
+            {featuredProducts.map((product, index) => (
               <div key={index} className="group relative overflow-hidden rounded-lg border bg-background">
                 <div className="aspect-square overflow-hidden">
                   <Image
@@ -240,10 +200,13 @@ export default function Home() {
             </Button>
           </div>
         </div>
-      </section>
+      </section>}
+
+      {/* Latest Blog Posts Section */}
+      <LatestBlogPosts />
 
       {/* Book Waitlist Section */}
-      <section className="py-20 w-full">
+      {/* <section className="py-20 w-full">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-2xl p-12">
             <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -300,7 +263,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <Testimonials />
       {/* <TrustedBy /> */}

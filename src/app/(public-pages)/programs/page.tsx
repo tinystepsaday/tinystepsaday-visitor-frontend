@@ -429,7 +429,7 @@ export default function ProgramsPage() {
             </section>
 
             {/* Program Pricing */}
-            <section className="py-20 bg-background">
+            {/* <section className="py-20 bg-background">
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
                     <SectionHeader
                         title="Program Packages"
@@ -623,7 +623,7 @@ export default function ProgramsPage() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* CTA Section */}
             <CTASection

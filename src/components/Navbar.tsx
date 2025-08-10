@@ -22,7 +22,7 @@ import {
   UserRound,
   Home,
   Zap,
-  DollarSign
+  // DollarSign
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
@@ -83,7 +83,7 @@ const Navbar = () => {
   const mainNavLinks = [
     { name: "Home", path: "/", icon: Home },
     { name: "Quiz", path: "/quiz", icon: Zap },
-    { name: "Pricing", path: "/pricing", icon: DollarSign }
+    // { name: "Pricing", path: "/pricing", icon: DollarSign }
   ];
 
   const resourcesDropdown = [
