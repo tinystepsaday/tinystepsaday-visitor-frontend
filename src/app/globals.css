@@ -76,6 +76,15 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+  /* Additional colors for callouts and enhanced content */
+  --blue-50: oklch(0.98 0.01 240);
+  --blue-500: oklch(0.6 0.15 240);
+  --yellow-50: oklch(0.98 0.02 80);
+  --yellow-500: oklch(0.8 0.15 80);
+  --red-50: oklch(0.98 0.01 20);
+  --red-500: oklch(0.6 0.15 20);
+  --green-50: oklch(0.98 0.01 140);
+  --green-500: oklch(0.6 0.15 140);
 }
 
 .dark {
@@ -110,6 +119,15 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* Additional colors for callouts and enhanced content (dark theme) */
+  --blue-50: oklch(0.15 0.02 240);
+  --blue-500: oklch(0.7 0.15 240);
+  --yellow-50: oklch(0.15 0.02 80);
+  --yellow-500: oklch(0.8 0.15 80);
+  --red-50: oklch(0.15 0.02 20);
+  --red-500: oklch(0.7 0.15 20);
+  --green-50: oklch(0.15 0.02 140);
+  --green-500: oklch(0.7 0.15 140);
 }
 
 @layer base {
@@ -157,6 +175,367 @@
   
   .prose-custom section:last-child {
     @apply mb-0;
+  }
+
+  /* Enhanced Prose Styling for Sanitized HTML Content */
+  .prose {
+    @apply text-foreground max-w-none;
+    color: hsl(var(--foreground));
+    line-height: 1.75;
+  }
+
+  /* Typography Scale */
+  .prose h1 {
+    @apply text-4xl font-bold mb-6 mt-12 first:mt-0;
+    color: hsl(var(--foreground));
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+
+  .prose h2 {
+    @apply text-3xl font-bold mb-5 mt-10 first:mt-0;
+    color: hsl(var(--foreground));
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+  }
+
+  .prose h3 {
+    @apply text-2xl font-semibold mb-4 mt-8;
+    color: hsl(var(--foreground));
+    line-height: 1.4;
+  }
+
+  .prose h4 {
+    @apply text-xl font-semibold mb-3 mt-6;
+    color: hsl(var(--foreground));
+    line-height: 1.4;
+  }
+
+  .prose h5 {
+    @apply text-lg font-medium mb-2 mt-4;
+    color: hsl(var(--foreground));
+    line-height: 1.5;
+  }
+
+  .prose h6 {
+    @apply text-base font-medium mb-2 mt-4;
+    color: hsl(var(--foreground));
+    line-height: 1.5;
+  }
+
+  /* Paragraphs and Text */
+  .prose p {
+    @apply text-lg mb-6 leading-relaxed;
+    color: hsl(var(--foreground));
+    text-align: justify;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  }
+
+  .prose p:last-child {
+    @apply mb-0;
+  }
+
+  .prose strong {
+    @apply font-semibold;
+    color: hsl(var(--foreground));
+  }
+
+  .prose em {
+    @apply italic;
+    color: hsl(var(--foreground));
+  }
+
+  .prose u {
+    @apply underline decoration-2 underline-offset-2;
+    color: hsl(var(--foreground));
+  }
+
+  .prose del {
+    @apply line-through decoration-2;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .prose mark {
+    @apply bg-yellow-200 dark:bg-yellow-800 px-1 py-0.5 rounded;
+    color: hsl(var(--foreground));
+  }
+
+  .prose code {
+    @apply bg-muted px-2 py-1 rounded text-sm font-mono;
+    color: hsl(var(--foreground));
+    border: 1px solid hsl(var(--border));
+  }
+
+  .prose pre {
+    @apply bg-muted p-4 rounded-lg overflow-x-auto mb-6;
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground));
+  }
+
+  .prose pre code {
+    @apply bg-transparent p-0 border-0;
+    color: hsl(var(--foreground));
+  }
+
+  /* Lists */
+  .prose ul {
+    @apply space-y-3 list-disc pl-6 mb-6;
+    color: hsl(var(--foreground));
+  }
+
+  .prose ol {
+    @apply space-y-3 list-decimal pl-6 mb-6;
+    color: hsl(var(--foreground));
+  }
+
+  .prose li {
+    @apply text-lg leading-relaxed;
+    color: hsl(var(--foreground));
+  }
+
+  .prose li > ul,
+  .prose li > ol {
+    @apply mt-2 mb-0;
+  }
+
+  .prose li::marker {
+    color: hsl(var(--primary));
+  }
+
+  /* Blockquotes */
+  .prose blockquote {
+    @apply border-l-4 border-primary pl-6 py-2 mb-6 italic;
+    background: linear-gradient(90deg, hsl(var(--primary) / 0.05) 0%, transparent 100%);
+    color: hsl(var(--foreground));
+  }
+
+  .prose blockquote p {
+    @apply mb-0;
+    color: hsl(var(--foreground));
+  }
+
+  .prose blockquote cite {
+    @apply text-sm text-muted-foreground block mt-2;
+    font-style: normal;
+  }
+
+  /* Links */
+  .prose a {
+    @apply text-primary underline decoration-2 underline-offset-2 transition-all duration-200;
+    color: hsl(var(--primary));
+  }
+
+  .prose a:hover {
+    @apply decoration-primary/50;
+    color: hsl(var(--primary) / 0.8);
+  }
+
+  .prose a:focus {
+    @apply outline-none ring-2 ring-primary ring-offset-2 rounded;
+  }
+
+  /* Images */
+  .prose img {
+    @apply rounded-lg shadow-lg mx-auto my-6;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .prose figure {
+    @apply my-8 text-center;
+  }
+
+  .prose figcaption {
+    @apply text-sm text-muted-foreground mt-2 italic;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* Tables */
+  .prose table {
+    @apply w-full border-collapse mb-6;
+    color: hsl(var(--foreground));
+  }
+
+  .prose thead {
+    @apply bg-muted;
+    background-color: hsl(var(--muted));
+  }
+
+  .prose th {
+    @apply border border-border px-4 py-3 text-left font-semibold;
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--border));
+  }
+
+  .prose td {
+    @apply border border-border px-4 py-3;
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--border));
+  }
+
+  .prose tbody tr:nth-child(even) {
+    @apply bg-muted/50;
+    background-color: hsl(var(--muted) / 0.5);
+  }
+
+  .prose tbody tr:hover {
+    @apply bg-muted;
+    background-color: hsl(var(--muted));
+  }
+
+  /* Horizontal Rules */
+  .prose hr {
+    @apply border-0 border-t border-border my-8;
+    border-color: hsl(var(--border));
+  }
+
+  /* Definition Lists */
+  .prose dl {
+    @apply mb-6;
+    color: hsl(var(--foreground));
+  }
+
+  .prose dt {
+    @apply font-semibold mb-2;
+    color: hsl(var(--foreground));
+  }
+
+  .prose dd {
+    @apply ml-4 mb-4;
+    color: hsl(var(--foreground));
+  }
+
+  /* Abbreviations */
+  .prose abbr {
+    @apply border-b border-dotted border-muted-foreground cursor-help;
+    border-color: hsl(var(--muted-foreground));
+  }
+
+  /* Small Text */
+  .prose small {
+    @apply text-sm;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* Subscript and Superscript */
+  .prose sub,
+  .prose sup {
+    @apply text-xs;
+    color: hsl(var(--foreground));
+  }
+
+  /* Highlighted Text */
+  .prose .highlight {
+    @apply bg-primary/10 px-1 py-0.5 rounded;
+    background-color: hsl(var(--primary) / 0.1);
+    color: hsl(var(--foreground));
+  }
+
+  /* Callout Boxes */
+  .prose .callout {
+    @apply p-4 rounded-lg mb-6 border-l-4;
+    background-color: hsl(var(--muted));
+    border-color: hsl(var(--primary));
+  }
+
+  .prose .callout.info {
+    @apply border-blue-500;
+    background-color: hsl(var(--blue-50));
+    border-color: hsl(var(--blue-500));
+  }
+
+  .prose .callout.warning {
+    @apply border-yellow-500;
+    background-color: hsl(var(--yellow-50));
+    border-color: hsl(var(--yellow-500));
+  }
+
+  .prose .callout.error {
+    @apply border-red-500;
+    background-color: hsl(var(--red-50));
+    border-color: hsl(var(--red-500));
+  }
+
+  .prose .callout.success {
+    @apply border-green-500;
+    background-color: hsl(var(--green-50));
+    border-color: hsl(var(--green-500));
+  }
+
+  /* Code Blocks with Syntax Highlighting */
+  .prose .code-block {
+    @apply bg-muted p-4 rounded-lg overflow-x-auto mb-6;
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground));
+  }
+
+  .prose .code-block .language-tag {
+    @apply text-xs text-muted-foreground mb-2 block;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* Footnotes */
+  .prose .footnote {
+    @apply text-sm text-muted-foreground;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .prose .footnote-ref {
+    @apply text-primary no-underline;
+    color: hsl(var(--primary));
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .prose {
+      @apply text-base;
+    }
+    
+    .prose h1 {
+      @apply text-3xl;
+    }
+    
+    .prose h2 {
+      @apply text-2xl;
+    }
+    
+    .prose h3 {
+      @apply text-xl;
+    }
+    
+    .prose p {
+      @apply text-base;
+    }
+    
+    .prose li {
+      @apply text-base;
+    }
+    
+    .prose blockquote {
+      @apply pl-4;
+    }
+    
+    .prose pre {
+      @apply p-3 text-sm;
+    }
+  }
+
+  /* Print Styles */
+  @media print {
+    .prose {
+      @apply text-black;
+      color: black;
+    }
+    
+    .prose a {
+      @apply text-black no-underline;
+      color: black;
+    }
+    
+    .prose img {
+      @apply shadow-none;
+    }
   }
 
   @keyframes spin-slow {

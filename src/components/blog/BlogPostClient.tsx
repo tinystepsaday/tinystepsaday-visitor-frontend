@@ -296,12 +296,12 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
       )}
 
       {/* Article Content */}
-      <div className="max-w-3xl mx-auto mb-12">
-        <div
-          className="prose prose-lg max-w-none"
+      <section className="max-w-3xl mx-auto mb-12">
+        <article
+          className="prose prose-lg max-w-none "
           dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
         />
-      </div>
+      </section>
 
       {/* Blog Navigation */}
       {post.navigation && (
