@@ -155,6 +155,8 @@ export const getSubscription = () => {
 
 // Account sessions
 export const recordSession = () => {
+  if (typeof navigator === 'undefined') return;
+  
   const sessions = getSessions();
   sessions.push({
     id: Date.now(),

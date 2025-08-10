@@ -196,7 +196,7 @@ class TokenManager {
     await this.clearAuthTokens();
     
     // Only redirect if not already on login page
-    if (typeof window !== 'undefined' && !window.location.pathname.includes('/auth/login')) {
+    if (typeof window !== 'undefined' && window.location.pathname && !window.location.pathname.includes('/auth/login')) {
       window.location.href = '/auth/login';
     }
   }

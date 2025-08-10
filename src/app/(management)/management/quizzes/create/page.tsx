@@ -249,7 +249,9 @@ export default function CreateQuizPage() {
       })
       setIsLoading(false)
       // Redirect to quizzes list
-      window.location.href = '/management/quizzes'
+      if (typeof window !== 'undefined') {
+        window.location.href = '/management/quizzes'
+      }
     }, 1000)
   }
 

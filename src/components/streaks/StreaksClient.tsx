@@ -193,7 +193,9 @@ export default function StreaksClient({ streaks, currentPage, totalPages, sort, 
         <Button 
           onClick={() => {
             if (!isLoggedIn) {
-              window.location.href = '/auth/login?redirect=' + encodeURIComponent('/streaks/create');
+              if (typeof window !== 'undefined') {
+                window.location.href = '/auth/login?redirect=' + encodeURIComponent('/streaks/create');
+              }
             } else {
               router.push('/streaks/create');
             }

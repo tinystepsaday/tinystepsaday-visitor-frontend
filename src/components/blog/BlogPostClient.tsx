@@ -44,7 +44,7 @@ interface BlogPostClientProps {
 
 const BlogPostClient = ({ post }: BlogPostClientProps) => {
   const [isClient, setIsClient] = useState(false);
-  const { user } = useAuth();
+  const [user, setUser] = useState<{ id: string; email: string; firstName: string; lastName: string; avatar?: string } | null>(null);
   const queryClient = useQueryClient();
   const [likesCount, setLikesCount] = useState(post.likesCount || 0);
   const [liked, setLiked] = useState(false);
@@ -55,6 +55,16 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  // Only call useAuth when component is fully loaded on client side
+  const auth = useAuth();
+  
+  // Update user state when auth changes
+  useEffect(() => {
+    if (isClient && auth.user) {
+      setUser(auth.user);
+    }
+  }, [isClient, auth.user]);
 
   // Always call hooks but handle the data conditionally
   const { data: commentsData, isLoading: apiCommentsLoading } = usePublicBlogComments({
@@ -135,7 +145,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
 
   // Handle share to social media with enhanced content
   const handleShare = (platform: string) => {
-    const url = window.location.href;
+    const url = typeof window !== 'undefined' ? window.location.href : '';
     const title = post.title;
     const excerpt = post.excerpt || `Check out this article: ${post.title}`;
     const author = post.author.name;
@@ -180,7 +190,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
         await navigator.share({
           title: `${post.title} at Tiny Steps A Day`,
           text: `${post.excerpt || post.title} by ${post.author.name}. Read more at Tiny Steps A Day.`,
-          url: window.location.href,
+          url: typeof window !== 'undefined' ? window.location.href : '',
         });
       } catch {
         // Fallback to copy link
@@ -195,7 +205,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
   // Enhanced share with platform detection
   const handleSmartShare = () => {
     // Check if it's mobile and has native sharing
-    if (typeof navigator.share !== 'undefined' && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    if (typeof navigator !== 'undefined' && typeof navigator.share !== 'undefined' && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
       handleNativeShare();
     } else {
       // Show social media options for desktop
@@ -207,7 +217,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
   // Copy link to clipboard
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(typeof window !== 'undefined' ? window.location.href : '');
       toast("Link copied to clipboard!");
     } catch {
       toast("Failed to copy link");
@@ -304,7 +314,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
                     variant="outline"
                     size="sm"
                     onClick={handleLike}
-                    disabled={!isClient || (toggleLikeMutation)?.isPending}
+                    disabled={!isClient || toggleLikeMutation.isPending}
                     className={liked ? "text-red-500 border-red-500" : ""}
                   >
                     <Heart className={`mr-2 h-4 w-4 ${liked ? "fill-current" : ""}`} />

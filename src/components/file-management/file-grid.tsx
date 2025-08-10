@@ -81,6 +81,8 @@ export function FileGrid({
   }
 
   const copyToClipboard = async (text: string) => {
+    if (typeof navigator === 'undefined' || !navigator.clipboard) return;
+    
     try {
       await navigator.clipboard.writeText(text)
       // You might want to show a toast here

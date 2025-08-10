@@ -62,7 +62,9 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
     });
     
     // Redirect to checkout
-    window.location.href = '/checkout';
+    if (typeof window !== 'undefined') {
+      window.location.href = '/checkout';
+    }
   };
 
   return (

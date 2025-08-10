@@ -1,5 +1,7 @@
 import { getCurrentUser } from '@/lib/auth/serverActions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function TestAuthPage() {
   try {
     // Test the server action

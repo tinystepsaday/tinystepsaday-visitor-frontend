@@ -108,8 +108,9 @@ export default function SignupForm() {
         toast.success("Account created successfully!", {
           description: "Please check your email to verify your account.",
         });
-        // Redirect to verify account page with email parameter
-        router.push(`/auth/verifyaccount?email=${encodeURIComponent(data.email)}`);
+        // Redirect to verify account page with email and returnUrl parameters
+        const verifyUrl = `/auth/verifyaccount?email=${encodeURIComponent(data.email)}&returnUrl=${encodeURIComponent(returnUrl)}`;
+        router.push(verifyUrl);
       } else {
         // Handle validation errors
         if (result.message.includes(':')) {

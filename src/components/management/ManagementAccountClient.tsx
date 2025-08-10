@@ -179,7 +179,11 @@ export function ManagementAccountClient() {
             <p className="text-muted-foreground mb-4">Failed to load account data</p>
             <Button 
               variant="outline" 
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.location.reload();
+                }
+              }}
             >
               Retry
             </Button>

@@ -50,7 +50,7 @@ class TokenManager {
     
     // Also set cookies for server-side authentication
     // Use httpOnly: false so server-side can read them
-    if (typeof document !== 'undefined') {
+    if (typeof document !== 'undefined' && typeof window !== 'undefined') {
       document.cookie = `accessToken=${accessToken}; path=/; max-age=1800; SameSite=Lax; secure=${window.location.protocol === 'https:'}`;
       document.cookie = `refreshToken=${refreshToken}; path=/; max-age=604800; SameSite=Lax; secure=${window.location.protocol === 'https:'}`;
     }
@@ -169,7 +169,7 @@ class TokenManager {
       localStorage.removeItem('isInstructor');
       
       // Redirect to login page
-      if (window.location.pathname !== '/auth/login') {
+      if (typeof window !== 'undefined' && window.location.pathname !== '/auth/login') {
         window.location.href = '/auth/login';
       }
     }

@@ -19,12 +19,12 @@ export default function CareerPositionClient({ career, careerId }: CareerPositio
       navigator.share({
         title: `${career.title} at Tiny Steps A Day`,
         text: `Check out this job opportunity: ${career.title} at Tiny Steps A Day`,
-        url: window.location.href,
+        url: typeof window !== 'undefined' ? window.location.href : '',
       })
         .then(() => console.log('Successful share'))
         .catch((error) => console.log('Error sharing', error));
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      navigator.clipboard.writeText(typeof window !== 'undefined' ? window.location.href : '');
       toast("Link copied to clipboard");
     }
   };

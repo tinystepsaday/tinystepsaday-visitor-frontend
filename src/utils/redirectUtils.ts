@@ -31,14 +31,14 @@ export function getRedirectUrl(
   if (providedUrl) {
     // Validate the redirect URL to prevent open redirects
     const allowedDomains = [
-      window.location.origin,
+      typeof window !== 'undefined' ? window.location.origin : '',
       process.env.NEXT_PUBLIC_FRONTEND_URL,
       'http://localhost:3000',
       'https://tinystepsaday.com'
     ].filter(Boolean);
     
     try {
-      const url = new URL(providedUrl, window.location.origin);
+      const url = new URL(providedUrl, typeof window !== 'undefined' ? window.location.origin : '');
       const isAllowed = allowedDomains.some(domain => 
         url.origin === domain || url.origin === new URL(domain || '').origin
       );

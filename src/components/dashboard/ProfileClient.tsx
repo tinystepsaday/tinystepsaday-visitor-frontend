@@ -187,7 +187,9 @@ export function ProfileClient() {
         deactivateForm.reset();
         // Redirect to logout or show deactivation message
         setTimeout(() => {
-          window.location.href = "/auth/login";
+          if (typeof window !== 'undefined') {
+            window.location.href = "/auth/login";
+          }
         }, 2000);
       } else {
         toast.error(response.message || "Failed to deactivate account");
@@ -223,7 +225,11 @@ export function ProfileClient() {
             <p className="text-muted-foreground mb-4">Failed to load profile data</p>
             <Button 
               variant="outline" 
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.location.reload();
+                }
+              }}
             >
               Retry
             </Button>

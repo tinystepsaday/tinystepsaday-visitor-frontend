@@ -27,6 +27,7 @@ export default function VerifyAccountForm() {
   const [email, setEmail] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
   const searchParams = useSearchParams();
+  const returnUrl = searchParams.get('returnUrl') || '/dashboard';
 
   // Extract email from URL parameters
   const emailFromParams = searchParams.get('email') || '';
@@ -142,7 +143,7 @@ export default function VerifyAccountForm() {
         </div>
 
         <div className="space-y-4">
-          <Link href="/auth/login">
+          <Link href={`/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`}>
             <Button className="w-full">
               Continue to Login
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -169,7 +170,7 @@ export default function VerifyAccountForm() {
         </div>
 
         <div className="space-y-4">
-          <Link href="/auth/login">
+          <Link href={`/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`}>
             <Button variant="outline" className="w-full">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Login
@@ -256,7 +257,7 @@ export default function VerifyAccountForm() {
         <div className="pt-4 border-t">
           <p className="text-sm text-muted-foreground">
             Already verified?{" "}
-            <Link href="/auth/login" className="text-primary hover:underline font-medium">
+            <Link href={`/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`} className="text-primary hover:underline font-medium">
               Sign in
             </Link>
           </p>

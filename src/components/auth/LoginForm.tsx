@@ -86,11 +86,15 @@ export default function LoginForm() {
           console.log('Redirecting to:', redirectUrl);
           
           // Use window.location.href for reliable redirect
-          window.location.href = redirectUrl;
+          if (typeof window !== 'undefined') {
+            window.location.href = redirectUrl;
+          }
         } else {
           // Fallback to default redirect
           console.log('No user data in result, redirecting to dashboard');
-          window.location.href = '/dashboard';
+          if (typeof window !== 'undefined') {
+            window.location.href = '/dashboard';
+          }
         }
       } else {
         toast.error("Login failed", {

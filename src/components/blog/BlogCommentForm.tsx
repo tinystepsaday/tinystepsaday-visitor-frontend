@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/hooks/useAuth"
+import { usePathname } from "next/navigation"
 
 const commentSchema = z.object({
   content: z.string().min(1, "Comment is required").max(1000, "Comment must be less than 1000 characters"),
@@ -26,6 +27,7 @@ interface BlogCommentFormProps {
 export function BlogCommentForm({ onSubmit, parentId, onCancel, isReply = false }: BlogCommentFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { user } = useAuth()
+  const pathname = usePathname()
 
   const {
     register,
@@ -53,11 +55,15 @@ export function BlogCommentForm({ onSubmit, parentId, onCancel, isReply = false 
   }
 
   if (!user) {
+    const currentUrl = typeof window !== 'undefined' ? window.location.href : pathname
+    const loginUrl = `/auth/login?returnUrl=${encodeURIComponent(currentUrl)}`
+    const signupUrl = `/auth/signup?returnUrl=${encodeURIComponent(currentUrl)}`
+    
     return (
       <Card>
         <CardContent>
           <p className="text-center text-muted-foreground">
-            Please <a href="/auth/login" className="text-primary hover:underline">log in</a> to leave a comment.
+            Please <a href={loginUrl} className="text-primary hover:underline">log in</a> or <a href={signupUrl} className="text-primary hover:underline">sign up</a> to leave a comment.
           </p>
         </CardContent>
       </Card>
@@ -66,7 +72,7 @@ export function BlogCommentForm({ onSubmit, parentId, onCancel, isReply = false 
 
   return (
     <Card>
-      <CardContent className="pt-6">
+      <CardContent>
         <div className="flex gap-4">
           <Avatar className="h-10 w-10">
             <AvatarImage src={user.avatar} alt={`${user.firstName || ''} ${user.lastName || ''}`.trim()} />

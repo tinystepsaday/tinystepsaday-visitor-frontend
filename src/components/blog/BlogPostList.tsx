@@ -104,7 +104,7 @@ export function BlogPostList({ showActions = true, limit = 10, filters }: BlogPo
       }
     })
 
-    const newUrl = `${window.location.pathname}?${params.toString()}`
+    const newUrl = `${typeof window !== 'undefined' ? window.location.pathname : ''}?${params.toString()}`
     router.push(newUrl)
   }
 

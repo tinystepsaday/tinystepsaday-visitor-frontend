@@ -11,20 +11,6 @@ interface BlogPostPageProps {
 // Force dynamic rendering for blog posts to support real-time interactions
 export const dynamic = 'force-dynamic';
 
-// Remove static generation since we need real-time data for likes/comments
-// export async function generateStaticParams(): Promise<{ slug: string }[]> {
-//   try {
-//     const response = await apiClient.get<{ posts: BlogPost[] }>("/api/blog/public/posts?limit=100");
-//     const posts = response.posts || [];
-//     return posts.map((post: BlogPost) => ({
-//       slug: post.slug,
-//     }));
-//   } catch (error) {
-//     console.error("Error fetching posts for static generation:", error);
-//     return [];
-//   }
-// }
-
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
   

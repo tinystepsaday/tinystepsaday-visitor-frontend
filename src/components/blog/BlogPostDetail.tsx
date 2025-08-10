@@ -76,7 +76,7 @@ export function BlogPostDetail({ post }: BlogPostDetailProps) {
   }
 
   const handleShare = async (platform: string) => {
-    const url = window.location.href
+    const url = typeof window !== 'undefined' ? window.location.href : ''
     const title = post.title
     const text = post.excerpt || post.title
 

@@ -29,7 +29,9 @@ export default function StreakDetailsClient({ streak, userProgress }: StreakDeta
   const handleEnroll = () => {
     if (!isLoggedIn) {
       // Redirect to login
-      window.location.href = '/auth/login?redirect=' + encodeURIComponent(window.location.pathname);
+      if (typeof window !== 'undefined') {
+        window.location.href = '/auth/login?redirect=' + encodeURIComponent(window.location.pathname);
+      }
       return;
     }
     
@@ -42,7 +44,9 @@ export default function StreakDetailsClient({ streak, userProgress }: StreakDeta
       // Immediately enroll the user
       console.log("Enrolling user in streak:", streak.id);
       // In a real app, this would enroll the user and redirect
-      window.location.href = `/streaks/${streak.slug}/checkin`;
+      if (typeof window !== 'undefined') {
+        window.location.href = `/streaks/${streak.slug}/checkin`;
+      }
     }
   };
 

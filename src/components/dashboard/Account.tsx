@@ -379,7 +379,7 @@ const Account = () => {
                         Receive notifications about new content in your enrolled courses.
                       </p>
                     </div>
-                    <input
+                    <Input
                       type="checkbox"
                       className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                       defaultChecked
@@ -395,7 +395,7 @@ const Account = () => {
                         Receive reminders about upcoming mentorship sessions.
                       </p>
                     </div>
-                    <input
+                    <Input
                       type="checkbox"
                       className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                       defaultChecked
@@ -411,7 +411,7 @@ const Account = () => {
                         Receive our weekly newsletter with articles and updates.
                       </p>
                     </div>
-                    <input
+                    <Input
                       type="checkbox"
                       className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                       defaultChecked
@@ -427,8 +427,8 @@ const Account = () => {
                         Receive information about special offers and discounts.
                       </p>
                     </div>
-                    <input
-                      type="checkbox"
+                    <Input
+                        type="checkbox"
                       className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                     />
                   </div>
@@ -445,7 +445,7 @@ const Account = () => {
                         Receive notifications when you complete a course or module.
                       </p>
                     </div>
-                    <input
+                    <Input
                       type="checkbox"
                       className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                       defaultChecked
@@ -461,7 +461,7 @@ const Account = () => {
                         Receive notifications when someone replies to your comments.
                       </p>
                     </div>
-                    <input
+                    <Input
                       type="checkbox"
                       className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                       defaultChecked

@@ -128,8 +128,10 @@ export function TemplatesClient() {
 
   const handleCopyTemplate = (template: MessageTemplate) => {
     const templateText = `Subject: ${template.subject}\n\nContent:\n${template.content}`;
-    navigator.clipboard.writeText(templateText);
-    toast.success("Template copied to clipboard");
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(templateText);
+      toast.success("Template copied to clipboard");
+    }
   };
 
   const handleDeleteTemplate = async (templateId: string) => {

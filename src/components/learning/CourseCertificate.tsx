@@ -30,7 +30,7 @@ const CourseCertificate = ({ course, completedDate }: CourseCertificateProps) =>
       navigator.share({
         title: `Certificate: ${course.title}`,
         text: `I just completed ${course.title} on Tiny Steps A Day!`,
-        url: window.location.href,
+        url: typeof window !== 'undefined' ? window.location.href : '',
       });
     } else {
       // Fallback to copying to clipboard
