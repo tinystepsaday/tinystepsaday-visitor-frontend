@@ -95,8 +95,10 @@ export interface QuizAnalytics {
   };
 }
 
+export const quizzes: Record<string, Quiz> = {};
+
 // Enhanced quiz data with management fields
-export const quizzes: Record<string, Quiz> = {
+export const quizzes2: Record<string, Quiz> = {
   "self-mastery": {
     id: "self-mastery",
     title: "Master Your Habits",

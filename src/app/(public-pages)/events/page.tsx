@@ -45,7 +45,8 @@ export const metadata: Metadata = {
 export default function EventsPage() {
   const upcomingEvents = getUpcomingEvents();
 
-  const jsonLd = {
+  // Only create JSON-LD if there are events
+  const jsonLd = upcomingEvents.length > 0 ? {
     "@context": "https://schema.org",
     "@type": "Event",
     name: "Upcoming Events",
@@ -78,40 +79,52 @@ export default function EventsPage() {
     },
     eventCurrency: "USD",
     eventCurrencyCode: "USD",
-  }
+  } : null;
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {jsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      )}
       <div className="max-w-4xl mx-auto mt-16 md:mt-24">
         <div className="flex items-center gap-2 mb-8">
           <Calendar className="h-6 w-6 text-primary" />
           <h1 className="text-3xl font-bold">Upcoming Events</h1>
         </div>
 
-        <div className="grid gap-6">
-          {upcomingEvents.map((event) => (
-            <Card key={event.id}>
-              <CardHeader>
-                <CardTitle>{event.title}</CardTitle>
-                <CardDescription>
-                  {event.date} • {event.time} • {event.location}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">{event.description}</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">
-                    {event.availableSeats} seats available
-                  </span>
-                  <Button asChild>
-                    <Link href={`/events/${event.slug}`}>View Details</Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {upcomingEvents.length === 0 ? (
+          <Card>
+            <CardContent className="py-12 text-center">
+              <p className="text-muted-foreground text-lg">
+                No upcoming events at the moment. Check back soon for new workshops and retreats!
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-6">
+            {upcomingEvents.map((event) => (
+              <Card key={event.id}>
+                <CardHeader>
+                  <CardTitle>{event.title}</CardTitle>
+                  <CardDescription>
+                    {event.date} • {event.time} • {event.location}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4">{event.description}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">
+                      {event.availableSeats} seats available
+                    </span>
+                    <Button asChild>
+                      <Link href={`/events/${event.slug}`}>View Details</Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -20,6 +20,15 @@ interface StreakDetailsClientProps {
 
 export default function StreakDetailsClient({ streak, userProgress }: StreakDetailsClientProps) {
   const { isLoggedIn, user } = useAuthStore();
+  
+  // Utility function to safely get current pathname
+  const getCurrentPathname = () => {
+    if (typeof window !== 'undefined') {
+      return window.location.pathname;
+    }
+    return '/streaks';
+  };
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -30,7 +39,7 @@ export default function StreakDetailsClient({ streak, userProgress }: StreakDeta
     if (!isLoggedIn) {
       // Redirect to login
       if (typeof window !== 'undefined') {
-        window.location.href = '/auth/login?redirect=' + encodeURIComponent(window.location.pathname);
+        window.location.href = '/auth/login?redirect=' + encodeURIComponent(getCurrentPathname());
       }
       return;
     }

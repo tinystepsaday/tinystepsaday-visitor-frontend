@@ -7,7 +7,9 @@ export interface GalleryImage {
   category?: string;
 }
 
-export const galleryImages: GalleryImage[] = [
+export const galleryImages: GalleryImage[] = [];
+
+export const galleryImages2: GalleryImage[] = [
   {
     id: 1,
     src: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5",

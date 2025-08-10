@@ -60,7 +60,9 @@ export interface Course {
   certification: boolean;
 }
 
-export const courses: Course[] = [
+export const courses: Course[] = [];
+
+export const courses2: Course[] = [
   {
     id: 1,
     slug: "mindful-living-essentials",

@@ -74,7 +74,9 @@ export interface Streak {
   termsAndConditions: string;
 }
 
-export const streaks: Streak[] = [
+export const streaks: Streak[] = [];
+
+export const streaks2: Streak[] = [
   {
     id: "1",
     slug: "meditation-streak",

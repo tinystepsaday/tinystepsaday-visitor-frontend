@@ -38,7 +38,9 @@ export interface EventApplicant {
   specialRequirements?: string;
 }
 
-export const events: Event[] = [
+export const events: Event[] = [];
+
+export const events2: Event[] = [
   {
     id: "1",
     slug: "mindfulness-workshop",

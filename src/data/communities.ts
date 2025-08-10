@@ -89,7 +89,9 @@ export interface CommunityPost {
   tags: string[];
 }
 
-export const communities: Community[] = [
+export const communities: Community[] = [];
+
+export const communities2: Community[] = [
   {
     id: "meditation",
     name: "Meditation Masters",

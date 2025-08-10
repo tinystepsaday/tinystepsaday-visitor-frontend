@@ -30,7 +30,9 @@ export interface Review {
   verified: boolean;
 }
 
-export const products: Product[] = [
+export const products: Product[] = [];
+
+export const products2: Product[] = [
   {
     id: 1,
     name: "Meditation Cushion",

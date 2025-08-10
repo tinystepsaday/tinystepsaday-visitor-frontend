@@ -47,7 +47,9 @@ export interface JobApplication {
   tags: string[];
 }
 
-export const careersData: Career[] = [
+export const careersData: Career[] = [];
+
+export const careersData2: Career[] = [
   {
     id: "mindfulness-coach",
     title: "Mindfulness Coach",

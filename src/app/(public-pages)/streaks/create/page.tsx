@@ -1,5 +1,8 @@
 import StreakCreateClient from "@/components/streaks/StreakCreateClient";
 
+// Force dynamic rendering to prevent build errors
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: "Create Your Own Streak | Tiny Steps A Day",
   description: "Create a custom streak challenge and invite others to join your journey.",
