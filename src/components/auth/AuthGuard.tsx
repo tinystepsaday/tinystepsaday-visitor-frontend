@@ -25,7 +25,7 @@ export default function AuthGuard({
 
   // Initialize auth state on mount
   useEffect(() => {
-    console.log("AuthGuard: Initializing auth state");
+    // console.log("AuthGuard: Initializing auth state");
     initializeAuth();
   }, [initializeAuth]);
 
@@ -41,30 +41,30 @@ export default function AuthGuard({
     // Add a small delay to ensure auth state is properly loaded
     const timer = setTimeout(() => {
       if (authLoading) {
-        console.log("AuthGuard: Still loading auth state");
+        // console.log("AuthGuard: Still loading auth state");
         return;
       }
 
       if (!requireAuth) {
-        console.log("AuthGuard: No auth required, allowing access");
+        // console.log("AuthGuard: No auth required, allowing access");
         setHasAccess(true);
         setIsLoading(false);
         return;
       }
 
       if (!isLoggedIn || !user) {
-        console.log("AuthGuard: User not authenticated, redirecting to login");
+        // console.log("AuthGuard: User not authenticated, redirecting to login");
         router.push("/auth/login");
         return;
       }
 
       if (requireManagementAccess && !hasManagementAccess(user.role as UserRole)) {
-        console.log("AuthGuard: User doesn't have management access, redirecting to dashboard");
+        // console.log("AuthGuard: User doesn't have management access, redirecting to dashboard");
         router.push("/dashboard");
         return;
       }
 
-      console.log("AuthGuard: User authenticated and authorized, allowing access");
+      // console.log("AuthGuard: User authenticated and authorized, allowing access");
       setHasAccess(true);
       setIsLoading(false);
     }, 100); // Small delay to ensure proper hydration
@@ -73,7 +73,7 @@ export default function AuthGuard({
   }, [isLoggedIn, user, authLoading, requireAuth, requireManagementAccess, router]);
 
   if (isLoading || authLoading) {
-    console.log("AuthGuard: Showing loading state");
+    // console.log("AuthGuard: Showing loading state");
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -85,10 +85,10 @@ export default function AuthGuard({
   }
 
   if (!hasAccess) {
-    console.log("AuthGuard: No access, showing fallback");
+    // console.log("AuthGuard: No access, showing fallback");
     return fallback;
   }
 
-  console.log("AuthGuard: Rendering children");
+  // console.log("AuthGuard: Rendering children");
   return <>{children}</>;
 } 

@@ -15,24 +15,52 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { BlogCommentForm } from "./BlogCommentForm"
 import { useAuth } from "@/hooks/useAuth"
-import { useDeleteBlogComment } from "@/lib/api/blog"
+import { useDeleteBlogComment, useCreateBlogComment } from "@/lib/api/blog"
 import { useToast } from "@/hooks/use-toast"
 import type { BlogComment } from "@/lib/types"
 
 interface BlogCommentListProps {
   comments: BlogComment[]
   postId: string
+  onCommentAdded?: () => void
 }
 
-export function BlogCommentList({ comments }: BlogCommentListProps) {
+export function BlogCommentList({ comments, postId, onCommentAdded }: BlogCommentListProps) {
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const { user } = useAuth()
   const { toast } = useToast()
   const deleteMutation = useDeleteBlogComment()
+  const createCommentMutation = useCreateBlogComment()
 
-  const handleReply = async () => {
-    // Handle reply submission
-    setReplyingTo(null)
+  const handleCommentSubmit = async (content: string, parentId?: string) => {
+    try {
+      await createCommentMutation.mutateAsync({
+        content,
+        postId,
+        parentId
+      })
+      
+      toast({
+        title: "Success",
+        description: parentId ? "Reply posted successfully!" : "Comment posted successfully!",
+      })
+      
+      // Close reply form if it was a reply
+      if (parentId) {
+        setReplyingTo(null)
+      }
+      
+      // Notify parent component to refresh comments
+      if (onCommentAdded) {
+        onCommentAdded()
+      }
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to post comment. Please try again.",
+        variant: "destructive",
+      })
+    }
   }
 
   const handleDelete = async (commentId: string) => {
@@ -42,6 +70,11 @@ export function BlogCommentList({ comments }: BlogCommentListProps) {
         title: "Success",
         description: "Comment deleted successfully.",
       })
+      
+      // Notify parent component to refresh comments
+      if (onCommentAdded) {
+        onCommentAdded()
+      }
     } catch {
       toast({
         title: "Error",
@@ -122,8 +155,10 @@ export function BlogCommentList({ comments }: BlogCommentListProps) {
       {replyingTo === comment.id && (
         <div className="ml-8">
           <BlogCommentForm
-            onSubmit={handleReply}
+            onSubmit={handleCommentSubmit}
             parentId={comment.id}
+            onCancel={() => setReplyingTo(null)}
+            isReply={true}
           />
         </div>
       )}
@@ -147,7 +182,7 @@ export function BlogCommentList({ comments }: BlogCommentListProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-8">
       {comments.map((comment) => renderComment(comment))}
     </div>
   )

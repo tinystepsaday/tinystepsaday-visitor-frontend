@@ -1,5 +1,6 @@
-import ConditionalNavbar from "@/components/ConditionalNavbar"; 
+import ConditionalNavbar from "@/components/ConditionalNavbar";
 import ConditionalFooter from "@/components/ConditionalFooter";
+import Providers from "@/components/providers";
 
 export default function PublicPagesLayout({
   children,
@@ -7,10 +8,10 @@ export default function PublicPagesLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <Providers>
       <ConditionalNavbar />
       {children}
       <ConditionalFooter />
-    </>
+    </Providers>
   );
 }

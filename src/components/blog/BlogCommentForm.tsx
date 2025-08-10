@@ -17,11 +17,13 @@ const commentSchema = z.object({
 type CommentFormData = z.infer<typeof commentSchema>
 
 interface BlogCommentFormProps {
-  onSubmit: (content: string) => Promise<void>
+  onSubmit: (content: string, parentId?: string) => Promise<void>
   parentId?: string
+  onCancel?: () => void
+  isReply?: boolean
 }
 
-export function BlogCommentForm({ onSubmit }: BlogCommentFormProps) {
+export function BlogCommentForm({ onSubmit, parentId, onCancel, isReply = false }: BlogCommentFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { user } = useAuth()
 
@@ -36,13 +38,12 @@ export function BlogCommentForm({ onSubmit }: BlogCommentFormProps) {
 
   const handleFormSubmit = async (data: CommentFormData) => {
     if (!user) {
-      // Handle not logged in state
       return
     }
 
     setIsSubmitting(true)
     try {
-      await onSubmit(data.content)
+      await onSubmit(data.content, parentId)
       reset()
     } catch {
       // Error is handled by parent component
@@ -54,7 +55,7 @@ export function BlogCommentForm({ onSubmit }: BlogCommentFormProps) {
   if (!user) {
     return (
       <Card>
-        <CardContent className="pt-6">
+        <CardContent>
           <p className="text-center text-muted-foreground">
             Please <a href="/auth/login" className="text-primary hover:underline">log in</a> to leave a comment.
           </p>
@@ -78,7 +79,7 @@ export function BlogCommentForm({ onSubmit }: BlogCommentFormProps) {
               <div className="space-y-2">
                 <Textarea
                   {...register("content")}
-                  placeholder="Write a comment..."
+                  placeholder={isReply ? "Write a reply..." : "Write a comment..."}
                   rows={3}
                   className="resize-none"
                 />
@@ -86,9 +87,14 @@ export function BlogCommentForm({ onSubmit }: BlogCommentFormProps) {
                   <p className="text-sm text-red-500">{errors.content.message}</p>
                 )}
               </div>
-              <div className="flex justify-end">
+              <div className="flex justify-end gap-2 mt-4">
+                {onCancel && (
+                  <Button type="button" variant="outline" onClick={onCancel}>
+                    Cancel
+                  </Button>
+                )}
                 <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "Posting..." : "Post Comment"}
+                  {isSubmitting ? (isReply ? "Posting Reply..." : "Posting...") : (isReply ? "Post Reply" : "Post Comment")}
                 </Button>
               </div>
             </form>

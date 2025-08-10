@@ -191,7 +191,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-16">
+    <div className="container mx-auto px-4 py-16 w-full">
       <SectionHeader
         title="Tiny Steps A Day Blog"
         subtitle="Insights and guidance for your personal growth journey"
@@ -199,9 +199,9 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       />
 
       {/* Search and Filter */}
-      <div className="flex flex-col gap-4 mb-12 mt-8 max-w-7xl mx-auto justify-between">
+      <div className="flex flex-col gap-4 mb-12 mt-8 max-w-7xl mx-auto justify-between w-full items-center">
         <div className="flex justify-between items-center w-full gap-4 flex-wrap md:flex-nowrap">
-          <form className="relative flex-grow" method="GET" action="/blog">
+          <form className="relative flex-grow w-full" method="GET" action="/blog">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               type="text"
@@ -218,7 +218,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             )}
             <input type="hidden" name="page" value="1" />
           </form>
-          <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
+          <div className="flex gap-2 flex-wrap pb-2 md:pb-0 w-full">
             {displayCategories.map((cat) => (
               <Button
                 key={cat.slug}
@@ -236,7 +236,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         </div>
 
         {/* Tags Filter */}
-        <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 max-w-7xl mx-auto">
+        <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 max-w-7xl mx-auto w-full justify-center">
           {displayTags.map((tag) => (
             <button
               key={tag.slug}
@@ -257,7 +257,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           <Link href={`/blog/${filteredPosts[0].slug}`} className="group">
             <div className="rounded-2xl overflow-hidden bg-card shadow-md hover:shadow-lg transition-shadow">
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="h-80 overflow-hidden">
+                <div className="h-full overflow-hidden">
                   <Image
                     src={filteredPosts[0].featuredImage || "/placeholder-blog.jpg"}
                     alt={filteredPosts[0].title}
