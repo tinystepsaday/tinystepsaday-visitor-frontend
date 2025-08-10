@@ -85,6 +85,25 @@ export interface BlogPost {
   }>
   createdAt: Date
   updatedAt: Date
+  // Enhanced blog post with navigation and related posts
+  navigation?: BlogPostNavigation
+  relatedPosts?: BlogPost[]
+}
+
+// Blog post navigation (previous/next)
+export interface BlogPostNavigation {
+  previous: BlogPostNavigationItem | null
+  next: BlogPostNavigationItem | null
+}
+
+// Blog post navigation item
+export interface BlogPostNavigationItem {
+  id: string
+  title: string
+  slug: string
+  excerpt?: string
+  featuredImage?: string
+  createdAt: Date
 }
 
 export interface BlogPostUpdate {

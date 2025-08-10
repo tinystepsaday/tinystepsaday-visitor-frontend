@@ -23,6 +23,8 @@ import { sanitizeHtml } from "@/lib/html-sanitizer";
 import type { BlogPost, BlogComment } from "@/lib/types";
 import { BlogCommentList } from "./BlogCommentList";
 import { BlogCommentForm } from "./BlogCommentForm";
+import BlogNavigation from "./BlogNavigation";
+import RelatedPosts from "./RelatedPosts";
 import {
   usePublicBlogComments,
   useCreateBlogComment,
@@ -301,6 +303,11 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
         />
       </div>
 
+      {/* Blog Navigation */}
+      {post.navigation && (
+        <BlogNavigation navigation={post.navigation} />
+      )}
+
       {/* Article Footer */}
       <div className="max-w-4xl mx-auto mb-12">
         <Separator className="mb-8" />
@@ -472,6 +479,11 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
           </div>
         )}
       </div>
+
+      {/* Related Posts */}
+      {post.relatedPosts && post.relatedPosts.length > 0 && (
+        <RelatedPosts posts={post.relatedPosts} currentPostId={post.id} />
+      )}
     </div>
   );
 };
