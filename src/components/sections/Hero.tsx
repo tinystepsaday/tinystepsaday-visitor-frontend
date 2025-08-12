@@ -23,11 +23,11 @@ const Hero = () => {
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              Make <span className="gradient-text">Tiny Steps A Day</span> to Growth and Fulfillment.
+              Make <span className="gradient-text">Tiny Steps A Day</span> to Growth, change and Fulfillment.
             </h1>
             
             <p className="text-xl text-muted-foreground max-w-xl">
-              Personalized mentorship, guidance, and support to help you navigate life&apos;s challenges and embrace your true potential.
+              Small but practical and powerfull steps, guidance, and support to help you activate the hero in you and your true potential.
             </p>
             
             <div className="flex flex-wrap gap-4 pt-2">

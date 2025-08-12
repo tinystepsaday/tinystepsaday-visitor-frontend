@@ -44,85 +44,87 @@ export const metadata = {
 // Team member data
 const teamMembers = [
   {
-    name: "Sarah Johnson",
+    name: "Jean Eric Hirwa",
     role: "Founder & CEO",
-    bio: "With over 15 years of experience in mindfulness coaching and organizational psychology, Sarah founded Tiny Steps A Day Journey to help people discover their authentic selves and live with greater purpose.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+    bio: "I am a software engineer, entrepreneur, and founder of Tiny Steps A Day. I am passionate about helping people discover their authentic selves and live with greater purpose.",
+    image: "https://firebasestorage.googleapis.com/v0/b/tiny-steps-a-day-44449.firebasestorage.app/o/files%2F1754735338875_8yh48ntz1dl.JPG?alt=media&token=f7b0cb86-d319-4784-bc72-2ad68018686e",
     social: {
-      linkedin: "#",
-      twitter: "#"
+      linkedin: "https://www.linkedin.com/in/jean-eric-hirwa/",
+      instagram: "https://www.instagram.com/hirwa_jean_eric/",
+      github: "https://github.com/hirwajeaneric",
+      website: "https://www.erichirwa.com"
     }
   },
-  {
-    name: "Michael Chen",
-    role: "Chief Product Officer",
-    bio: "Michael brings his background in UX design and behavioral science to create transformative digital experiences that make personal growth accessible and engaging for everyone.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-    social: {
-      linkedin: "#",
-      twitter: "#"
-    }
-  },
-  {
-    name: "Aisha Patel",
-    role: "Head of Coaching",
-    bio: "A certified mindfulness instructor and therapist, Aisha oversees our coaching programs and ensures they meet the highest standards of practice and care.",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-    social: {
-      linkedin: "#",
-      twitter: "#"
-    }
-  },
-  {
-    name: "David Rodriguez",
-    role: "Chief Technology Officer",
-    bio: "David leverages his expertise in software engineering and AI to build the technological foundation that supports our users' personal growth journeys.",
-    image: "https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-    social: {
-      linkedin: "#",
-      twitter: "#"
-    }
-  },
-  {
-    name: "Emily Wong",
-    role: "Content Director",
-    bio: "As an author and meditation teacher, Emily creates and curates our educational content, ensuring it's both scientifically grounded and accessible.",
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-    social: {
-      linkedin: "#",
-      twitter: "#"
-    }
-  },
-  {
-    name: "James Wilson",
-    role: "Community Manager",
-    bio: "James fosters connections within our community, creating spaces for sharing, support, and collective growth among our members.",
-    image: "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-    social: {
-      linkedin: "#",
-      twitter: "#"
-    }
-  },
-  {
-    name: "Olivia Martinez",
-    role: "Research Lead",
-    bio: "With a PhD in positive psychology, Olivia keeps our approaches aligned with the latest research in wellbeing, habit formation, and personal growth.",
-    image: "https://images.unsplash.com/photo-1598550874175-4d0ef131c1b2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-    social: {
-      linkedin: "#",
-      twitter: "#"
-    }
-  },
-  {
-    name: "Nathan Lee",
-    role: "Operations Director",
-    bio: "Nathan ensures our organization runs smoothly and sustainably, allowing us to focus on our mission of helping people transform their lives.",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-    social: {
-      linkedin: "#",
-      twitter: "#"
-    }
-  }
+  // {
+  //   name: "Michael Chen",
+  //   role: "Chief Product Officer",
+  //   bio: "Michael brings his background in UX design and behavioral science to create transformative digital experiences that make personal growth accessible and engaging for everyone.",
+  //   image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+  //   social: {
+  //     linkedin: "#",
+  //     twitter: "#"
+  //   }
+  // },
+  // {
+  //   name: "Aisha Patel",
+  //   role: "Head of Coaching",
+  //   bio: "A certified mindfulness instructor and therapist, Aisha oversees our coaching programs and ensures they meet the highest standards of practice and care.",
+  //   image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+  //   social: {
+  //     linkedin: "#",
+  //     twitter: "#"
+  //   }
+  // },
+  // {
+  //   name: "David Rodriguez",
+  //   role: "Chief Technology Officer",
+  //   bio: "David leverages his expertise in software engineering and AI to build the technological foundation that supports our users' personal growth journeys.",
+  //   image: "https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+  //   social: {
+  //     linkedin: "#",
+  //     twitter: "#"
+  //   }
+  // },
+  // {
+  //   name: "Emily Wong",
+  //   role: "Content Director",
+  //   bio: "As an author and meditation teacher, Emily creates and curates our educational content, ensuring it's both scientifically grounded and accessible.",
+  //   image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+  //   social: {
+  //     linkedin: "#",
+  //     twitter: "#"
+  //   }
+  // },
+  // {
+  //   name: "James Wilson",
+  //   role: "Community Manager",
+  //   bio: "James fosters connections within our community, creating spaces for sharing, support, and collective growth among our members.",
+  //   image: "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+  //   social: {
+  //     linkedin: "#",
+  //     twitter: "#"
+  //   }
+  // },
+  // {
+  //   name: "Olivia Martinez",
+  //   role: "Research Lead",
+  //   bio: "With a PhD in positive psychology, Olivia keeps our approaches aligned with the latest research in wellbeing, habit formation, and personal growth.",
+  //   image: "https://images.unsplash.com/photo-1598550874175-4d0ef131c1b2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+  //   social: {
+  //     linkedin: "#",
+  //     twitter: "#"
+  //   }
+  // },
+  // {
+  //   name: "Nathan Lee",
+  //   role: "Operations Director",
+  //   bio: "Nathan ensures our organization runs smoothly and sustainably, allowing us to focus on our mission of helping people transform their lives.",
+  //   image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+  //   social: {
+  //     linkedin: "#",
+  //     twitter: "#"
+  //   }
+  // }
 ];
 
 const jsonLd = {
@@ -211,7 +213,7 @@ const About = () => {
             <div className="col-span-1">
               <div className="aspect-square rounded-lg overflow-hidden">
                 <Image
-                  src="https://images.unsplash.com/photo-1620228885847-9eab2a1adddc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=700&q=80"
+                  src="https://firebasestorage.googleapis.com/v0/b/tiny-steps-a-day-44449.firebasestorage.app/o/files%2F1754735338875_8yh48ntz1dl.JPG?alt=media&token=f7b0cb86-d319-4784-bc72-2ad68018686e"
                   alt="Founder's journey"
                   width={400}
                   height={400}
@@ -220,23 +222,14 @@ const About = () => {
               </div>
             </div>
             <div className="md:col-span-2 space-y-6">
-              <p className="text-lg">
-                Tiny Steps A Day Journey began in 2020 when our founder, Sarah Johnson, experienced her own transformative journey through mindfulness and personal development practices after a period of burnout and disconnection.
-              </p>
-              <p className="text-lg">
-                After 15 years in corporate consulting, Sarah realized that many people were struggling with the same challenges: feeling disconnected from their purpose, overwhelmed by the pace of modern life, and unsure how to create meaningful change.
-              </p>
-              <p className="text-lg">
-                Drawing on her background in organizational psychology and her training in mindfulness practices, Sarah assembled a team of experts to create accessible, science-backed programs that would help people navigate their own inner paths to growth and fulfillment.
-              </p>
-              <p className="text-lg">
-                Today, Tiny Steps A Day Journey has grown from a small startup to a global community, but our mission remains the same: to guide people toward lives of greater authenticity, purpose, and connection.
-              </p>
+            <p className="text-lg">
+              Tiny Steps A Day was born from a profound personal realization that true transformation doesn&apos;t happen through grand gestures or overnight changes, but through the consistent practice of small, intentional habits that compound over time into profound character shifts and ultimately, a completely new way of life. My journey began during a period of intense burnout and disconnection since my childhood through my adulthood and while working as a software developer, where the relentless pace of modern life left little room for self-reflection and authentic growth.
+            </p>
 
               <div className="pt-6">
                 <Button asChild variant="outline">
-                  <Link href="/blog">
-                    Read Sarah&apos;s Story on Our Blog
+                  <Link href="https://www.tinystepsaday.com/blog/the-inception-of-tiny-steps-a-day">
+                    Read Jean Eric&apos;s Story on Our Blog <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
               </div>
@@ -337,7 +330,7 @@ const About = () => {
                   Holistic
                 </h3>
                 <p className="text-muted-foreground">
-                  We address the whole person—mind, body, heart, and spirit—recognizing that true growth and well-being come from integrating all aspects of ourselves into a coherent, purposeful life.
+                  We address the whole person, mind, body, heart, and spirit—recognizing that true growth and well-being come from integrating all aspects of ourselves into a coherent, purposeful life.
                 </p>
               </div>
             </div>
@@ -394,8 +387,8 @@ const About = () => {
       <section className="py-16 px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
           <SectionHeader
-            title="Meet Our Team"
-            subtitle="The passionate individuals behind Tiny Steps A Day Journey"
+            title={teamMembers.length > 1 ? "Meet Our Team" : "Meet The Founder"}
+            subtitle={teamMembers.length > 1 ? "The passionate individuals behind Tiny Steps A Day Journey" : "The passionate individual behind Tiny Steps A Day Journey"}
             centered={true}
             isPageHeader={false}
           />

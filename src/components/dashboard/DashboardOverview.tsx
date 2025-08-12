@@ -139,9 +139,9 @@ const DashboardOverview = () => {
                 <div className={`p-3 rounded-lg ${stat.color}`}>
                   {stat.icon}
                 </div>
-                <Link href={stat.link} className="text-muted-foreground hover:text-primary">
+                {stat.value > 0 && <Link href={stat.link} className="text-muted-foreground hover:text-primary">
                   <ArrowRight className="h-5 w-5" />
-                </Link>
+                </Link>}
               </div>
               <div className="space-y-1">
                 <p className="text-muted-foreground">{stat.title}</p>
@@ -156,12 +156,12 @@ const DashboardOverview = () => {
       <div className="mb-10">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold">Courses In Progress</h2>
-          <Button variant="outline" size="sm" asChild>
+          {coursesInProgress.length > 0 && <Button variant="outline" size="sm" asChild>
             <Link href="/dashboard/courses">
               View All
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
-          </Button>
+          </Button>}
         </div>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -218,12 +218,12 @@ const DashboardOverview = () => {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle>Upcoming Sessions</CardTitle>
-              <Button variant="ghost" size="sm" className="gap-1" asChild>
+              {upcomingSessions.length > 0 && <Button variant="ghost" size="sm" className="gap-1" asChild>
                 <Link href="/dashboard/sessions">
                   View All
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-              </Button>
+              </Button>}
             </div>
           </CardHeader>
           <CardContent>
@@ -267,12 +267,12 @@ const DashboardOverview = () => {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle>Saved Articles</CardTitle>
-              <Button variant="ghost" size="sm" className="gap-1" asChild>
+              {savedArticles.length > 0 && <Button variant="ghost" size="sm" className="gap-1" asChild>
                 <Link href="/dashboard/reading-list">
                   View All
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-              </Button>
+              </Button>}
             </div>
           </CardHeader>
           <CardContent>

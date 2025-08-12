@@ -16,12 +16,12 @@ const serviceItems = [
   {
     icon: Shield,
     title: "Mental Health Support",
-    description: "Navigate emotional challenges with professional support in a safe, confidential space.",
+    description: "Reduce stress, anxiety, and depression, and improve your overall mental health and well-being.",
     link: "/programs#mental-health"
   },
   {
     icon: GraduationCap,
-    title: "Career Guidance",
+    title: "Career Guidance & Direction",
     description: "Align your career with your purpose and discover fulfilling professional pathways.",
     link: "/programs#career"
   },
@@ -38,8 +38,8 @@ const Services = () => {
     <section className="py-24 bg-background">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <SectionHeader
-          title="Our Transformative Services"
-          subtitle="We provide comprehensive support for your personal and professional growth"
+          title="Our Transformative Perks"
+          subtitle="This platform and our team of experts are dedicated to provide you with comprehensive support for your personal and professional growth."
           centered={true}
           isPageHeader={false}
         />
@@ -63,7 +63,7 @@ const Services = () => {
                     <>
                       <li className="flex items-center">
                         <div className="w-1.5 h-1.5 rounded-full bg-primary mr-2"></div>
-                        Weekly personalized sessions
+                        Personalized sessions
                       </li>
                       <li className="flex items-center">
                         <div className="w-1.5 h-1.5 rounded-full bg-primary mr-2"></div>
@@ -126,7 +126,7 @@ const Services = () => {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button variant="ghost" asChild className="w-full justify-start p-0 hover:bg-transparent">
+                <Button variant="ghost" asChild className="w-full justify-start p-0 hover:bg-primary hover:text-primary-foreground">
                   <Link href={service.link} className="text-primary flex items-center">
                     Learn more <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>

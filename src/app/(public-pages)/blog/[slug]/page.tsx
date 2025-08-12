@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import apiClient from "@/integration/apiClient";
-import BlogPostClient from "@/components/blog/BlogPostClient";
+import BlogPostContent from "@/components/blog/BlogPostContent";
 import type { BlogPost } from "@/lib/types";
 
 interface BlogPostPageProps {
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     }
 
     return {
-      title: `${post.title} | Blog | Tiny Steps A Day`,
+      title: `${post.title} | Blog `,
       description: post.excerpt || post.seoDescription || post.title,
       keywords: [
         ...(post.seoKeywords || []),
@@ -140,7 +140,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <BlogPostClient post={post} />
+        
+        {/* Server-side rendered content for SEO */}
+        <BlogPostContent post={post} />
       </>
     );
   } catch (error) {

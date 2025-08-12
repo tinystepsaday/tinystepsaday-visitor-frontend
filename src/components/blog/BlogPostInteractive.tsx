@@ -33,11 +33,11 @@ import {
 } from "@/components/ui/tooltip";
 import type { BlogPost, BlogComment } from "@/lib/types";
 
-interface BlogPostClientProps {
+interface BlogPostInteractiveProps {
   post: BlogPost;
 }
 
-const BlogPostClient = ({ post }: BlogPostClientProps) => {
+const BlogPostInteractive = ({ post }: BlogPostInteractiveProps) => {
   const [isClient, setIsClient] = useState(false);
   const [user, setUser] = useState<{ id: string; email: string; firstName: string; lastName: string; avatar?: string } | null>(null);
   const queryClient = useQueryClient();
@@ -232,7 +232,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl px-4 mx-auto w-full">
       {/* Interactive Article Footer */}
       <div className="mb-12">
         <Separator className="mb-8" />
@@ -385,4 +385,4 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
   );
 };
 
-export default BlogPostClient;
+export default BlogPostInteractive;

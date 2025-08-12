@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
     googleBot: {
-      index: true,  
+      index: true,
       follow: true,
     },
   },
@@ -90,24 +90,33 @@ export default function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Hero />
       <Services />
-      
+
       {/* Services Inspiration Section */}
-      <section className="py-20 bg-gradient-to-b from-purple-50/50 to-transparent dark:from-purple-900/10 w-full">
-        <div className="max-w-4xl mx-auto text-center mb-16 px-4">
+      {/* <section className="py-20 bg-gradient-to-b from-purple-50/50 to-transparent dark:from-purple-900/10 w-full">
+        <div className="max-w-4xl mx-auto text-center px-4">
           <h2 className="text-3xl font-bold mb-6">Transform Your Journey</h2>
           <div className="prose dark:prose-invert mx-auto text-left space-y-6">
             <p>
-              At Tiny Steps A Day Journey, we understand that true transformation comes from within. Our platform was born from a deep commitment to helping individuals discover their authentic selves and unlock their full potential. Drawing inspiration from ancient wisdom traditions and modern psychology, we&apos;ve created a comprehensive system that addresses the whole person - mind, body, and spirit.
+              Tiny Steps A Day was born from a profound personal realization that true transformation doesn&apos;t happen through grand gestures or overnight changes, but through the consistent practice of small, intentional habits that compound over time into profound character shifts and ultimately, a completely new way of life. My journey began during a period of intense burnout and disconnection since my childhood through my adulthood and while working as a software developer, where the relentless pace of modern life left little room for self-reflection and authentic growth.
             </p>
+
             <p>
-              Our approach combines cutting-edge personal development tools with timeless spiritual practices. Whether you&apos;re seeking career advancement, emotional healing, or spiritual growth, our carefully curated programs provide the structure and support you need. Through our platform, you&apos;ll gain access to expert-led courses, one-on-one mentorship, supportive community spaces, and transformative workshops.
+              Through personal experimentation and deep introspection, I discovered that the most overlooked habits, those tiny, seemingly insignificant daily practices were actually the keys to unlocking lasting change. Rather than trying to overhaul my entire life at once, I began creating small tools and systems that supported my growth while allowing me to continue my daily responsibilities. This approach of working with the grain of life, rather than against it, became the foundation of our platform.
             </p>
+
             <p>
-              Our services include personalized meditation guidance, career transition coaching, emotional intelligence development, spiritual mentorship, and holistic wellness programs. Each service is designed to meet you where you are and guide you toward where you want to be. With flexible learning paths and adaptive content, you can progress at your own pace while staying accountable to your goals.
+              Our philosophy centers on accessing the deep root causes of our current situations, our behaviors, fears, insecurities, and limiting beliefs and then working with tiny but decisive steps toward transformation. We believe that by understanding the &ldquo;why&rdquo; behind our patterns, we can create sustainable change through consistent micro-actions. This is where our innovative streak system comes into play, providing a structured way to build positive habits through daily check-ins, progress tracking, and community support.
             </p>
+
+            <p>
+              The platform offers a comprehensive ecosystem of growth resources including insightful blog posts that explore the psychology of change, practical e-books that provide actionable frameworks, downloadable cheatsheets for quick reference, and immersive audio-books for learning on-the-go. These resources work together synergistically to provide a wholesome growth support experience that addresses the mind, body, and spirit. Whether you&apos;re looking to build mindfulness practices, improve relationships, navigate career transitions, or develop emotional intelligence, our approach ensures that every step, no matter how small, moves you closer to your authentic self and the life you truly desire.
+            </p>
+            <div className="flex justify-end">
+              <em className="text-lg text-muted-foreground"><span className="font-bold">Jean Eric Hirwa</span>, the founder of Tiny Steps A Day</em>
+            </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <QuizSection />
       <HowItWorks />

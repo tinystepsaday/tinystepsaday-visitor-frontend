@@ -194,13 +194,13 @@ export default function ProgramsPage() {
 
                             <SectionHeader
                                 title="Mental Health Support"
-                                subtitle="Navigate emotional challenges with professional support in a safe, confidential space"
+                                subtitle="Reduce stress, anxiety, and depression, and improve your overall mental health and well-being."
                                 isPageHeader={false}
                             />
 
                             <div className="space-y-6">
                                 <p className="text-lg">
-                                    Our mental health support program offers compassionate guidance to help you navigate emotional challenges, build resilience, and cultivate lasting wellbeing.
+                                    Our mental health support program offers compassionate guidance to help you reduce stress, anxiety, and depression, and improve your overall mental health and well-being.
                                 </p>
 
                                 <div className="space-y-4">
@@ -209,9 +209,9 @@ export default function ProgramsPage() {
                                             <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
                                         </div>
                                         <div>
-                                            <h4 className="font-medium">Emotional Resilience Building</h4>
+                                            <h4 className="font-medium">Building Emotional Resilience</h4>
                                             <p className="text-muted-foreground text-sm">
-                                                Develop skills to navigate difficult emotions and challenges with greater ease and confidence.
+                                                Develop skills to navigate difficult emotions, stressful situations, anxiety and depressing episodes with greater ease and confidence.
                                             </p>
                                         </div>
                                     </div>
@@ -221,9 +221,9 @@ export default function ProgramsPage() {
                                             <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
                                         </div>
                                         <div>
-                                            <h4 className="font-medium">Stress Management Techniques</h4>
+                                            <h4 className="font-medium">Addiction Recovery</h4>
                                             <p className="text-muted-foreground text-sm">
-                                                Practical tools to reduce stress and create sustainable balance in your daily life.
+                                                With actionable steps and guidance, we help you recover from addiction and build a healthy, fulfilling life.
                                             </p>
                                         </div>
                                     </div>
@@ -264,14 +264,14 @@ export default function ProgramsPage() {
                             </div>
 
                             <SectionHeader
-                                title="Career Guidance"
-                                subtitle="Align your career with your purpose and discover fulfilling professional pathways"
+                                title="Career Guidance & Direction"
+                                subtitle="Align your career with your purpose and discover fulfilling professional pathways."
                                 isPageHeader={false}
                             />
 
                             <div className="space-y-6">
                                 <p className="text-lg">
-                                    Our career guidance services help you discover and create a professional path that aligns with your authentic values, strengths, and vision.
+                                    Remove blockers stopping you from achieving your career goals, visions, and performance. Our career guidance services help you discover and create a professional path that aligns with your authentic values, strengths, and vision.
                                 </p>
 
                                 <div className="space-y-4">
@@ -304,9 +304,9 @@ export default function ProgramsPage() {
                                             <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
                                         </div>
                                         <div>
-                                            <h4 className="font-medium">Professional Identity Alignment</h4>
+                                            <h4 className="font-medium">Eliminate Blockers</h4>
                                             <p className="text-muted-foreground text-sm">
-                                                Discover work that resonates with your authentic self and creates meaningful impact.
+                                                Remove blockers, habits, and patterns that are stopping you from achieving your career goals, visions, and performance.
                                             </p>
                                         </div>
                                     </div>
