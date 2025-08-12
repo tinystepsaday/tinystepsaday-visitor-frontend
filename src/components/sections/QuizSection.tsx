@@ -1,5 +1,3 @@
-"use client"
-
 import { Button } from "@/components/ui/button";
 import { Calendar, Timer, Book, User, Search } from "lucide-react";
 import Link from "next/link";

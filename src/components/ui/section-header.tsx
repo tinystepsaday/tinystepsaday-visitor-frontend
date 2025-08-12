@@ -21,7 +21,7 @@ export function SectionHeader({
       centered && "text-center",
       className
     )}>
-      <h1 className={cn("font-bold tracking-tight", isPageHeader ? "text-4xl md:text-5xl dark:text-primary text-slate-700" : "text-3xl md:text-4xl")}>{title}</h1>
+      <h2 className={cn("font-bold tracking-tight", isPageHeader ? "text-4xl md:text-5xl dark:text-primary text-slate-700" : "text-3xl md:text-4xl")}>{title}</h2>
       {subtitle && (
         <p className={cn("text-lg md:text-xl text-muted-foreground max-w-2xl", centered ? "mx-auto" : "")}>{subtitle}</p>
       )}

@@ -1,5 +1,3 @@
-"use client"
-
 import { cn } from "@/lib/utils";
 import { SectionHeader } from "../ui/section-header";
 
