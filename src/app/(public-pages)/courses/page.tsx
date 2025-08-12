@@ -8,7 +8,7 @@ import CourseCard from "@/components/courses/CourseCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const metadata: Metadata = {
-  title: "Online Courses | InnerPath Journey",
+  title: "Courses",
   description: "Explore our transformative online courses on mindfulness, emotional intelligence, career growth, and more. Start your journey today.",
 };
 

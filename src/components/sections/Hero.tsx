@@ -25,7 +25,7 @@ const Hero = () => {
             </h1>
             
             <p className="text-xl text-muted-foreground max-w-xl">
-              Small but practical and powerfull steps, guidance, and support to help you activate the hero in you and your true potential.
+              Small but practical and powerful steps, guidance, and support to help you activate the hero in you and your true potential.
             </p>
             
             <div className="flex flex-wrap gap-4 pt-2">

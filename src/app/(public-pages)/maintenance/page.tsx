@@ -1,10 +1,37 @@
 import { Metadata } from "next";
 import Image from "next/image";
 import { Wrench, Clock, Heart } from "lucide-react";
+import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
-  title: "Under Maintenance - Tiny Steps A Day",
+  title: "Under Maintenance",
   description: "We're currently performing some maintenance to improve your experience. We'll be back soon with exciting new features!",
+  keywords: [
+    "maintenance",
+    "under maintenance",
+    "tiny steps a day",
+    "tinystepsaday",
+    "tinystepsaday.com",
+  ],
+  openGraph: {
+    title: "Under Maintenance",
+    description: "We're currently performing some maintenance to improve your experience. We'll be back soon with exciting new features!",
+    url: `${sharedMetadata.metadataBase}/maintenance`,
+    images: [sharedMetadata.openGraph.images[0]],
+    siteName: sharedMetadata.openGraph.siteName,
+    locale: sharedMetadata.openGraph.locale,
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image" as const,
+    title: "Under Maintenance",
+    description: "We're currently performing some maintenance to improve your experience. We'll be back soon with exciting new features!",
+    images: [sharedMetadata.twitter.images[0]],
+  },
+  alternates: {
+    canonical: `${sharedMetadata.metadataBase}/maintenance`,
+  },
+  robots: sharedMetadata.robots,
 };
 
 export default function Maintenance() {

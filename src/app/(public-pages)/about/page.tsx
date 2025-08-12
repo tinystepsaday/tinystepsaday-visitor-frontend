@@ -6,7 +6,7 @@ import Link from "next/link";
 import TeamMembers from "@/components/sections/TeamMembers";
 
 export const metadata = {
-  title: "About | Tiny Steps A Day Journey",
+  title: "About",
   description: "Learn more about Tiny Steps A Day Journey and the people behind it.",
   keywords: ["tiny steps a day", "tiny steps", "a day", "actionable steps", "improve your life", "personal growth", "self improvement", "daily habits", "tips", "strategies", "small changes", "big improvements", "start your journey to a better you today", "personal growth", "self improvement", "daily habits", "tips", "strategies", "meditation", "mindfulness", "mindfulness meditation", "mindfulness practice", "mindfulness exercises", "mindfulness techniques", "mindfulness tips", "mindfulness strategies", "spirituality", "career guidance", "career development", "career advice", "career tips", "career strategies", "career planning", "love", "the law of one", "the law of attraction", "the law of abundance", "the law of prosperity", "the law of success", "mental health", "life direction", "purpose", "mentorship"],
   icons: {

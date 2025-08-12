@@ -1,22 +1,29 @@
 import { Metadata } from "next";
+import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
-  title: 'Cookie Policy | Tiny Steps A Day',
+  title: 'Cookie Policy',
   description: 'Comprehensive Cookie Policy for Tiny Steps A Day platform covering user rights, responsibilities, subscriptions, and legal compliance.',
   keywords: ['cookie policy', 'tinystepsaday', 'user agreement', 'legal terms', 'subscription terms', 'platform rules'],
   openGraph: {
     title: 'Cookie Policy | Tiny Steps A Day',
     description: 'Comprehensive Cookie Policy for Tiny Steps A Day platform covering user rights, responsibilities, subscriptions, and legal compliance.',
-    images: ["/images/cookies.png"],
+    images: [sharedMetadata.openGraph.images[0]],
+    url: `${sharedMetadata.metadataBase}/cookie-policy`,
+    siteName: sharedMetadata.openGraph.siteName,
+    locale: sharedMetadata.openGraph.locale,
+    type: "website",
   },
   twitter: {
     title: 'Cookie Policy | Tiny Steps A Day',
     description: 'Comprehensive Cookie Policy for Tiny Steps A Day platform covering user rights, responsibilities, subscriptions, and legal compliance.',
-    images: ["/images/cookies.png"],
+    images: [sharedMetadata.twitter.images[0]],
+    card: "summary_large_image" as const,
   },
   alternates: {
-    canonical: '/cookie-policy',
+    canonical: `${sharedMetadata.metadataBase}/cookie-policy`,
   },
+  robots: sharedMetadata.robots,
 };
 
 export default function CookiePolicy() {

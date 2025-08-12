@@ -4,11 +4,11 @@ import { DetailPageLoader } from "@/components/ui/loaders";
 import { ShopClient } from "@/components/shop/ShopClient";
 
 export const metadata: Metadata = {
-  title: "Shop - TinyStepsADay",
+  title: "Shop",
   description: "Discover our curated collection of mindfulness tools, books, and resources to support your personal growth journey. From meditation cushions to essential oils, find everything you need for your practice.",
   keywords: ["mindfulness tools", "meditation supplies", "self-improvement books", "essential oils", "yoga guides", "meditation timer"],
   openGraph: {
-    title: "Shop - TinyStepsADay",
+    title: "Shop | Tiny Steps A Day",
     description: "Discover our curated collection of mindfulness tools, books, and resources to support your personal growth journey.",
     type: "website",
     url: "https://tinystepsaday.com/shop",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Shop - TinyStepsADay",
+    title: "Shop | Tiny Steps A Day",
     description: "Discover our curated collection of mindfulness tools, books, and resources to support your personal growth journey.",
     images: ["https://tinystepsaday.com/og-shop.jpg"]
   }

@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s - Tiny Steps A Day",
-    default: "Tiny Steps A Day | Actionable steps and daily habits to improve your life",
+    template: "%s | Tiny Steps A Day",
+    default: "Tiny Steps A Day",
   },
   description: "Tiny Steps A Day is a source of actionable steps and daily habits to improve your life. Discover daily habits, tips, and strategies to make small changes that lead to big improvements.",
   keywords: ["tiny steps a day", "personal growth", "self improvement", "daily habits", "mindfulness", "career guidance", "mental health"],

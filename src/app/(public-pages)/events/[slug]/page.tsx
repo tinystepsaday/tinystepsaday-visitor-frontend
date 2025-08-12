@@ -33,13 +33,13 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
 
     if (!event) {
         return {
-            title: "Event Not Found | Tiny Steps A Day",
+            title: "Event Not Found",
             description: "The event you're looking for doesn't exist or has been removed.",
         };
     }
 
     return {
-        title: `${event.title} | Tiny Steps A Day`,
+        title: `${event.title}`,
         description: event.description,
         keywords: [
             event.title.toLowerCase(),

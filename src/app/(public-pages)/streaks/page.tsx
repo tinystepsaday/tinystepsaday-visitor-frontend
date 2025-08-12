@@ -5,13 +5,13 @@ import { getStreakParams } from "@/lib/utils";
 import { SectionHeader } from "@/components/ui/section-header";
 
 export const metadata = {
-  title: "Streaks & Daily Challenges | Tiny Steps A Day Journey",
+  title: "Streaks & Daily Challenges",
   description: "Build positive habits through daily practice. Join challenges and maintain your streaks with Tiny Steps A Day Journey.",
   keywords: [
     "streaks", "daily challenges", "habits", "tiny steps a day", "personal growth", "self improvement", "mindfulness", "wellness", "consistency", "motivation", "habit tracker", "challenge", "community"
   ],
   openGraph: {
-    title: "Streaks & Daily Challenges | Tiny Steps A Day Journey",
+    title: "Streaks & Daily Challenges | Tiny Steps A Day",
     description: "Build positive habits through daily practice. Join challenges and maintain your streaks with Tiny Steps A Day Journey.",
     images: ["https://www.tinystepsaday.com/banner-image.jpg"],
     url: "https://www.tinystepsaday.com/streaks",
@@ -21,7 +21,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Streaks & Daily Challenges | Tiny Steps A Day Journey",
+    title: "Streaks & Daily Challenges | Tiny Steps A Day",
     description: "Build positive habits through daily practice. Join challenges and maintain your streaks with Tiny Steps A Day Journey.",
     images: ["https://www.tinystepsaday.com/banner-image.jpg"],
   },

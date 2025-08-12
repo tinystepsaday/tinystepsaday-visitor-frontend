@@ -23,7 +23,7 @@ const steps = [
   {
     number: "04",
     title: "Do you want to connect with a mentor?",
-    description: "You can do so by requesting a session, we will connect you with one of our mentors. You can also explore our availble subscription options to get access to our resources and support on a better price.",
+    description: "You can do so by requesting a session, we will connect you with one of our mentors. You can also explore our available subscription options to get access to our resources and support on a better price.",
     color: "from-innerpath-blue/20 to-innerpath-blue/5"
   }
 ];

@@ -4,7 +4,7 @@ import { getGalleryImages } from "@/data/gallery";
 import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
-  title: "Gallery | Tiny Steps A Day",
+  title: "Gallery",
   description: "Explore moments from our events, workshops, and community gatherings. View our collection of inspiring images showcasing our journey and community.",
   keywords: [
     "gallery",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     title: "Gallery | Tiny Steps A Day",
     description: "Explore moments from our events, workshops, and community gatherings. View our collection of inspiring images.",
     url: `${sharedMetadata.metadataBase}/gallery`,
-    images: ["https://www.tinystepsaday.com/cover-image.jpg"],
+    images: [sharedMetadata.openGraph.images[0]],
     siteName: sharedMetadata.openGraph.siteName,
     locale: sharedMetadata.openGraph.locale,
     type: "website",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: "summary_large_image" as const,
     title: "Gallery | Tiny Steps A Day",
     description: "Explore moments from our events, workshops, and community gatherings. View our collection of inspiring images.",
-    images: ["https://www.tinystepsaday.com/cover-image.jpg"],
+    images: [sharedMetadata.twitter.images[0]],
   },
   alternates: {
     canonical: `${sharedMetadata.metadataBase}/gallery`,

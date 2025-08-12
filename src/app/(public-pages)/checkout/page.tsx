@@ -3,11 +3,11 @@ import { Suspense } from "react";
 import CheckoutForm from "@/components/checkout/CheckoutForm";
 
 export const metadata: Metadata = {
-  title: "Checkout - TinyStepsADay",
+  title: "Checkout",
   description: "Complete your purchase securely. Choose from our range of mindfulness products, courses, and subscription plans.",
   keywords: ["checkout", "payment", "secure checkout", "mindfulness products", "courses", "subscription"],
   openGraph: {
-    title: "Checkout - TinyStepsADay",
+    title: "Checkout - Tiny Steps A Day",
     description: "Complete your purchase securely. Choose from our range of mindfulness products, courses, and subscription plans.",
     type: "website",
     url: "https://tinystepsaday.com/checkout",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Checkout - TinyStepsADay",
+    title: "Checkout - Tiny Steps A Day",
     description: "Complete your purchase securely. Choose from our range of mindfulness products, courses, and subscription plans.",
     images: ["https://tinystepsaday.com/og-checkout.jpg"]
   }
@@ -32,12 +32,12 @@ export default function CheckoutPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CheckoutPage",
-    "name": "TinyStepsADay Checkout",
+    "name": "Tiny Steps A Day Checkout",
     "description": "Secure checkout page for mindfulness products, courses, and subscription plans",
     "url": "https://tinystepsaday.com/checkout",
     "provider": {
       "@type": "Organization",
-      "name": "TinyStepsADay",
+      "name": "Tiny Steps A Day",
       "url": "https://tinystepsaday.com"
     }
   };

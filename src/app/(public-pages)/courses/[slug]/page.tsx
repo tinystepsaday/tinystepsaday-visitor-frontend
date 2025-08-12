@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import CourseDetailsClient from "./CourseDetailsClient";
 import { Course } from "@/data/courses";
+import { sharedMetadata } from "@/app/shared-metadata";
 
 interface CourseDetailsPageProps {
   params: Promise<{
@@ -14,7 +15,7 @@ const getCourseBySlug = async (slug: string): Promise<Course | null> => {
   // This would be a real API call in production
   const courses: Course[] = [
     {
-      id: 1,
+      id: "1",
       slug: "javascript-fundamentals",
       title: "JavaScript Fundamentals",
       description: "Learn the basics of JavaScript programming",
@@ -27,7 +28,7 @@ const getCourseBySlug = async (slug: string): Promise<Course | null> => {
       rating: 4.8,
       reviews: 156,
       instructor: {
-        id: 1,
+        id: "1",
         name: "John Doe",
         title: "Senior JavaScript Developer",
         bio: "John is a senior JavaScript developer with 10+ years of experience.",
@@ -45,18 +46,18 @@ const getCourseBySlug = async (slug: string): Promise<Course | null> => {
       requirements: ["Basic computer knowledge", "No prior programming experience required"],
       curriculum: [
         {
-          id: 1,
+          id: "1",
           title: "Introduction to JavaScript",
           lessons: [
             {
-              id: 1,
+              id: "1",
               title: "What is JavaScript?",
               type: "video",
               duration: "05:30",
               videoUrl: "https://example.com/video1.mp4",
             },
             {
-              id: 2,
+              id: "2",
               title: "Setting up your environment",
               type: "video",
               duration: "08:15",
@@ -65,18 +66,18 @@ const getCourseBySlug = async (slug: string): Promise<Course | null> => {
           ],
         },
         {
-          id: 2,
+          id: "2",
           title: "Variables and Data Types",
           lessons: [
             {
-              id: 3,
+              id: "3",
               title: "Understanding variables",
               type: "video",
               duration: "12:45",
               videoUrl: "https://example.com/video3.mp4",
             },
             {
-              id: 4,
+              id: "4",
               title: "Data types in JavaScript",
               type: "video",
               duration: "15:20",
@@ -97,9 +98,13 @@ const getCourseBySlug = async (slug: string): Promise<Course | null> => {
       ],
       lastUpdated: "2024-01-15",
       certification: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      difficulty: "Beginner",
+      currency: "USD",
     },
     {
-      id: 2, 
+      id: "2", 
       slug: "react-basics",
       title: "React Basics",
       description: "Build modern web applications with React",
@@ -112,7 +117,7 @@ const getCourseBySlug = async (slug: string): Promise<Course | null> => {
       rating: 4.9,
       reviews: 234,
       instructor: {
-        id: 2,
+        id: "2",
         name: "Jane Smith",
         title: "React Expert & Frontend Architect",
         bio: "Jane is a React expert with experience at top tech companies.",
@@ -130,18 +135,18 @@ const getCourseBySlug = async (slug: string): Promise<Course | null> => {
       requirements: ["Basic JavaScript knowledge", "HTML and CSS fundamentals"],
       curriculum: [
         {
-          id: 1,
+          id: "1",
           title: "React Fundamentals",
           lessons: [
             {
-              id: 1,
+              id: "1",
               title: "Introduction to React",
               type: "video",
               duration: "10:00",
               videoUrl: "https://example.com/react1.mp4",
             },
             {
-              id: 2,
+              id: "2",
               title: "Creating your first component",
               type: "video",
               duration: "12:30",
@@ -162,6 +167,10 @@ const getCourseBySlug = async (slug: string): Promise<Course | null> => {
       ],
       lastUpdated: "2024-01-20",
       certification: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      difficulty: "Intermediate",
+      currency: "USD",
     }
   ];
 
@@ -174,23 +183,39 @@ export async function generateMetadata({ params }: CourseDetailsPageProps): Prom
 
   if (!course) {
     return {
-      title: "Course Not Found | Tiny Steps A Day",
+      title: "Course Not Found",
       description: "The requested course could not be found.",
       robots: "noindex, nofollow",
     };
   }
 
   return {
-    title: `${course.title} | Tiny Steps A Day`,
+    title: `${course.title}`,
     description: course.description,
-    keywords: `${course.title}, ${course.category}, online course, ${course.instructor.name}, ${course.level}`,
+    keywords: [
+      course.title,
+      course.category,
+      "online course",
+      course.instructor.name,
+      course.level,
+      course.description,
+      course.image,
+      course.slug,
+      course.createdAt.toString(),
+      course.updatedAt.toString(),
+      course.duration,
+      course.currency,
+      course.instructor.name,
+      course.instructor.title,
+      course.instructor.bio,
+    ],
     openGraph: {
       title: `${course.title} | Tiny Steps A Day`,
       description: course.description,
       images: [course.image],
-      url: `https://www.tinystepsaday.com/courses/${slug}`,
-      siteName: "Tiny Steps A Day",
-      locale: "en_US",
+      url: `${sharedMetadata.metadataBase}/courses/${slug}`,
+      siteName: sharedMetadata.openGraph.siteName,
+      locale: sharedMetadata.openGraph.locale,
       type: "website",
     },
     twitter: {
@@ -210,7 +235,7 @@ export async function generateMetadata({ params }: CourseDetailsPageProps): Prom
         follow: true,
       },
     },
-    metadataBase: new URL("https://www.tinystepsaday.com"),
+    metadataBase: new URL(sharedMetadata.metadataBase),
   };
 }
 

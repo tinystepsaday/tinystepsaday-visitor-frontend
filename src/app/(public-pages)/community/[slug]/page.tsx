@@ -5,7 +5,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "Community | InnerPath Journey",
+  title: "Community",
   description: "A community dedicated to mindfulness and meditation practice",
 };
 

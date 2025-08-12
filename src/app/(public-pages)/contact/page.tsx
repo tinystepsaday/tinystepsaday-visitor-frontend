@@ -8,7 +8,7 @@ import { getContactFAQs, getContactInfo } from "@/data/contact";
 import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
-  title: "Contact Us | Tiny Steps A Day",
+  title: "Contact Us",
   description: "Get in touch with our team for mentorship inquiries, support, or general questions about our programs and courses. We're here to help you on your journey to personal growth.",
   keywords: [
     "contact us",

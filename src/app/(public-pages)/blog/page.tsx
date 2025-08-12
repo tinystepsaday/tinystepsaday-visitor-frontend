@@ -29,19 +29,19 @@ interface BlogPageProps {
 
 export async function generateMetadata({ searchParams }: BlogPageProps): Promise<Metadata> {
   const { search, category } = await searchParams;
-  const baseTitle = "Blog | Tiny Steps A Day";
+  const baseTitle = "Blog";
   const baseDescription = "Discover insights and guidance for your personal growth journey. Read articles on mindfulness, meditation, career development, relationships, and more.";
 
   let dynamicTitle = baseTitle;
   let dynamicDescription = baseDescription;
 
   if (search) {
-    dynamicTitle = `Search: ${search} | Tiny Steps A Day`;
+    dynamicTitle = `Search: ${search}`;
     dynamicDescription = `Search results for "${search}" on Tiny Steps A Day. Explore articles on personal growth and more.`;
   } else if (category && category !== "all") {
     // Convert slug to display name for metadata
     const categoryName = category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' ');
-    dynamicTitle = `${categoryName} Articles | Tiny Steps A Day`;
+    dynamicTitle = `${categoryName} Articles`;
     dynamicDescription = `Explore ${categoryName} articles on Tiny Steps A Day for insights on personal growth and well-being.`;
   }
 

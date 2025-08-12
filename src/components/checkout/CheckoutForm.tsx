@@ -132,7 +132,7 @@ export default function CheckoutForm({ tierInfo: propTierInfo, courseInfo: propC
         getCourseBySlug(courseSlug).then((course) => {
           if (course) {
             const courseInfo: CourseInfo = {
-              id: course.id,
+              id: parseInt(course.id),
               name: course.title,
               slug: course.slug,
               description: course.description,

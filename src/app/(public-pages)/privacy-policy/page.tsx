@@ -1,22 +1,29 @@
 import { Metadata } from "next";
+import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Tiny Steps A Day",
+  title: "Privacy Policy",
   description: "Our comprehensive privacy policy details how we collect, use, and protect your personal information in compliance with GDPR, CCPA, and other privacy regulations.",
   keywords: ["privacy policy", "tinystepsaday", "personal information", "data protection", "GDPR", "CCPA", "privacy rights"],
   openGraph: {
     title: "Privacy Policy | Tiny Steps A Day",
     description: "Our comprehensive privacy policy details how we collect, use, and protect your personal information in compliance with GDPR, CCPA, and other privacy regulations.",
-    images: ["/images/privacy.png"],
+    images: [sharedMetadata.openGraph.images[0]],
+    url: `${sharedMetadata.metadataBase}/privacy-policy`,
+    siteName: sharedMetadata.openGraph.siteName,
+    locale: sharedMetadata.openGraph.locale,
+    type: "website",
   },
   twitter: {
     title: "Privacy Policy | Tiny Steps A Day",
     description: "Our comprehensive privacy policy details how we collect, use, and protect your personal information in compliance with GDPR, CCPA, and other privacy regulations.",
-    images: ["/images/privacy.png"],
+    images: [sharedMetadata.twitter.images[0]],
+    card: "summary_large_image" as const,
   },
   alternates: {
-    canonical: "/privacy-policy",
+    canonical: `${sharedMetadata.metadataBase}/privacy-policy`,
   },
+  robots: sharedMetadata.robots,
 };
 
 export default function PrivacyPolicyPage() {

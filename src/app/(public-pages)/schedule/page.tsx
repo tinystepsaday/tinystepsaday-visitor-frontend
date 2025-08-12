@@ -4,7 +4,7 @@ import { ScheduleForm } from "@/components/schedule/ScheduleForm";
 import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
-  title: "Schedule a Consultation | Tiny Steps A Day",
+  title: "Schedule a Consultation",
   description: "Book your personalized consultation with our expert practitioners. Choose from individual sessions, couple's therapy, group sessions, or initial assessments. Start your journey to better mental health and personal growth.",
   keywords: [
     "consultation booking",

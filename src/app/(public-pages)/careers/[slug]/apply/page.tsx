@@ -13,13 +13,13 @@ export async function generateMetadata({ params }: CareerApplicationPageProps): 
 
   if (!career) {
     return {
-      title: "Position Not Found | Tiny Steps A Day",
+      title: "Position Not Found",
       description: "The job position you're looking for doesn't exist or has been filled.",
     };
   }
 
   return {
-    title: `Apply for ${career.title} | Careers | Tiny Steps A Day`,
+    title: `Apply for ${career.title}`,
     description: `Apply for the ${career.title} position at Tiny Steps A Day. ${career.summary}`,
     keywords: [
       "apply",

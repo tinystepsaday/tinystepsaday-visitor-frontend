@@ -21,17 +21,17 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   
   if (!product) {
     return {
-      title: "Product Not Found - TinyStepsADay",
+      title: "Product Not Found",
       description: "The product you're looking for doesn't exist or has been removed."
     };
   }
 
   return {
-    title: `${product.name} - TinyStepsADay`,
+    title: `${product.name}`,
     description: product.description,
     keywords: [product.category, product.name, "mindfulness", "meditation", "personal growth"],
     openGraph: {
-      title: `${product.name} - TinyStepsADay`,
+      title: `${product.name} | Tiny Steps A Day`,
       description: product.description,
       type: "website",
       url: `https://tinystepsaday.com/shop/${product.slug}`,
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     },
     twitter: {
       card: "summary_large_image",
-      title: `${product.name} - TinyStepsADay`,
+      title: `${product.name} | Tiny Steps A Day`,
       description: product.description,
       images: [product.images[0]]
     }

@@ -4,7 +4,7 @@ import CommunityCard from "@/components/community/CommunityCard";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Community | Tiny Steps A Day",
+  title: "Community",
   description: "Join our community of like-minded individuals on your journey of personal growth and transformation",
   keywords: ["tiny steps a day", "tiny steps", "a day", "actionable steps", "improve your life", "personal growth", "self improvement", "daily habits", "tips", "strategies", "small changes", "big improvements", "start your journey to a better you today", "personal growth", "self improvement", "daily habits", "tips", "strategies", "meditation", "mindfulness", "mindfulness meditation", "mindfulness practice", "mindfulness exercises", "mindfulness techniques", "mindfulness tips", "mindfulness strategies", "spirituality", "community", "community engagement", "community support", "community growth", "community development", "community engagement", "community support", "community growth", "community development"],
   icons: {

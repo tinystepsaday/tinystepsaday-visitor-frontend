@@ -119,6 +119,7 @@ export function ProductImageCarousel({ images, productName }: ProductImageCarous
           <div className="flex gap-2 overflow-x-auto pb-2">
             {images.map((image, index) => (
               <button
+                title={`${productName} thumbnail ${index + 1}`}
                 key={index}
                 onClick={() => setCurrentImageIndex(index)}
                 className={cn(
@@ -221,6 +222,7 @@ export function ProductImageCarousel({ images, productName }: ProductImageCarous
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                 {images.map((image, index) => (
                   <button
+                    title={`${productName} thumbnail ${index + 1}`}
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
                     className={cn(

@@ -5,24 +5,31 @@ import Link from "next/link";
 import { Metadata } from "next";
 import Image from "next/image";
 import CTASection from "@/components/sections/CTASection";
+import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
-    title: "Programs | Tiny Steps A Day",
+    title: "Programs",
     description: "Explore our comprehensive programs offering personalized mentorship, career guidance, mental health support, and life direction services.",
     keywords: ["mentorship programs", "career guidance services", "mental health support", "life coaching", "personal growth programs"],
     openGraph: {
         title: "Programs | Tiny Steps A Day",
         description: "Explore our comprehensive programs offering personalized mentorship, career guidance, mental health support, and life direction services.",
         images: ["/images/programs.png"],
+        url: `${sharedMetadata.metadataBase}/programs`,
+        siteName: sharedMetadata.openGraph.siteName,
+        locale: sharedMetadata.openGraph.locale,
+        type: "website",
     },
     twitter: {
         title: "Programs | Tiny Steps A Day",
         description: "Explore our comprehensive programs offering personalized mentorship, career guidance, mental health support, and life direction services.",
         images: ["/images/programs.png"],
+        card: "summary_large_image" as const,
     },
     alternates: {
-        canonical: "/programs",
+        canonical: `${sharedMetadata.metadataBase}/programs`,
     },
+    robots: sharedMetadata.robots,
 };
 
 export default function ProgramsPage() {

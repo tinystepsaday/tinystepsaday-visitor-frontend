@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
   title: 'Terms of Service | Tiny Steps A Day',
@@ -7,16 +8,22 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Terms of Service | Tiny Steps A Day',
     description: 'Comprehensive Terms of Service for Tiny Steps A Day platform covering user rights, responsibilities, subscriptions, and legal compliance.',
-    images: ['/images/terms.png'],
+    images: [sharedMetadata.openGraph.images[0]],
+    siteName: sharedMetadata.openGraph.siteName,
+    locale: sharedMetadata.openGraph.locale,
+    type: "website",
+    url: `${sharedMetadata.metadataBase}/terms-of-service`,
   },
   twitter: {
     title: 'Terms of Service | Tiny Steps A Day',
     description: 'Comprehensive Terms of Service for Tiny Steps A Day platform covering user rights, responsibilities, subscriptions, and legal compliance.',
-    images: ['/images/terms.png'],
+    card: "summary_large_image" as const,
+    images: [sharedMetadata.twitter.images[0]],
   },
   alternates: {
-    canonical: '/terms-of-service',
+    canonical: `${sharedMetadata.metadataBase}/terms-of-service`,
   },
+  robots: sharedMetadata.robots,
 };
 
 export default function TermsOfService() {

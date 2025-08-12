@@ -5,18 +5,32 @@ import BillingCycleTabsWrapper from "./BillingCycleTabsWrapper";
 import { PRICING_CYCLES, type BillingCycle } from "./constants";
 import { SectionHeader } from "@/components/ui/section-header";
 import { getPricingTiers } from "@/data/pricing";
+import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
   title: "Pricing - Choose Your Transformation Plan",
   description: "Explore our pricing plans to find the perfect fit for your transformational journey.",
+  keywords: [
+    "pricing",
+    "choose your transformation plan",
+    "tiny steps a day",
+    "tinystepsaday",
+    "tinystepsaday.com",
+  ],
   openGraph: {
     title: "Pricing - Choose Your Transformation Plan",
     description: "Explore our pricing plans to find the perfect fit for your transformational journey.",
     url: "/pricing",
     type: "website",
+    images: [sharedMetadata.openGraph.images[0]],
+    siteName: sharedMetadata.openGraph.siteName,
+    locale: sharedMetadata.openGraph.locale,
   },
-  icons: {
-    icon: "/favicon.ico",
+  twitter: {
+    card: "summary_large_image" as const,
+    title: "Pricing - Choose Your Transformation Plan",
+    description: "Explore our pricing plans to find the perfect fit for your transformational journey.",
+    images: [sharedMetadata.twitter.images[0]],
   },
   alternates: {
     canonical: "https://www.tinystepsaday.com/pricing",

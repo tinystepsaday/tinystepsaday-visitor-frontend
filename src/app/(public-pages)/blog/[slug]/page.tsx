@@ -19,13 +19,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     
     if (!post) {
       return {
-        title: "Article Not Found | Tiny Steps A Day",
+        title: "Article Not Found",
         description: "The blog post you're looking for doesn't exist or has been moved.",
       };
     }
 
     return {
-      title: `${post.title} | Blog `,
+      title: `${post.title}`,
       description: post.excerpt || post.seoDescription || post.title,
       keywords: [
         ...(post.seoKeywords || []),

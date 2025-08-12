@@ -14,15 +14,43 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { getAllQuizzes } from "@/data/quizzes";
+import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
-  title: "Self-Improvement Quiz - Discover Your Path",
+  title: "Self-Improvement Quiz",
   description: "Take our self-improvement quiz to discover your personal development path and find the right resources for your journey.",
+  keywords: [
+    "self-improvement quiz",
+    "personal development",
+    "quiz",
+    "self-improvement",
+    "personal development path",
+    "tiny steps a day",
+    "tiny steps",
+    "a day",
+    "actionable steps",
+    "daily habits",
+    "tips",
+  ],
   openGraph: {
-    title: "Self-Improvement Quiz - Discover Your Path",
+    title: "Self-Improvement Quiz | Tiny Steps A Day",
     description: "Take our self-improvement quiz to discover your personal development path and find the right resources for your journey.",
-    url: "/quiz",
+    url: `${sharedMetadata.metadataBase}/quiz`,
+    images: [sharedMetadata.openGraph.images[0]],
+    siteName: sharedMetadata.openGraph.siteName,
+    locale: sharedMetadata.openGraph.locale,
+    type: "website",
   },
+  twitter: {
+    title: "Self-Improvement Quiz | Tiny Steps A Day",
+    description: "Take our self-improvement quiz to discover your personal development path and find the right resources for your journey.",
+    images: [sharedMetadata.twitter.images[0]],
+    card: "summary_large_image" as const,
+  },
+  alternates: {
+    canonical: `${sharedMetadata.metadataBase}/quiz`,
+  },
+  robots: sharedMetadata.robots,
 };
 
 // Helper function to get icon based on category

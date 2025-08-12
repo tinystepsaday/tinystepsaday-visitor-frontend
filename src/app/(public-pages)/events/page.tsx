@@ -7,7 +7,7 @@ import { getUpcomingEvents } from "@/data/events";
 import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
-  title: "Upcoming Events | Tiny Steps A Day",
+  title: "Upcoming Events",
   description: "Discover our upcoming mindfulness workshops, meditation retreats, and wellness events. Join our community for transformative experiences led by expert practitioners.",
   keywords: [
     "upcoming events",

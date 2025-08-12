@@ -43,6 +43,7 @@ export default function StreakReviewForm({ streakId, onSubmit, onCancel }: Strea
           <div className="flex items-center gap-1 mt-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
+                title={`Rate ${star} out of 5`}
                 key={star}
                 type="button"
                 onClick={() => setRating(star)}
