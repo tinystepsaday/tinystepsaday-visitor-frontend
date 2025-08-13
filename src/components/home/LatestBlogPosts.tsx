@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, User, ArrowRight } from "lucide-react";
 import { usePublicBlogPosts } from "@/lib/api/blog";
+import { SectionHeader } from "../ui/section-header";
 
 const LatestBlogPosts = () => {
   const { data: blogData, isLoading, error } = usePublicBlogPosts({
@@ -18,12 +19,7 @@ const LatestBlogPosts = () => {
     return (
       <section className="py-20 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Latest Blog Posts</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Discover insights, tips, and stories from our community
-            </p>
-          </div>
+          <SectionHeader title="Latest Blog Posts" subtitle="Discover insights, tips, and stories from our community" />
           <div className="grid md:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
               <div key={i} className="animate-pulse">
@@ -45,12 +41,7 @@ const LatestBlogPosts = () => {
     return (
       <section className="py-20 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Latest Blog Posts</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Discover insights, tips, and stories from our community
-            </p>
-          </div>
+          <SectionHeader title="Latest Blog Posts" subtitle="Discover insights, tips, and stories from our community" />
           <div className="text-center py-12">
             <p className="text-muted-foreground mb-6">
               No blog posts available at the moment.
@@ -71,13 +62,12 @@ const LatestBlogPosts = () => {
   return (
     <section className="py-20 w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Latest Blog Posts</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Discover the latest insights and guidance for your personal growth journey
-          </p>
-        </div>
-        
+        <SectionHeader
+          title="Latest Blog Posts"
+          subtitle="Discover the latest insights and guidance for your personal growth journey"
+          isPageHeader={false}
+          centered={true}
+        />
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           {posts.map((post) => (
             <div key={post.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden border border-border rounded-lg bg-foreground/2 dark:bg-foreground/5">
@@ -103,10 +93,10 @@ const LatestBlogPosts = () => {
                   {/* Category Badge */}
                   {post.category && (
                     <div className="mb-3">
-                      <Badge 
-                        variant="secondary" 
+                      <Badge
+                        variant="secondary"
                         className="text-xs font-medium"
-                        style={{ 
+                        style={{
                           backgroundColor: post.category.color || 'hsl(var(--secondary))',
                           color: post.category.color ? 'white' : 'hsl(var(--secondary-foreground))'
                         }}
@@ -141,7 +131,7 @@ const LatestBlogPosts = () => {
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
                         <span>
-                          {post.publishedAt 
+                          {post.publishedAt
                             ? new Date(post.publishedAt).toLocaleDateString()
                             : new Date(post.createdAt).toLocaleDateString()
                           }
@@ -157,11 +147,11 @@ const LatestBlogPosts = () => {
                     {post.tags && post.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-3">
                         {post.tags.slice(0, 2).map((tag) => (
-                          <Badge 
-                            key={tag.id} 
-                            variant="outline" 
+                          <Badge
+                            key={tag.id}
+                            variant="outline"
                             className="text-xs"
-                            style={{ 
+                            style={{
                               borderColor: tag.color || 'hsl(var(--border))',
                               color: tag.color || 'hsl(var(--foreground))'
                             }}
