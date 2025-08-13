@@ -6,7 +6,7 @@ import { sanitizeHtml } from "@/lib/html-sanitizer";
 import type { BlogPost } from "@/lib/types";
 import BlogNavigation from "./BlogNavigation";
 import RelatedPosts from "./RelatedPosts";
-import BlogPostInteractive from "./BlogPostInteractive";
+import BlogPostInteractiveWrapper from "./BlogPostInteractiveWrapper";
 
 interface BlogPostContentProps {
   post: BlogPost;
@@ -87,7 +87,8 @@ const BlogPostContent = ({ post }: BlogPostContentProps) => {
         <BlogNavigation navigation={post.navigation} />
       )}
 
-      <BlogPostInteractive post={post} />
+      {/* Blog Post Interactive */}
+      <BlogPostInteractiveWrapper post={post} />
 
       {/* Related Posts */}
       {post.relatedPosts && post.relatedPosts.length > 0 && (

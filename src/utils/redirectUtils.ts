@@ -14,7 +14,7 @@ export function getDefaultRedirectUrl(role: UserRole): string {
   }
   
   // Regular users go to user dashboard
-  return '/dashboard';
+  return '/';
 }
 
 /**

@@ -189,7 +189,7 @@ export const logout = async (): Promise<void> => {
       localStorage.removeItem('isInstructor');
       
       // Redirect to login page
-      window.location.href = '/auth/login';
+      window.location.href = '/';
     }
   }
 };

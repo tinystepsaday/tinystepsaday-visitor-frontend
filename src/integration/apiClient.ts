@@ -24,7 +24,7 @@ class TokenManager {
   private static instance: TokenManager;
   private refreshPromise: Promise<boolean> | null = null;
 
-  private constructor() {}
+  private constructor() { }
 
   static getInstance(): TokenManager {
     if (!TokenManager.instance) {
@@ -47,14 +47,14 @@ class TokenManager {
     if (typeof window === 'undefined') return;
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
-    
+
     // Also set cookies for server-side authentication
     // Use httpOnly: false so server-side can read them
     if (typeof document !== 'undefined' && typeof window !== 'undefined') {
       document.cookie = `accessToken=${accessToken}; path=/; max-age=1800; SameSite=Lax; secure=${window.location.protocol === 'https:'}`;
       document.cookie = `refreshToken=${refreshToken}; path=/; max-age=604800; SameSite=Lax; secure=${window.location.protocol === 'https:'}`;
     }
-    
+
     console.log('Frontend Debug - Tokens set in localStorage and cookies');
     console.log('Frontend Debug - accessToken length:', accessToken.length);
     console.log('Frontend Debug - refreshToken length:', refreshToken.length);
@@ -64,7 +64,7 @@ class TokenManager {
     if (typeof window === 'undefined') return;
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    
+
     // Also clear cookies
     if (typeof document !== 'undefined') {
       document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
@@ -77,7 +77,7 @@ class TokenManager {
       const decoded = jwtDecode<TokenPayload>(token);
       const now = Math.floor(Date.now() / 1000);
       const expiresIn = decoded.exp - now;
-      
+
       return {
         token,
         expiresAt: decoded.exp * 1000, // Convert to milliseconds
@@ -143,7 +143,7 @@ class TokenManager {
       if (response.data.success && response.data.data) {
         const { token: newAccessToken, refreshToken: newRefreshToken } = response.data.data;
         this.setTokens(newAccessToken, newRefreshToken);
-        
+
         console.log('Tokens refreshed successfully');
         return true;
       }
@@ -158,7 +158,7 @@ class TokenManager {
 
   public handleTokenExpiration(): void {
     this.clearTokens();
-    
+
     // Clear user data
     if (typeof window !== 'undefined') {
       localStorage.removeItem('user');
@@ -167,9 +167,16 @@ class TokenManager {
       localStorage.removeItem('isSuperAdmin');
       localStorage.removeItem('isModerator');
       localStorage.removeItem('isInstructor');
-      
+
       // Redirect to login page
-      if (typeof window !== 'undefined' && window.location.pathname !== '/auth/login') {
+      // Only redirect to login page if not on a public page
+      if (typeof window !== 'undefined' &&
+        window.location.pathname !== '/auth/login' &&
+        !window.location.pathname.includes('/blog/') &&  // Don't redirect from blog posts
+        !window.location.pathname.includes('/about') &&  // Don't redirect from public pages
+        !window.location.pathname.includes('/contact') &&
+        !window.location.pathname.includes('/courses') &&
+        !window.location.pathname.includes('/pricing')) {
         window.location.href = '/auth/login';
       }
     }
@@ -183,7 +190,7 @@ class ApiClient {
 
   constructor() {
     this.tokenManager = TokenManager.getInstance();
-    
+
     this.axiosInstance = axios.create({
       baseURL: process.env.NEXT_PUBLIC_API_URL,
       headers: {
@@ -199,14 +206,14 @@ class ApiClient {
     this.axiosInstance.interceptors.request.use(
       async (config) => {
         const accessToken = this.tokenManager.getAccessToken();
-        
+
         if (accessToken) {
           // Check if token is expiring soon (within 5 minutes)
           if (this.tokenManager.isTokenExpiringSoon(accessToken, 300)) {
             console.log('Token expiring soon, refreshing...');
             await this.tokenManager.refreshTokens();
           }
-          
+
           // Add the current (or newly refreshed) access token
           const currentToken = this.tokenManager.getAccessToken();
           if (currentToken) {
@@ -227,26 +234,26 @@ class ApiClient {
         // Check for new tokens in response headers (from auto-refresh middleware)
         const newAccessToken = response.headers['x-new-access-token'];
         const newRefreshToken = response.headers['x-new-refresh-token'];
-        
+
         if (newAccessToken && newRefreshToken) {
           this.tokenManager.setTokens(newAccessToken, newRefreshToken);
           console.log('New tokens received from server');
         }
-        
+
         return response;
       },
       async (error: AxiosError) => {
         const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
-        
+
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
-          
+
           const refreshToken = this.tokenManager.getRefreshToken();
           if (refreshToken && !this.tokenManager.isTokenExpired(refreshToken)) {
             try {
               // Try to refresh tokens
               const refreshSuccess = await this.tokenManager.refreshTokens();
-              
+
               if (refreshSuccess) {
                 // Retry the original request with new token
                 const newAccessToken = this.tokenManager.getAccessToken();
@@ -260,11 +267,11 @@ class ApiClient {
               console.error('Token refresh failed during request retry:', refreshError);
             }
           }
-          
+
           // If refresh failed or no refresh token, handle expiration
           this.tokenManager.handleTokenExpiration();
         }
-        
+
         return Promise.reject(error);
       }
     );

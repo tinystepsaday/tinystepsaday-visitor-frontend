@@ -81,9 +81,7 @@ export default function LoginForm() {
         
         // Use the user data returned from the login function
         if (result.user) {
-          console.log('Login successful - User data:', result.user);
           const redirectUrl = getRedirectUrl(result.user.role as 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'MODERATOR', searchParams.get('redirect'), searchParams.get('returnUrl'));
-          console.log('Redirecting to:', redirectUrl);
           
           // Use window.location.href for reliable redirect
           if (typeof window !== 'undefined') {
@@ -91,9 +89,8 @@ export default function LoginForm() {
           }
         } else {
           // Fallback to default redirect
-          console.log('No user data in result, redirecting to dashboard');
           if (typeof window !== 'undefined') {
-            window.location.href = '/dashboard';
+            window.location.href = '/';
           }
         }
       } else {
