@@ -261,8 +261,8 @@ const Navbar = () => {
 
       {/* Mobile Navigation Menu */}
       {isOpen && (
-        <div className="md:hidden fixed inset-0 top-16 bg-background/95 backdrop-blur-sm z-40">
-          <div className="h-full overflow-y-auto">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-sm z-40 border-t border-border">
+          <div className="max-h-[calc(100vh-4rem)] overflow-y-auto">
             <div className="p-6 space-y-6">
               {/* Main Navigation Links */}
               <div>
