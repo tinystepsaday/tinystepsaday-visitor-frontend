@@ -12,7 +12,7 @@ const Hero = () => {
         <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-200/20 rounded-full filter blur-3xl opacity-60 animate-pulse-subtle"></div>
       </div>
       
-      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 lg:px-2">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 lg:px-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
           {/* Hero Content */}
           <div className="space-y-8 animate-fade-in">
@@ -20,7 +20,7 @@ const Hero = () => {
               Begin Your Transformative Journey
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-16">
               Make <span className="gradient-text">Tiny Steps A Day</span> to Growth, change and Fulfillment.
             </h1>
             
@@ -64,9 +64,9 @@ const Hero = () => {
           
           {/* Hero Image - Stylized */}
           <div className="relative animate-fade-in">
-            <div className="relative z-10 aspect-square max-w-md mx-auto lg:mx-0 lg:ml-auto overflow-hidden rounded-2xl shadow-xl">
+            <div className="relative z-10 aspect-video max-w-3xl mx-auto lg:mx-0 lg:ml-auto overflow-hidden rounded-2xl shadow-xl">
               <div className="absolute inset-0 bg-gradient-to-br from-innerpath-primary/30 via-innerpath-light/40 to-innerpath-blue/20"></div>
-              <Image src="/banner-image.jpg" alt="Kid playing in the grass" width={900} height={900} />
+              <Image src="/banner-image.jpg" alt="Man climbing steps" width={1500} height={900} />
               <div className="aspect-square bg-muted flex items-center justify-center">
                 <div className="text-center p-8">
                   <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center">

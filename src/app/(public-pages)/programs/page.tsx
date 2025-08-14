@@ -156,7 +156,7 @@ export default function ProgramsPage() {
                                 {/* Placeholder for mentorship image */}
                                 <div className="absolute inset-0 bg-gradient-to-br from-innerpath-primary/30 via-innerpath-light/40 to-innerpath-blue/20"></div>
                                 <Image
-                                    src="https://images.unsplash.com/photo-1516398810565-0cb4310bb8ea?fit=crop&w=800&q=80"
+                                    src="/online-meeting-photo-by-shvetsa-4226256.jpg"
                                     alt="One-on-one mentorship session"
                                     className="w-full h-full object-cover"
                                     width={500}
@@ -181,7 +181,7 @@ export default function ProgramsPage() {
                                 {/* Placeholder for mental health image */}
                                 <div className="absolute inset-0 bg-gradient-to-bl from-innerpath-secondary/30 via-innerpath-blue/40 to-innerpath-green/20"></div>
                                 <Image
-                                    src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?fit=crop&w=800&q=80"
+                                    src="/mentorship-photo-by-pexels-cottonbro-5989928.jpg"
                                     alt="Mental health support session"
                                     className="w-full h-full object-cover"
                                     width={500}
@@ -334,10 +334,10 @@ export default function ProgramsPage() {
                                 {/* Placeholder for career image */}
                                 <div className="absolute inset-0 bg-gradient-to-br from-innerpath-green/30 via-innerpath-blue/40 to-innerpath-primary/20"></div>
                                 <Image
-                                    src="https://images.unsplash.com/photo-1552664730-d307ca884978?fit=crop&w=800&q=80"
+                                    src="/cross-roads-decision-making-chooice-career-pexels-googledeepmind-17485632.jpg"
                                     alt="Career guidance session"
                                     className="w-full h-full object-cover"
-                                    width={500}
+                                    width={1000}
                                     height={500}
                                 />
                             </div>
