@@ -13,8 +13,8 @@ export interface CreateQuizData {
   description: string;
   category: string;
   estimatedTime: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  status: 'draft' | 'active' | 'archived';
+  difficulty: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+  status: 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
   isPublic: boolean;
   tags: string[];
   questions: Array<{
@@ -82,6 +82,8 @@ interface BackendQuiz {
   difficulty?: string;
   status?: string;
   isPublic: boolean;
+  createdBy: string;
+  updatedBy: string;
   createdAt: string;
   updatedAt: string;
   totalAttempts?: number;
@@ -89,6 +91,12 @@ interface BackendQuiz {
   averageScore?: number;
   averageCompletionTime?: number;
   tags?: string[];
+  createdByUser?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
   questions?: Array<{
     id: string;
     text: string;
@@ -330,6 +338,14 @@ export function transformBackendQuiz(backendQuiz: BackendQuiz): Quiz {
     difficulty: (backendQuiz.difficulty?.toUpperCase() as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED') || 'BEGINNER',
     status: (backendQuiz.status?.toUpperCase() as 'DRAFT' | 'ACTIVE' | 'ARCHIVED') || 'DRAFT',
     isPublic: backendQuiz.isPublic,
+    createdBy: backendQuiz.createdBy || 'system',
+    updatedBy: backendQuiz.updatedBy || 'system',
+    createdByUser: backendQuiz.createdByUser || {
+      id: 'system',
+      firstName: 'System',
+      lastName: 'User',
+      email: 'system@example.com'
+    },
     createdAt: backendQuiz.createdAt,
     updatedAt: backendQuiz.updatedAt,
     totalAttempts: backendQuiz.totalAttempts || 0,

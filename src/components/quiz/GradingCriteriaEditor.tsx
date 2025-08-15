@@ -125,7 +125,7 @@ export function GradingCriteriaEditor({
         <Card>
           <CardContent className="text-center py-8">
             <p className="text-muted-foreground mb-4">No grading criteria defined yet.</p>
-            <Button onClick={addCriteria} variant="outline">
+            <Button type="button" onClick={addCriteria} variant="outline">
               <Plus className="h-4 w-4 mr-2" />
               Add First Criteria
             </Button>
@@ -142,6 +142,7 @@ export function GradingCriteriaEditor({
                 <CardTitle className="text-base">Criteria {index + 1}</CardTitle>
               </div>
               <Button
+                type="button"
                 variant="ghost"
                 size="sm"
                 onClick={() => removeCriteria(criterion.id)}
@@ -222,6 +223,7 @@ export function GradingCriteriaEditor({
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addRecommendation(criterion.id))}
                 />
                 <Button
+                  type="button"
                   onClick={() => addRecommendation(criterion.id)}
                   variant="outline"
                   size="sm"
@@ -234,6 +236,7 @@ export function GradingCriteriaEditor({
                   <Badge key={idx} variant="secondary" className="flex items-center space-x-1">
                     <span>{rec}</span>
                     <button
+                      type="button"
                       onClick={() => removeRecommendation(criterion.id, idx)}
                       className="ml-1 hover:text-destructive"
                       title="Remove recommendation"
@@ -266,6 +269,7 @@ export function GradingCriteriaEditor({
                   <Badge key={course.id} variant="outline" className="flex items-center space-x-1">
                     <span>{course.name}</span>
                     <button
+                      type="button"
                       onClick={() => removeCourse(criterion.id, course.id)}
                       className="ml-1 hover:text-destructive"
                       title="Remove course"
@@ -298,6 +302,7 @@ export function GradingCriteriaEditor({
                   <Badge key={product.id} variant="outline" className="flex items-center space-x-1">
                     <span>{product.name}</span>
                     <button
+                      type="button"
                       onClick={() => removeProduct(criterion.id, product.id)}
                       className="ml-1 hover:text-destructive"
                       title="Remove product"
@@ -330,6 +335,7 @@ export function GradingCriteriaEditor({
                   <Badge key={streak.id} variant="outline" className="flex items-center space-x-1">
                     <span>{streak.name}</span>
                     <button
+                      type="button"
                       onClick={() => removeStreak(criterion.id, streak.id)}
                       className="ml-1 hover:text-destructive"
                       title="Remove streak"
@@ -344,7 +350,7 @@ export function GradingCriteriaEditor({
           </CardContent>
         </Card>
       ))}
-      <Button onClick={addCriteria} variant="outline" size="sm" className="w-full">
+      <Button type="button" onClick={addCriteria} variant="outline" size="sm" className="w-full">
         <Plus className="h-4 w-4 mr-2" />
         Add Criteria
       </Button>

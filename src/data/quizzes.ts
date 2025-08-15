@@ -46,6 +46,14 @@ export interface Quiz {
   averageCompletionTime: number; // in minutes
   tags: string[];
   gradingCriteria: GradingCriteria[];
+  createdBy: string;
+  updatedBy: string;
+  createdByUser: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
 }
 
 export interface QuizResult {
@@ -113,6 +121,14 @@ export const quizzes2: Record<string, Quiz> = {
     difficulty: "INTERMEDIATE",
     status: "ACTIVE",
     isPublic: true,
+    createdBy: "system",
+    updatedBy: "system",
+    createdByUser: {
+      id: "system",
+      firstName: "System",
+      lastName: "User",
+      email: "system@example.com"
+    },
     createdAt: "2025-01-01",
     updatedAt: "2025-01-15",
     totalAttempts: 1247,
@@ -305,6 +321,14 @@ export const quizzes2: Record<string, Quiz> = {
     difficulty: "BEGINNER",
     status: "ACTIVE",
     isPublic: true,
+    createdBy: "system",
+    updatedBy: "system",
+    createdByUser: {
+      id: "system",
+      firstName: "System",
+      lastName: "User",
+      email: "system@example.com"
+    },
     createdAt: "2025-01-05",
     updatedAt: "2025-01-12",
     totalAttempts: 892,
@@ -427,6 +451,14 @@ export const quizzes2: Record<string, Quiz> = {
     difficulty: "INTERMEDIATE",
     status: "ACTIVE",
     isPublic: true,
+    createdBy: "system",
+    updatedBy: "system",
+    createdByUser: {
+      id: "system",
+      firstName: "System",
+      lastName: "User",
+      email: "system@example.com"
+    },
     createdAt: "2025-01-10",
     updatedAt: "2025-01-18",
     totalAttempts: 567,
@@ -549,6 +581,14 @@ export const quizzes2: Record<string, Quiz> = {
     difficulty: "ADVANCED",
     status: "DRAFT",
     isPublic: false,
+    createdBy: "system",
+    updatedBy: "system",
+    createdByUser: {
+      id: "system",
+      firstName: "System",
+      lastName: "User",
+      email: "system@example.com"
+    },
     createdAt: "2025-01-15",
     updatedAt: "2025-01-15",
     totalAttempts: 0,
@@ -671,6 +711,14 @@ export const quizzes2: Record<string, Quiz> = {
     difficulty: "INTERMEDIATE",
     status: "ACTIVE",
     isPublic: true,
+    createdBy: "system",
+    updatedBy: "system",
+    createdByUser: {
+      id: "system",
+      firstName: "System",
+      lastName: "User",
+      email: "system@example.com"
+    },
     createdAt: "2025-01-20",
     updatedAt: "2025-01-25",
     totalAttempts: 445,

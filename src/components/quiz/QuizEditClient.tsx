@@ -233,17 +233,15 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
       }
 
       if (isEditing && quiz) {
-        // Update existing quiz
-        const updatedQuiz = await quizAPI.updateQuiz(quiz.id, quizData as unknown as CreateQuizData)
-        console.log('Updated quiz:', updatedQuiz)
+        const result = await quizAPI.updateQuiz(quiz.id, quizData as unknown as CreateQuizData)
+        console.log('Updated quiz:', result)
         toast({
           title: "Success",
           description: "Quiz updated successfully!",
         })
       } else {
-        // Create new quiz
-        const createdQuiz = await quizAPI.createQuiz(quizData as unknown as CreateQuizData)
-        console.log('Created quiz:', createdQuiz)
+        const result = await quizAPI.createQuiz(quizData as unknown as CreateQuizData)
+        console.log('Created quiz:', result)
         toast({
           title: "Success",
           description: "Quiz created successfully!",
@@ -253,7 +251,8 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
       // Redirect to quiz management page
       router.push('/management/quizzes')
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to save quiz. Please try again.'
+      const errorData = err as { message?: string; error?: { message?: string } }
+      const errorMessage = errorData?.message || errorData?.error?.message || (err instanceof Error ? err.message : 'Failed to save quiz. Please try again.')
       toast({
         title: "Error",
         description: errorMessage,
@@ -280,7 +279,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
                 Back to Quizzes
               </Button>
             </Link>
-            <Button onClick={handleSave} disabled={isLoading}>
+            <Button type="button" onClick={handleSave} disabled={isLoading}>
               <Save className="h-4 w-4 mr-2" />
               {isLoading ? 'Saving...' : (isEditing ? 'Update Quiz' : 'Create Quiz')}
             </Button>
@@ -296,7 +295,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
         </div>
       </div>
 
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
         {/* Basic Information */}
         <Card>
           <CardHeader>
