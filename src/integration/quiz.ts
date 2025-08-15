@@ -1,0 +1,418 @@
+import apiClient from './apiClient';
+import type { 
+  Quiz, 
+  QuizResult, 
+  QuizAnalytics
+} from '@/data/quizzes';
+
+// API types that are not exported from quizzes data
+export interface CreateQuizData {
+  title: string;
+  subtitle?: string;
+  description: string;
+  category: string;
+  estimatedTime: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  status: 'draft' | 'active' | 'archived';
+  isPublic: boolean;
+  tags: string[];
+  questions: Array<{
+    text: string;
+    order: number;
+    options: Array<{
+      text: string;
+      value: number;
+      order: number;
+    }>;
+  }>;
+  gradingCriteria: Array<{
+    name: string;
+    minScore: number;
+    maxScore: number;
+    label: string;
+    color: string;
+    recommendations: string[];
+    proposedCourses: Array<{ id: string; name: string; slug: string }>;
+    proposedProducts: Array<{ id: string; name: string; slug: string }>;
+    proposedStreaks: Array<{ id: string; name: string; slug: string }>;
+    description?: string;
+  }>;
+}
+
+export type UpdateQuizData = Partial<CreateQuizData>;
+
+export interface QuizQuery {
+  search?: string;
+  category?: string;
+  difficulty?: string;
+  status?: string;
+  isPublic?: boolean;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface QuizResultQuery {
+  quizId?: string;
+  userId?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface QuizSubmission {
+  quizId: string;
+  answers: Record<string, string>;
+  timeSpent: number;
+}
+
+// Backend data interfaces
+interface BackendQuiz {
+  id: string;
+  quizType?: string;
+  redirectAfterAnswer?: string;
+  title: string;
+  subtitle?: string;
+  description: string;
+  category: string;
+  estimatedTime: string;
+  difficulty?: string;
+  status?: string;
+  isPublic: boolean;
+  createdAt: string;
+  updatedAt: string;
+  totalAttempts?: number;
+  completedAttempts?: number;
+  averageScore?: number;
+  averageCompletionTime?: number;
+  tags?: string[];
+  questions?: Array<{
+    id: string;
+    text: string;
+    options?: Array<{
+      id: string;
+      text: string;
+      value: number;
+    }>;
+  }>;
+  gradingCriteria?: Array<{
+    id: string;
+    name: string;
+    minScore: number;
+    maxScore: number;
+    label: string;
+    color: string;
+    recommendations?: string[];
+    proposedCourses?: Array<{ id: string; name: string; slug: string }>;
+    proposedProducts?: Array<{ id: string; name: string; slug: string }>;
+    proposedStreaks?: Array<{ id: string; name: string; slug: string }>;
+    description?: string;
+  }>;
+}
+
+interface BackendQuizResult {
+  id: string;
+  quizId: string;
+  userId: string;
+  user?: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  };
+  score: number;
+  maxScore: number;
+  percentage: number;
+  level?: string;
+  feedback?: string;
+  recommendations?: string[];
+  completedAt: string;
+  timeSpent?: number;
+  answers?: Record<string, string>;
+  classification?: string;
+  areasOfImprovement?: string[];
+  supportNeeded?: string[];
+}
+
+interface BackendQuizAnalytics {
+  totalAttempts?: number;
+  completedAttempts?: number;
+  completionRate?: number;
+  averageScore?: number;
+  averageTimeSpent?: number;
+  levelDistribution?: {
+    excellent?: number;
+    good?: number;
+    fair?: number;
+    needsImprovement?: number;
+  };
+  dropoffPoints?: Array<{
+    questionNumber: number;
+    dropoffCount: number;
+    dropoffRate: number;
+  }>;
+  popularClassifications?: Array<{
+    classification: string;
+    count: number;
+    percentage: number;
+  }>;
+  timeDistribution?: {
+    fast?: number;
+    normal?: number;
+    slow?: number;
+  };
+}
+
+// Quiz API Integration
+export class QuizAPI {
+  private static instance: QuizAPI;
+  private baseURL = '/api/quizzes';
+
+  private constructor() {}
+
+  static getInstance(): QuizAPI {
+    if (!QuizAPI.instance) {
+      QuizAPI.instance = new QuizAPI();
+    }
+    return QuizAPI.instance;
+  }
+
+  // Public Quiz Endpoints
+  async getPublicQuizzes(query?: Partial<QuizQuery>): Promise<{ quizzes: Quiz[]; total: number; page: number; totalPages: number }> {
+    try {
+      const response = await apiClient.get<{ quizzes: Quiz[]; total: number; page: number; totalPages: number }>(`${this.baseURL}/public/quizzes`, { params: query });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getPublicQuizById(id: string): Promise<Quiz> {
+    try {
+      const response = await apiClient.get<Quiz>(`${this.baseURL}/public/quizzes/${id}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getQuizCategories(): Promise<string[]> {
+    try {
+      const response = await apiClient.get<string[]>(`${this.baseURL}/categories`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getQuizDifficulties(): Promise<Array<{ value: string; label: string }>> {
+    try {
+      const response = await apiClient.get<Array<{ value: string; label: string }>>(`${this.baseURL}/difficulties`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Protected Quiz Endpoints (require authentication)
+  async getQuizzes(query?: Partial<QuizQuery>): Promise<{ quizzes: Quiz[]; total: number; page: number; totalPages: number }> {
+    try {
+      const response = await apiClient.get<{ quizzes: Quiz[]; total: number; page: number; totalPages: number }>(`${this.baseURL}/quizzes`, { params: query });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getQuizById(id: string): Promise<Quiz> {
+    try {
+      const response = await apiClient.get<Quiz>(`${this.baseURL}/quizzes/${id}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createQuiz(data: CreateQuizData): Promise<Quiz> {
+    try {
+      const response = await apiClient.post<Quiz>(`${this.baseURL}/quizzes`, data);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateQuiz(id: string, data: UpdateQuizData): Promise<Quiz> {
+    try {
+      const response = await apiClient.put<Quiz>(`${this.baseURL}/quizzes/${id}`, data);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteQuiz(id: string): Promise<void> {
+    try {
+      await apiClient.delete(`${this.baseURL}/quizzes/${id}`);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Quiz Results
+  async submitQuiz(quizId: string, submission: QuizSubmission): Promise<QuizResult> {
+    try {
+      const response = await apiClient.post<QuizResult>(`${this.baseURL}/quizzes/${quizId}/submit`, submission);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getQuizResults(query?: Partial<QuizResultQuery>): Promise<{ results: QuizResult[]; total: number; page: number; totalPages: number }> {
+    try {
+      const response = await apiClient.get<{ results: QuizResult[]; total: number; page: number; totalPages: number }>(`${this.baseURL}/results`, { params: query });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getQuizResultById(resultId: string): Promise<QuizResult> {
+    try {
+      const response = await apiClient.get<QuizResult>(`${this.baseURL}/results/${resultId}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getUserQuizResults(page: number = 1, limit: number = 10): Promise<{ results: QuizResult[]; total: number; page: number; totalPages: number }> {
+    try {
+      const params = new URLSearchParams();
+      params.append('page', page.toString());
+      params.append('limit', limit.toString());
+
+      const response = await apiClient.get<{ results: QuizResult[]; total: number; page: number; totalPages: number }>(`${this.baseURL}/results/user?${params.toString()}`);
+      return response;
+    } catch (error) {
+      console.error('Error fetching user quiz results:', error);
+      throw error;
+    }
+  }
+
+  // Quiz Analytics
+  async getQuizAnalytics(quizId: string): Promise<QuizAnalytics> {
+    try {
+      const response = await apiClient.get<QuizAnalytics>(`${this.baseURL}/quizzes/${quizId}/analytics`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+}
+
+// Export singleton instance
+export const quizAPI = QuizAPI.getInstance();
+
+// Helper functions for data transformation
+export function transformBackendQuiz(backendQuiz: BackendQuiz): Quiz {
+  return {
+    id: backendQuiz.id,
+    quizType: (backendQuiz.quizType?.toLowerCase() as 'default' | 'onboarding') || 'default',
+    redirectAfterAnswer: (backendQuiz.redirectAfterAnswer?.toLowerCase() as 'home' | 'results') || 'results',
+    title: backendQuiz.title,
+    subtitle: backendQuiz.subtitle || '',
+    description: backendQuiz.description,
+    category: backendQuiz.category,
+    estimatedTime: backendQuiz.estimatedTime,
+    difficulty: (backendQuiz.difficulty?.toLowerCase() as 'beginner' | 'intermediate' | 'advanced') || 'beginner',
+    status: (backendQuiz.status?.toLowerCase() as 'draft' | 'active' | 'archived') || 'draft',
+    isPublic: backendQuiz.isPublic,
+    createdAt: backendQuiz.createdAt,
+    updatedAt: backendQuiz.updatedAt,
+    totalAttempts: backendQuiz.totalAttempts || 0,
+    completedAttempts: backendQuiz.completedAttempts || 0,
+    averageScore: backendQuiz.averageScore || 0,
+    averageCompletionTime: backendQuiz.averageCompletionTime || 0,
+    tags: backendQuiz.tags || [],
+    questions: backendQuiz.questions?.map((q) => ({
+      id: q.id,
+      text: q.text,
+      options: q.options?.map((opt) => ({
+        id: opt.id,
+        text: opt.text,
+        value: opt.value
+      })) || []
+    })) || [],
+    gradingCriteria: backendQuiz.gradingCriteria?.map((gc) => ({
+      id: gc.id,
+      name: gc.name,
+      minScore: gc.minScore,
+      maxScore: gc.maxScore,
+      label: gc.label,
+      color: gc.color,
+      recommendations: gc.recommendations || [],
+      proposedCourses: gc.proposedCourses || [],
+      proposedProducts: gc.proposedProducts || [],
+      proposedStreaks: gc.proposedStreaks || [],
+      description: gc.description
+    })) || []
+  };
+}
+
+export function transformBackendQuizResult(backendResult: BackendQuizResult): QuizResult {
+  return {
+    id: backendResult.id,
+    quizId: backendResult.quizId,
+    userId: backendResult.userId,
+    userName: backendResult.user?.firstName && backendResult.user?.lastName 
+      ? `${backendResult.user.firstName} ${backendResult.user.lastName}`
+      : 'Anonymous User',
+    userEmail: backendResult.user?.email || 'anonymous@example.com',
+    score: backendResult.score,
+    maxScore: backendResult.maxScore,
+    percentage: backendResult.percentage,
+    level: (backendResult.level?.toLowerCase() as 'excellent' | 'good' | 'fair' | 'needs-improvement') || 'fair',
+    feedback: backendResult.feedback || '',
+    recommendations: backendResult.recommendations || [],
+    completedAt: backendResult.completedAt,
+    timeSpent: backendResult.timeSpent || 0,
+    answers: backendResult.answers || {},
+    classification: backendResult.classification || 'Unknown',
+    areasOfImprovement: backendResult.areasOfImprovement || [],
+    supportNeeded: backendResult.supportNeeded || []
+  };
+}
+
+export function transformBackendQuizAnalytics(backendAnalytics: BackendQuizAnalytics): QuizAnalytics {
+  return {
+    totalAttempts: backendAnalytics.totalAttempts || 0,
+    completedAttempts: backendAnalytics.completedAttempts || 0,
+    completionRate: backendAnalytics.completionRate || 0,
+    averageScore: backendAnalytics.averageScore || 0,
+    averageTimeSpent: backendAnalytics.averageTimeSpent || 0,
+    levelDistribution: {
+      excellent: backendAnalytics.levelDistribution?.excellent || 0,
+      good: backendAnalytics.levelDistribution?.good || 0,
+      fair: backendAnalytics.levelDistribution?.fair || 0,
+      needsImprovement: backendAnalytics.levelDistribution?.needsImprovement || 0
+    },
+    dropoffPoints: backendAnalytics.dropoffPoints || [],
+    popularClassifications: backendAnalytics.popularClassifications || [],
+    timeDistribution: {
+      fast: backendAnalytics.timeDistribution?.fast || 0,
+      normal: backendAnalytics.timeDistribution?.normal || 0,
+      slow: backendAnalytics.timeDistribution?.slow || 0
+    }
+  };
+}
+
+// Export types for external use
+export type { 
+  Quiz, 
+  QuizResult, 
+  QuizAnalytics
+} from '@/data/quizzes';
+

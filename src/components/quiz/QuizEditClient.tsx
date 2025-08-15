@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -12,12 +13,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
+import { quizAPI } from '@/integration/quiz'
 import { type Quiz, type GradingCriteria } from '@/data/quizzes'
 import { GradingCriteriaEditor } from './GradingCriteriaEditor'
 import { DetailPageLoader } from '../ui/loaders'
 
 interface QuizEditClientProps {
-  quiz: Quiz
+  quiz?: Quiz // Optional for creating new quizzes
+  isEditing?: boolean
 }
 
 interface Question {
@@ -30,7 +33,8 @@ interface Question {
   }>
 }
 
-export default function QuizEditClient({ quiz }: QuizEditClientProps) {
+export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClientProps) {
+  const router = useRouter()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
@@ -48,6 +52,14 @@ export default function QuizEditClient({ quiz }: QuizEditClientProps) {
     status: 'draft' as 'draft' | 'active' | 'archived',
     isPublic: false
   })
+
+  // Available categories and difficulties from backend
+  const [availableCategories, setAvailableCategories] = useState<string[]>([])
+  const [availableDifficulties] = useState([
+    { value: 'beginner', label: 'Beginner' },
+    { value: 'intermediate', label: 'Intermediate' },
+    { value: 'advanced', label: 'Advanced' }
+  ])
 
   // Mock data for courses and products - in real app, these would come from API
   const availableCourses = [
@@ -71,9 +83,14 @@ export default function QuizEditClient({ quiz }: QuizEditClientProps) {
   ]
 
   useEffect(() => {
-    const fetchQuiz = async () => {
+    const initializeData = async () => {
       try {
-        if (quiz) {
+        // Fetch available categories from backend
+        const categories = await quizAPI.getQuizCategories()
+        setAvailableCategories(categories)
+
+        if (quiz && !isInitialized) {
+          // Editing existing quiz
           setFormData({
             title: quiz.title,
             subtitle: quiz.subtitle,
@@ -87,16 +104,37 @@ export default function QuizEditClient({ quiz }: QuizEditClientProps) {
           setTags(quiz.tags)
           setQuestions(quiz.questions)
           setGradingCriteria(quiz.gradingCriteria)
-          setIsInitialized(true)
+        } else if (!quiz && !isInitialized) {
+          // Creating new quiz - set default values
+          setFormData({
+            title: '',
+            subtitle: '',
+            description: '',
+            category: '',
+            estimatedTime: '',
+            difficulty: 'intermediate',
+            status: 'draft',
+            isPublic: false
+          })
+          setTags([])
+          setQuestions([])
+          setGradingCriteria([])
         }
+        setIsInitialized(true)
       } catch (err) {
-        console.error('Error fetching quiz:', err)
+        console.error('Error initializing quiz data:', err)
+        toast({
+          title: "Error",
+          description: "Failed to load quiz data. Please try again.",
+          variant: "destructive"
+        })
       }
     }
+
     if (!isInitialized) {
-      fetchQuiz()
+      initializeData()
     }
-  }, [quiz, isInitialized])
+  }, [quiz, isInitialized, toast])
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -148,23 +186,77 @@ export default function QuizEditClient({ quiz }: QuizEditClientProps) {
     setQuestions(prev => prev.filter(q => q.id !== questionId))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSave = async () => {
+    if (!formData.title || !formData.description || questions.length === 0) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields and add at least one question.",
+        variant: "destructive"
+      })
+      return
+    }
+
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const quizData = {
+        title: formData.title,
+        subtitle: formData.subtitle,
+        description: formData.description,
+        category: formData.category,
+        estimatedTime: formData.estimatedTime,
+        difficulty: formData.difficulty,
+        status: formData.status,
+        isPublic: formData.isPublic,
+        tags,
+        questions: questions.map((q, index) => ({
+          text: q.text,
+          order: index + 1,
+          options: q.options.map((opt, optIndex) => ({
+            text: opt.text,
+            value: opt.value,
+            order: optIndex + 1
+          }))
+        })),
+        gradingCriteria: gradingCriteria.map((gc) => ({
+          name: gc.name,
+          minScore: gc.minScore,
+          maxScore: gc.maxScore,
+          label: gc.label,
+          color: gc.color,
+          recommendations: gc.recommendations,
+          proposedCourses: gc.proposedCourses,
+          proposedProducts: gc.proposedProducts,
+          proposedStreaks: gc.proposedStreaks,
+          description: gc.description
+        }))
+      }
 
+      if (isEditing && quiz) {
+        // Update existing quiz
+        await quizAPI.updateQuiz(quiz.id, quizData)
+        toast({
+          title: "Success",
+          description: "Quiz updated successfully!",
+        })
+      } else {
+        // Create new quiz
+        await quizAPI.createQuiz(quizData)
+        toast({
+          title: "Success",
+          description: "Quiz created successfully!",
+        })
+      }
+
+      // Redirect to quiz management page
+      router.push('/management/quizzes')
+    } catch (err: unknown) {
+      console.error('Error saving quiz:', err)
+      const errorMessage = err instanceof Error ? err.message : 'Failed to save quiz. Please try again.'
       toast({
-        title: "Quiz updated successfully",
-        description: "Your quiz has been updated and saved.",
-      })
-    } catch {
-      toast({
-        title: "Error updating quiz",
-        description: "There was an error updating your quiz. Please try again.",
-        variant: "destructive",
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive"
       })
     } finally {
       setIsLoading(false)
@@ -181,25 +273,29 @@ export default function QuizEditClient({ quiz }: QuizEditClientProps) {
       <div className="flex items-center justify-between">
         <div className="flex flex-col items-start gap-4 w-full justify-between">
           <div className="flex items-center justify-between w-full">
-            <Link href={`/management/quizzes/${quiz.id}`}>
+            <Link href="/management/quizzes">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Quiz
+                Back to Quizzes
               </Button>
             </Link>
-            <Button onClick={handleSubmit} disabled={isLoading}>
+            <Button onClick={handleSave} disabled={isLoading}>
               <Save className="h-4 w-4 mr-2" />
-              {isLoading ? 'Saving...' : 'Save Changes'}
+              {isLoading ? 'Saving...' : (isEditing ? 'Update Quiz' : 'Create Quiz')}
             </Button>
           </div>
-          <div className="flex flex-col items-start w-full">
-            <h1 className="text-2xl font-bold">Edit Quiz</h1>
-            <p className="text-muted-foreground">Update quiz details and questions</p>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {isEditing ? 'Edit Quiz' : 'Create New Quiz'}
+            </h1>
+            <p className="text-muted-foreground">
+              {isEditing ? 'Update your quiz details and questions' : 'Build a new assessment quiz for your audience'}
+            </p>
           </div>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form className="space-y-6">
         {/* Basic Information */}
         <Card>
           <CardHeader>
@@ -217,14 +313,37 @@ export default function QuizEditClient({ quiz }: QuizEditClientProps) {
                   placeholder="Enter quiz title"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Input
-                  id="category"
-                  value={formData.category}
-                  onChange={(e) => handleInputChange('category', e.target.value)}
-                  placeholder="Enter category"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category *</Label>
+                  <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableCategories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="difficulty">Difficulty *</Label>
+                  <Select value={formData.difficulty} onValueChange={(value) => handleInputChange('difficulty', value as 'beginner' | 'intermediate' | 'advanced')}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select difficulty" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableDifficulties.map((difficulty) => (
+                        <SelectItem key={difficulty.value} value={difficulty.value}>
+                          {difficulty.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
 
@@ -250,19 +369,6 @@ export default function QuizEditClient({ quiz }: QuizEditClientProps) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="difficulty">Difficulty</Label>
-                <Select value={formData.difficulty} onValueChange={(value) => handleInputChange('difficulty', value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="beginner">Beginner</SelectItem>
-                    <SelectItem value="intermediate">Intermediate</SelectItem>
-                    <SelectItem value="advanced">Advanced</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
               <div className="space-y-2">
                 <Label htmlFor="estimatedTime">Estimated Time (minutes)</Label>
                 <Input

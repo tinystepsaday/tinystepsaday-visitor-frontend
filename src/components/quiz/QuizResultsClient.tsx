@@ -1,293 +1,269 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { QuizLayout } from "@/components/quiz/QuizLayout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Book, Calendar, ArrowRight, Target } from "lucide-react";
-import Link from "next/link";
-import { Quiz, QuizResult, calculateQuizResult } from "@/data/quizzes";
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Trophy,
+  Target, 
+  TrendingUp, 
+  Clock, 
+  Share2, 
+  Download,
+  Star,
+  ArrowLeft,
+  Calendar
+} from 'lucide-react';
+import { quizAPI, transformBackendQuizResult } from '@/integration/quiz';
+import type { Quiz, QuizResult } from '@/data/quizzes';
 
 interface QuizResultsClientProps {
   quiz: Quiz;
 }
 
 export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
-  const [result, setResult] = useState<QuizResult | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const resultId = searchParams.get('resultId');
+  
+  const [result, setResult] = useState<QuizResult | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!quiz) return;
-    
-    const answersParam = searchParams.get('answers');
-    if (answersParam) {
+    const fetchResult = async () => {
+      if (!resultId) return;
+      
       try {
-        const answers = JSON.parse(decodeURIComponent(answersParam));
-        const calculatedResult = calculateQuizResult(answers, quiz.id);
-        setResult(calculatedResult);
-      } catch (error) {
-        console.error('Error parsing answers:', error);
-        router.push(`/quiz/${quiz.id}`);
+        setIsLoading(true);
+        const fetchedResult = await quizAPI.getQuizResultById(resultId);
+        const transformedResult = transformBackendQuizResult(fetchedResult);
+        setResult(transformedResult);
+      } catch (err: unknown) {
+        console.error('Error fetching quiz result:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load quiz result';
+        setError(errorMessage);
+      } finally {
+        setIsLoading(false);
       }
-    } else {
-      router.push(`/quiz/${quiz.id}`);
-    }
-    setIsLoading(false);
-  }, [searchParams, quiz?.id, router, quiz]);
+    };
 
-  // Safety check
-  if (!quiz) {
-    return (
-      <QuizLayout title="Quiz Error" subtitle="Quiz not found">
-        <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">This quiz could not be found.</p>
-          <Button onClick={() => router.push("/quiz")}>
-            Back to Quizzes
-          </Button>
-        </div>
-      </QuizLayout>
-    );
-  }
+    fetchResult();
+  }, [resultId]);
+
+  const getLevelColor = (level: string) => {
+    switch (level) {
+      case 'excellent':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'good':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'fair':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'needs-improvement':
+        return 'bg-red-100 text-red-800 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getLevelIcon = (level: string) => {
+    switch (level) {
+      case 'excellent':
+        return <Trophy className="h-6 w-6 text-green-600" />;
+      case 'good':
+        return <TrendingUp className="h-6 w-6 text-blue-600" />;
+      case 'fair':
+        return <Target className="h-6 w-6 text-yellow-600" />;
+      case 'needs-improvement':
+        return <Target className="h-6 w-6 text-red-600" />;
+      default:
+        return <Star className="h-6 w-6 text-gray-600" />;
+    }
+  };
 
   if (isLoading) {
     return (
-      <QuizLayout title={quiz.title} subtitle="Loading results...">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Calculating your results...</p>
-          </div>
-        </div>
-      </QuizLayout>
-    );
-  }
-
-  if (!result) {
-    return (
-      <QuizLayout title={quiz.title} subtitle="Error loading results">
+      <div className="max-w-4xl mx-auto p-6">
         <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">Unable to load quiz results.</p>
-          <Button onClick={() => router.push(`/quiz/${quiz.id}`)}>
-            Retake Quiz
-          </Button>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your results...</p>
         </div>
-      </QuizLayout>
+      </div>
     );
   }
 
-  const getCriteriaForScore = (percentage: number) => {
-    return quiz.gradingCriteria.find(c => 
-      percentage >= c.minScore && percentage <= c.maxScore
-    )
+  if (error || !result) {
+    return (
+      <div className="max-w-4xl mx-auto p-6">
+        <Card className="border-red-200 bg-red-50">
+          <CardHeader>
+            <CardTitle className="text-red-600">Error Loading Results</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-red-600 mb-4">
+              {error || 'Unable to load quiz results'}
+            </p>
+            <div className="flex gap-4">
+              <Button onClick={() => router.push('/quiz')}>
+                Back to Quizzes
+              </Button>
+              <Button variant="outline" onClick={() => window.location.reload()}>
+                Try Again
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
-
-  const matchingCriteria = getCriteriaForScore(result.percentage)
 
   return (
-    <QuizLayout
-      title={quiz.title}
-      subtitle="Your Results"
-      showBackButton={true}
-      onBackClick={() => router.push(`/quiz/${quiz.id}`)}
-    >
-      <div className="space-y-6">
-        {/* Criteria name based on score */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Your Results</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground leading-relaxed font-bold text-4xl">
-              {matchingCriteria?.name || 'Results'}
-            </p>
-            <p className="text-sm text-muted-foreground mt-2">
-              Score: {result.percentage}% ({result.score}/{result.maxScore} points)
-            </p>
-          </CardContent>
-        </Card>
+    <div className="max-w-4xl mx-auto p-6 space-y-8">
+      {/* Header */}
+      <div className="text-center space-y-4">
+        <Button
+          variant="ghost"
+          onClick={() => router.push('/quiz')}
+          className="mb-4"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Quizzes
+        </Button>
+        
+        <h1 className="text-4xl font-bold">Quiz Results</h1>
+        <p className="text-xl text-muted-foreground">
+          {quiz.title} - {quiz.subtitle}
+        </p>
+      </div>
 
-        {/* Analysis */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Analysis</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground leading-relaxed">
-              {matchingCriteria?.description || result.feedback}
-            </p>
-          </CardContent>
-        </Card>
+      {/* Score Summary */}
+      <Card className="text-center">
+        <CardHeader>
+          <CardTitle className="text-2xl">Your Score</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            {getLevelIcon(result.level)}
+            <div>
+              <div className="text-4xl font-bold text-primary">
+                {result.percentage}%
+              </div>
+              <div className="text-lg text-muted-foreground">
+                {result.score} out of {result.maxScore} points
+              </div>
+            </div>
+          </div>
+          
+          <Badge className={`text-lg px-4 py-2 ${getLevelColor(result.level)}`}>
+            {result.classification}
+          </Badge>
+          
+          <div className="grid grid-cols-2 gap-4 max-w-md mx-auto text-sm">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <span>Time: {result.timeSpent} min</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <span>Completed: {new Date(result.completedAt).toLocaleDateString()}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Recommendations */}
-        <Card>
+      {/* Feedback */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            Personalized Feedback
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-lg mb-4">{result.feedback}</p>
+          
+          {/* Recommendations based on score level */}
+          {result.recommendations && result.recommendations.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="font-semibold text-lg">Recommendations</h4>
+              <div className="space-y-2">
+                {result.recommendations.map((recommendation: string, index: number) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <p className="text-muted-foreground">{recommendation}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Areas of Improvement */}
+          {result.areasOfImprovement && result.areasOfImprovement.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="font-semibold text-lg">Areas of Improvement</h4>
+              <div className="space-y-2">
+                {result.areasOfImprovement.map((area: string, index: number) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <p className="text-muted-foreground">{area}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Support Needed */}
+          {result.supportNeeded && result.supportNeeded.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="font-semibold text-lg">Support & Resources</h4>
+              <div className="space-y-2">
+                {result.supportNeeded.map((support: string, index: number) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <p className="text-muted-foreground">{support}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button onClick={() => router.push('/quiz')}>
+          Take Another Quiz
+        </Button>
+        <Button variant="outline">
+          <Share2 className="mr-2 h-4 w-4" />
+          Share Results
+        </Button>
+        <Button variant="outline">
+          <Download className="mr-2 h-4 w-4" />
+          Download PDF
+        </Button>
+      </div>
+
+      {/* Support Needed */}
+      {result.supportNeeded && result.supportNeeded.length > 0 && (
+        <Card className="border-amber-200 bg-amber-50">
           <CardHeader>
-            <CardTitle>Recommendations</CardTitle>
+            <CardTitle className="text-amber-800">Additional Support</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-3">
-              {(matchingCriteria?.recommendations || result.recommendations).map((recommendation, index) => (
-                <li key={index} className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-sm text-muted-foreground">{recommendation}</span>
-                </li>
+            <p className="text-amber-700 mb-3">
+              Based on your results, you might benefit from:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-amber-700">
+              {result.supportNeeded.map((support, index) => (
+                <li key={index}>{support}</li>
               ))}
             </ul>
           </CardContent>
         </Card>
-
-        {/* Recommended Courses */}
-        {matchingCriteria?.proposedCourses && matchingCriteria.proposedCourses.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Book className="h-5 w-5" />
-                <span>Recommended Courses</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {matchingCriteria.proposedCourses.map((course, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <span className="text-sm font-medium">{course.name}</span>
-                    <Link href={`/courses/${course.slug}`}>
-                      <Button variant="outline" size="sm">
-                        View Course
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Recommended Products */}
-        {matchingCriteria?.proposedProducts && matchingCriteria.proposedProducts.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Calendar className="h-5 w-5" />
-                <span>Recommended Resources</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {matchingCriteria.proposedProducts.map((product, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <span className="text-sm font-medium">{product.name}</span>
-                    <Link href={`/shop/${product.slug}`}>
-                      <Button variant="outline" size="sm">
-                        View Product
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Recommended Streaks */}
-        {matchingCriteria?.proposedStreaks && matchingCriteria.proposedStreaks.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Target className="h-5 w-5" />
-                <span>Recommended Streaks</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {matchingCriteria.proposedStreaks.map((streak, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <span className="text-sm font-medium">{streak.name}</span>
-                    <Link href={`/streaks/${streak.slug}`}>
-                      <Button variant="outline" size="sm">
-                        Join Streak
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Additional Action Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Book className="h-5 w-5" />
-                <span>Browse All Courses</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Explore our full course catalog to find the perfect learning path.
-              </p>
-            </CardContent>
-            <CardFooter>
-              <Link href="/courses" className="w-full">
-                <Button variant="outline" className="w-full">
-                  Browse Courses
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </CardFooter>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Calendar className="h-5 w-5" />
-                <span>Schedule Consultation</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Get personalized guidance from our experts.
-              </p>
-            </CardContent>
-            <CardFooter>
-              <Link href="/schedule" className="w-full">
-                <Button variant="outline" className="w-full">
-                  Book Session
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 pt-6">
-          <Button
-            onClick={() => router.push(`/quiz/${quiz.id}`)}
-            className="flex-1"
-          >
-            Retake Quiz
-          </Button>
-          
-          <Link href="/quiz" className="flex-1">
-            <Button variant="outline" className="w-full">
-              Try Another Quiz
-            </Button>
-          </Link>
-          
-          <Link href="/" className="flex-1">
-            <Button variant="outline" className="w-full">
-              Back to Home
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </QuizLayout>
+      )}
+    </div>
   );
 } 

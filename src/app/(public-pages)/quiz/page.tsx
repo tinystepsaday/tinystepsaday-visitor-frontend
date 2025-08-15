@@ -13,7 +13,7 @@ import {
   Target,
 } from "lucide-react";
 import Link from "next/link";
-import { getAllQuizzes } from "@/data/quizzes";
+import { quizAPI, transformBackendQuiz } from "@/integration/quiz";
 import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
@@ -58,11 +58,11 @@ const getCategoryIcon = (category: string) => {
   switch (category.toLowerCase()) {
     case 'personal development':
       return <User className="h-6 w-6" />;
-    case 'addiction recovery':
+    case 'mental health':
       return <Timer className="h-6 w-6" />;
-    case 'purpose discovery':
+    case 'life purpose':
       return <Search className="h-6 w-6" />;
-    case 'trauma healing':
+    case 'wellness':
       return <Book className="h-6 w-6" />;
     case 'mindfulness':
       return <Calendar className="h-6 w-6" />;
@@ -79,17 +79,17 @@ const getCategoryColor = (category: string) => {
         bg: "bg-blue-100 dark:bg-blue-900",
         text: "text-blue-600 dark:text-blue-300"
       };
-    case 'addiction recovery':
+    case 'mental health':
       return {
         bg: "bg-red-100 dark:bg-red-900",
         text: "text-red-600 dark:text-red-300"
       };
-    case 'purpose discovery':
+    case 'life purpose':
       return {
         bg: "bg-purple-100 dark:bg-purple-900",
         text: "text-purple-600 dark:text-purple-300"
       };
-    case 'trauma healing':
+    case 'wellness':
       return {
         bg: "bg-green-100 dark:bg-green-900",
         text: "text-green-600 dark:text-green-300"
@@ -108,91 +108,135 @@ const getCategoryColor = (category: string) => {
 };
 
 const Quiz = async () => {
-  const quizzes = await getAllQuizzes();
-  const publicQuizzes = quizzes.filter(quiz => quiz.isPublic && quiz.status === 'active');
+  try {
+    const response = await quizAPI.getPublicQuizzes({
+      page: 1,
+      limit: 20,
+      sortBy: 'createdAt',
+      sortOrder: 'desc'
+    });
+    
+    const publicQuizzes = response.quizzes.map(transformBackendQuiz);
 
-  return (
-    <div className="container max-w-7xl mx-auto px-4 py-12 md:py-16 w-full">
-      <SectionHeader
-        title="Self-Discovery Quizzes"
-        subtitle="Take a quick assessment to receive personalized recommendations tailored to your unique journey"
-        centered={true}
-        isPageHeader={true}
-      />
+    return (
+      <div className="container max-w-7xl mx-auto px-4 py-12 md:py-16 w-full">
+        <SectionHeader
+          title="Self-Discovery Quizzes"
+          subtitle="Take a quick assessment to receive personalized recommendations tailored to your unique journey"
+          centered={true}
+          isPageHeader={true}
+        />
 
-      <div className="mb-10 max-w-3xl mx-auto text-center">
-        <p className="text-muted-foreground">
-          Our scientifically designed quizzes take just 3-5 minutes to complete and will help you identify the most effective resources for your personal growth journey. No login required to get started!
-        </p>
-      </div>
+        <div className="mb-10 max-w-3xl mx-auto text-center">
+          <p className="text-muted-foreground">
+            Our scientifically designed quizzes take just 3-5 minutes to complete and will help you identify the most effective resources for your personal growth journey. No login required to get started!
+          </p>
+        </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {publicQuizzes.map((quiz) => {
-          const colors = getCategoryColor(quiz.category);
-          const icon = getCategoryIcon(quiz.category);
-          
-          return (
-            <Card key={quiz.id} className="overflow-hidden transition-all hover:shadow-lg">
-              <CardHeader className={`${colors.bg} py-5 ${colors.text}`}>
-                <div className="flex items-center justify-between">
-                  {icon}
-                  <div className="flex items-center gap-2 text-sm">
-                    <Timer className="h-4 w-4" />
-                    <span>{quiz.estimatedTime}</span>
-                    <span className="mx-1">•</span>
-                    <span>{quiz.questions.length} questions</span>
-                  </div>
-                </div>
-                <CardTitle className="mt-2 text-foreground">{quiz.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <div className="space-y-3">
-                  <p className="text-sm text-muted-foreground">
-                    {quiz.subtitle}
-                  </p>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button asChild className="w-full">
-                  <Link href={`/quiz/${quiz.id}`}>
-                    <Activity className="mr-2 h-4 w-4" />
-                    Learn More
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          );
-        })}
-      </div>
-
-      <div className="mt-16 text-center">
-        <h3 className="text-2xl font-bold mb-4">Why Take Our Quizzes?</h3>
-        <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
-          <div className="p-4 rounded-lg bg-card border">
-            <div className="mx-auto w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
-              <User className="h-6 w-6" />
-            </div>
-            <h4 className="font-semibold mb-2">Personalized Guidance</h4>
-            <p className="text-sm text-muted-foreground">Get recommendations tailored specifically to your unique needs and goals.</p>
+        {publicQuizzes.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {publicQuizzes.map((quiz) => {
+              const colors = getCategoryColor(quiz.category);
+              const icon = getCategoryIcon(quiz.category);
+              
+              return (
+                <Card key={quiz.id} className="overflow-hidden transition-all hover:shadow-lg">
+                  <CardHeader className={`${colors.bg} py-5 ${colors.text}`}>
+                    <div className="flex items-center justify-between">
+                      {icon}
+                      <div className="flex items-center gap-2 text-sm">
+                        <Timer className="h-4 w-4" />
+                        <span>{quiz.estimatedTime}</span>
+                        <span className="mx-1">•</span>
+                        <span>{quiz.questions.length} questions</span>
+                      </div>
+                    </div>
+                    <CardTitle className="mt-2 text-foreground">{quiz.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-4">
+                    <div className="space-y-3">
+                      <p className="text-sm text-muted-foreground">
+                        {quiz.subtitle}
+                      </p>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button asChild className="w-full">
+                      <Link href={`/quiz/${quiz.id}`}>
+                        <Activity className="mr-2 h-4 w-4" />
+                        Learn More
+                      </Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              );
+            })}
           </div>
-          <div className="p-4 rounded-lg bg-card border">
-            <div className="mx-auto w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
-              <Timer className="h-6 w-6" />
+        ) : (
+          <div className="text-center py-12">
+            <div className="mx-auto w-16 h-16 flex items-center justify-center rounded-full bg-muted mb-4">
+              <Target className="h-8 w-8 text-muted-foreground" />
             </div>
-            <h4 className="font-semibold mb-2">Quick & Effective</h4>
-            <p className="text-sm text-muted-foreground">Just 3-5 minutes to complete, delivering immediate actionable insights.</p>
+            <h3 className="text-lg font-semibold mb-2">No Quizzes Available</h3>
+            <p className="text-muted-foreground">
+              We&apos;re currently preparing some amazing quizzes for you. Check back soon!
+            </p>
           </div>
-          <div className="p-4 rounded-lg bg-card border">
-            <div className="mx-auto w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
-              <Book className="h-6 w-6" />
+        )}
+
+        <div className="mt-16 text-center">
+          <h3 className="text-2xl font-bold mb-4">Why Take Our Quizzes?</h3>
+          <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
+            <div className="p-4 rounded-lg bg-card border">
+              <div className="mx-auto w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
+                <User className="h-6 w-6" />
+              </div>
+              <h4 className="font-semibold mb-2">Personalized Guidance</h4>
+              <p className="text-sm text-muted-foreground">Get recommendations tailored specifically to your unique needs and goals.</p>
             </div>
-            <h4 className="font-semibold mb-2">Science-Based</h4>
-            <p className="text-sm text-muted-foreground">Our assessments are grounded in proven psychological frameworks and research.</p>
+            <div className="p-4 rounded-lg bg-card border">
+              <div className="mx-auto w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
+                <Timer className="h-6 w-6" />
+              </div>
+              <h4 className="font-semibold mb-2">Quick & Effective</h4>
+              <p className="text-sm text-muted-foreground">Just 3-5 minutes to complete, delivering immediate actionable insights.</p>
+            </div>
+            <div className="p-4 rounded-lg bg-card border">
+              <div className="mx-auto w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
+                <Book className="h-6 w-6" />
+              </div>
+              <h4 className="font-semibold mb-2">Science-Based</h4>
+              <p className="text-sm text-muted-foreground">Our assessments are grounded in proven psychological frameworks and research.</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  } catch (error) {
+    console.error('Error fetching quizzes:', error);
+    
+    // Fallback to empty state
+    return (
+      <div className="container max-w-7xl mx-auto px-4 py-12 md:py-16 w-full">
+        <SectionHeader
+          title="Self-Discovery Quizzes"
+          subtitle="Take a quick assessment to receive personalized recommendations tailored to your unique journey"
+          centered={true}
+          isPageHeader={true}
+        />
+
+        <div className="text-center py-12">
+          <div className="mx-auto w-16 h-16 flex items-center justify-center rounded-full bg-muted mb-4">
+            <Target className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">Unable to Load Quizzes</h3>
+          <p className="text-muted-foreground">
+            We&apos;re experiencing some technical difficulties. Please try again later.
+          </p>
+        </div>
+      </div>
+    );
+  }
 };
 
 export default Quiz;

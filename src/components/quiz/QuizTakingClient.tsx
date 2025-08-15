@@ -1,148 +1,258 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { QuizQuestion } from "@/components/quiz/QuizQuestion";
-import { QuizProgress } from "@/components/quiz/QuizProgress";
-import { QuizLayout } from "@/components/quiz/QuizLayout";
-import { ArrowRight, ArrowLeft, Book } from "lucide-react";
-import { Quiz } from "@/data/quizzes";
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { quizAPI } from '@/integration/quiz';
+import type { Quiz } from '@/data/quizzes';
+import { Clock, AlertCircle, CheckCircle } from 'lucide-react';
 
 interface QuizTakingClientProps {
   quiz: Quiz;
 }
 
 export default function QuizTakingClient({ quiz }: QuizTakingClientProps) {
+  const router = useRouter();
+  const { isLoggedIn } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
-
-  // Safety checks
-  if (!quiz || !quiz.questions || quiz.questions.length === 0) {
-    return (
-      <QuizLayout
-        title="Quiz Error"
-        showBackButton={true}
-        onBackClick={() => router.push("/quiz")}
-      >
-        <div className="text-center py-8">
-          <p className="text-muted-foreground mb-4">
-            This quiz is not available or has no questions.
-          </p>
-          <Button onClick={() => router.push("/quiz")}>
-            Back to Quizzes
-          </Button>
-        </div>
-      </QuizLayout>
-    );
-  }
+  const [timeSpent, setTimeSpent] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const { toast } = useToast();
 
   const currentQuestion = quiz.questions[currentQuestionIndex];
-  const totalQuestions = quiz.questions.length;
-  const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
-  const isFirstQuestion = currentQuestionIndex === 0;
-  const hasAnsweredCurrent = answers[currentQuestion.id];
+  const progress = ((currentQuestionIndex + 1) / quiz.questions.length) * 100;
+  const isLastQuestion = currentQuestionIndex === quiz.questions.length - 1;
+  const hasAnsweredCurrentQuestion = answers[currentQuestion.id];
 
-  const handleOptionSelect = (optionId: string) => {
+  // Timer effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeSpent(prev => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleAnswerSelect = (questionId: string, optionId: string) => {
     setAnswers(prev => ({
       ...prev,
-      [currentQuestion.id]: optionId
+      [questionId]: optionId
     }));
   };
 
-  const handleNextQuestion = () => {
-    if (isLastQuestion) {
-      // Submit quiz
-      setIsSubmitting(true);
-      const answersParam = encodeURIComponent(JSON.stringify(answers));
-      router.push(`/quiz/${quiz.id}/results?answers=${answersParam}`);
-    } else {
+  const handleNext = () => {
+    if (currentQuestionIndex < quiz.questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     }
   };
 
-  const handlePreviousQuestion = () => {
-    if (!isFirstQuestion) {
+  const handlePrevious = () => {
+    if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => prev - 1);
     }
   };
 
-  const handleBackClick = () => {
-    if (isFirstQuestion) {
-      router.push("/quiz");
-    } else {
-      handlePreviousQuestion();
+  const handleSubmit = async () => {
+    if (!isLoggedIn) {
+      setShowAuthPrompt(true);
+      return;
+    }
+
+    if (Object.keys(answers).length !== quiz.questions.length) {
+      setError('Please answer all questions before submitting.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const submission = {
+        quizId: quiz.id,
+        answers,
+        timeSpent
+      };
+
+      const result = await quizAPI.submitQuiz(quiz.id, submission);
+      // const transformedResult = transformBackendQuizResult(result); // This line was removed as per the new_code
+
+      // Redirect to results page
+      router.push(`/quiz/${quiz.id}/results?resultId=${result.id}`); // This line was changed as per the new_code
+    } catch (err: unknown) {
+      console.error('Error submitting quiz:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to submit quiz';
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  return (
-    <QuizLayout
-      title={quiz.title}
-      showBackButton={!isFirstQuestion}
-      onBackClick={handleBackClick}
-    >
-      <div className="space-y-6">
-        <QuizProgress 
-          currentStep={currentQuestionIndex + 1}
-          totalSteps={totalQuestions}
-        />
-        
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold">
-                Question {currentQuestionIndex + 1} of {totalQuestions}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {quiz.estimatedTime} • {quiz.difficulty} level
-              </p>
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  if (showAuthPrompt) {
+    return (
+      <div className="max-w-2xl mx-auto p-6">
+        <Card>
+          <CardHeader className="text-center">
+            <AlertCircle className="mx-auto h-12 w-12 text-amber-500 mb-4" />
+            <CardTitle>Authentication Required</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-muted-foreground">
+              You need to be logged in to submit this quiz and receive your personalized results.
+            </p>
+            <div className="flex gap-4 justify-center">
+              <Button onClick={() => router.push('/login')}>
+                Log In
+              </Button>
+              <Button variant="outline" onClick={() => router.push('/signup')}>
+                Sign Up
+              </Button>
             </div>
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <Book className="h-4 w-4" />
-              <span>{quiz.category}</span>
-            </div>
-          </div>
-          
-          <QuizQuestion
-            question={currentQuestion.text}
-            options={currentQuestion.options}
-            selectedOption={answers[currentQuestion.id]}
-            onOptionSelect={handleOptionSelect}
-          />
-        </div>
-        
-        <div className="flex justify-between pt-6">
-          <Button
-            variant="outline"
-            onClick={handleBackClick}
-            disabled={isSubmitting}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            {isFirstQuestion ? "Back to Quizzes" : "Previous"}
-          </Button>
-          
-          <Button
-            onClick={handleNextQuestion}
-            disabled={!hasAnsweredCurrent || isSubmitting}
-          >
-            {isSubmitting ? (
-              "Submitting..."
-            ) : isLastQuestion ? (
-              <>
-                Submit Quiz
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </>
-            ) : (
-              <>
-                Next Question
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </>
-            )}
-          </Button>
-        </div>
+            <Button 
+              variant="ghost" 
+              onClick={() => setShowAuthPrompt(false)}
+              className="text-sm"
+            >
+              Continue without saving
+            </Button>
+          </CardContent>
+        </Card>
       </div>
-    </QuizLayout>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 space-y-6">
+      {/* Quiz Header */}
+      <div className="text-center space-y-4">
+        <h1 className="text-3xl font-bold">{quiz.title}</h1>
+        <p className="text-lg text-muted-foreground">{quiz.subtitle}</p>
+        
+        {/* Progress and Timer */}
+        <div className="flex items-center justify-between max-w-2xl mx-auto">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 text-green-500" />
+            <span className="text-sm text-muted-foreground">
+              Question {currentQuestionIndex + 1} of {quiz.questions.length}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="h-5 w-5 text-blue-500" />
+            <span className="text-sm text-muted-foreground">
+              {formatTime(timeSpent)}
+            </span>
+          </div>
+        </div>
+        
+        <Progress value={progress} className="w-full max-w-2xl" />
+      </div>
+
+      {/* Current Question */}
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle className="text-xl">
+            {currentQuestion.text}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <RadioGroup
+            value={answers[currentQuestion.id] || ''}
+            onValueChange={(value) => handleAnswerSelect(currentQuestion.id, value)}
+            className="space-y-3"
+          >
+            {currentQuestion.options.map((option) => (
+              <div key={option.id} className="flex items-center space-x-3">
+                <RadioGroupItem value={option.id} id={option.id} />
+                <Label htmlFor={option.id} className="text-base cursor-pointer">
+                  {option.text}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </CardContent>
+      </Card>
+
+      {/* Navigation */}
+      <div className="flex justify-between max-w-2xl mx-auto">
+        <Button
+          variant="outline"
+          onClick={handlePrevious}
+          disabled={currentQuestionIndex === 0}
+        >
+          Previous
+        </Button>
+
+        {isLastQuestion ? (
+          <Button
+            onClick={handleSubmit}
+            disabled={!hasAnsweredCurrentQuestion || isSubmitting}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Quiz'}
+          </Button>
+        ) : (
+          <Button
+            onClick={handleNext}
+            disabled={!hasAnsweredCurrentQuestion}
+          >
+            Next
+          </Button>
+        )}
+      </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="max-w-2xl mx-auto">
+          <Card className="border-red-200 bg-red-50">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2 text-red-600">
+                <AlertCircle className="h-5 w-5" />
+                <span>{error}</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Quiz Info */}
+      <div className="max-w-2xl mx-auto">
+        <Card className="bg-muted/50">
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+              <div>
+                <span className="font-medium">Category:</span> {quiz.category}
+              </div>
+              <div>
+                <span className="font-medium">Difficulty:</span> {quiz.difficulty}
+              </div>
+              <div>
+                <span className="font-medium">Estimated Time:</span> {quiz.estimatedTime}
+              </div>
+              <div>
+                <span className="font-medium">Questions:</span> {quiz.questions.length}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 } 
