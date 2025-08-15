@@ -67,7 +67,10 @@ export interface QuizResultQuery {
 
 export interface QuizSubmission {
   quizId: string;
-  answers: Record<string, string>;
+  answers: Array<{
+    questionId: string;
+    optionId: string;
+  }>;
   timeSpent: number;
 }
 
@@ -274,7 +277,7 @@ export class QuizAPI {
   // Quiz Results
   async submitQuiz(quizId: string, submission: QuizSubmission): Promise<QuizResult> {
     try {
-      const response = await apiClient.post<{ data: QuizResult }>(`${this.baseURL}/quizzes/${quizId}/submit`, submission);
+      const response = await apiClient.post<{ data: QuizResult }>(`${this.baseURL}/results`, submission);
       return response.data;
     } catch (error: any) {
       throw error.response.data;

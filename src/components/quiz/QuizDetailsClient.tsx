@@ -129,9 +129,6 @@ export default function QuizDetailsClient({ quiz }: QuizDetailsClientProps) {
                   Start Quiz Now
                 </Link>
               </Button>
-              <p className="text-xs text-muted-foreground text-center">
-                No registration required • Free • Instant results
-              </p>
             </div>
           </div>
         </CardContent>

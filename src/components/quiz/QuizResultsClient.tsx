@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { 
   Trophy,
   Target, 
@@ -13,11 +12,11 @@ import {
   Share2, 
   Download,
   Star,
-  ArrowLeft,
   Calendar
 } from 'lucide-react';
 import { quizAPI, transformBackendQuizResult } from '@/integration/quiz';
 import type { Quiz, QuizResult } from '@/data/quizzes';
+import { SectionHeader } from '../ui/section-header';
 
 interface QuizResultsClientProps {
   quiz: Quiz;
@@ -99,19 +98,31 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
       <div className="max-w-4xl mx-auto p-6">
         <Card className="border-red-200 bg-red-50">
           <CardHeader>
-            <CardTitle className="text-red-600">Error Loading Results</CardTitle>
+            <CardTitle className="text-red-600">
+              {!resultId ? 'No Results Found' : 'Error Loading Results'}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-red-600 mb-4">
-              {error || 'Unable to load quiz results'}
+              {!resultId 
+                ? 'No quiz result ID provided. Please complete a quiz first to view your results.'
+                : (error || 'Unable to load quiz results')
+              }
             </p>
             <div className="flex gap-4">
               <Button onClick={() => router.push('/quiz')}>
                 Back to Quizzes
               </Button>
-              <Button variant="outline" onClick={() => window.location.reload()}>
-                Try Again
-              </Button>
+              {!resultId && (
+                <Button variant="outline" onClick={() => router.push(`/quiz/${quiz.id}/answering`)}>
+                  Take Quiz
+                </Button>
+              )}
+              {resultId && (
+                <Button variant="outline" onClick={() => window.location.reload()}>
+                  Try Again
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -120,23 +131,9 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
+    <div className="max-w-4xl mx-auto p-6 space-y-8 w-full mb-16">
       {/* Header */}
-      <div className="text-center space-y-4">
-        <Button
-          variant="ghost"
-          onClick={() => router.push('/quiz')}
-          className="mb-4"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Quizzes
-        </Button>
-        
-        <h1 className="text-4xl font-bold">Quiz Results</h1>
-        <p className="text-xl text-muted-foreground">
-          {quiz.title} - {quiz.subtitle}
-        </p>
-      </div>
+      <SectionHeader title={`Your Quiz Results for ${quiz.title}`} subtitle={quiz.subtitle} />
 
       {/* Score Summary */}
       <Card className="text-center">
@@ -146,19 +143,14 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
         <CardContent className="space-y-6">
           <div className="flex items-center justify-center gap-4 mb-6">
             {getLevelIcon(result.level)}
-            <div>
-              <div className="text-4xl font-bold text-primary">
-                {result.percentage}%
-              </div>
-              <div className="text-lg text-muted-foreground">
-                {result.score} out of {result.maxScore} points
-              </div>
-            </div>
           </div>
           
-          <Badge className={`text-lg px-4 py-2 ${getLevelColor(result.level)}`}>
-            {result.classification}
-          </Badge>
+          <div className={`text-lg px-4 py-2 ${getLevelColor(result.level)}`}>
+            <h2 className="text-2xl font-bold">{result.classification}</h2>
+            <p className="text-lg">
+              {result.feedback}
+            </p>
+          </div>
           
           <div className="grid grid-cols-2 gap-4 max-w-md mx-auto text-sm">
             <div className="flex items-center gap-2">
@@ -181,12 +173,12 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
             Personalized Feedback
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-lg mb-4">{result.feedback}</p>
-          
+        <CardContent className="space-y-4">
+          <p className="text-base mb-4">{result.feedback}</p>
+
           {/* Recommendations based on score level */}
           {result.recommendations && result.recommendations.length > 0 && (
-            <div className="space-y-3">
+            <div className="space-y-2">
               <h4 className="font-semibold text-lg">Recommendations</h4>
               <div className="space-y-2">
                 {result.recommendations.map((recommendation: string, index: number) => (
@@ -201,7 +193,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
 
           {/* Areas of Improvement */}
           {result.areasOfImprovement && result.areasOfImprovement.length > 0 && (
-            <div className="space-y-3">
+            <div className="space-y-2">
               <h4 className="font-semibold text-lg">Areas of Improvement</h4>
               <div className="space-y-2">
                 {result.areasOfImprovement.map((area: string, index: number) => (
@@ -216,7 +208,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
 
           {/* Support Needed */}
           {result.supportNeeded && result.supportNeeded.length > 0 && (
-            <div className="space-y-3">
+            <div className="space-y-2">
               <h4 className="font-semibold text-lg">Support & Resources</h4>
               <div className="space-y-2">
                 {result.supportNeeded.map((support: string, index: number) => (

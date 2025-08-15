@@ -1,69 +1,64 @@
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import QuizResultsClient from "@/components/quiz/QuizResultsClient";
-import { getAllQuizzes, getQuizById } from "@/data/quizzes";
-import { sharedMetadata } from "@/app/shared-metadata";
+"use client";
 
-interface QuizResultsPageProps {
-  params: Promise<{ slug: string }>;
-}
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
+import { quizAPI, transformBackendQuiz } from '@/integration/quiz';
+import QuizResultsClient from '@/components/quiz/QuizResultsClient';
+import type { Quiz } from '@/data/quizzes';
+import { DetailPageLoader } from '@/components/ui/loaders';
 
-export async function generateStaticParams() {
-  const quizzes = await getAllQuizzes();
-  return quizzes.map((quiz) => ({
-    slug: quiz.id,
-  }));
-}
-
-export async function generateMetadata({ params }: QuizResultsPageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const quiz = await getQuizById(slug);
+export default function QuizResultsPage() {
+  const params = useParams();
+  const quizId = params.slug as string;
   
-  if (!quiz) {
-    return {
-      title: "Quiz Results Not Found",
-      description: "The requested quiz results could not be found.",
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      try {
+        setIsLoading(true);
+        const fetchedQuiz = await quizAPI.getPublicQuizById(quizId);
+        const transformedQuiz = transformBackendQuiz(fetchedQuiz);
+        setQuiz(transformedQuiz);
+      } catch (err: unknown) {
+        console.error('Error fetching quiz:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch quiz';
+        setError(errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
     };
+
+    if (quizId) {
+      fetchQuiz();
+    }
+  }, [quizId]);
+
+  if (isLoading) {
+    return <DetailPageLoader />;
   }
 
-  return {
-    title: `${quiz.title} | Tiny Steps A Day`,
-    description: `View your results for the ${quiz.title} quiz and get personalized recommendations.`,
-    keywords: ["quiz results", "assessment results", "self-improvement", quiz.category.toLowerCase(), "tiny steps a day"],
-    openGraph: {
-      title: `${quiz.title} | Tiny Steps A Day`,
-      description: `View your results for the ${quiz.title} quiz and get personalized recommendations.`,
-      type: "website",
-      url: `${sharedMetadata.metadataBase}/quiz/${quiz.id}/results`,
-      images: [sharedMetadata.openGraph.images[0]],
-      siteName: sharedMetadata.openGraph.siteName,
-      locale: sharedMetadata.openGraph.locale,
-    },
-    twitter: {
-      card: "summary_large_image" as const,
-        title: `${quiz.title} | Tiny Steps A Day`,
-      description: `View your results for the ${quiz.title} quiz and get personalized recommendations.`,
-      images: [sharedMetadata.twitter.images[0]],
-    },
-    alternates: {
-      canonical: `${sharedMetadata.metadataBase}/quiz/${quiz.id}/results`,
-    },
-    robots: sharedMetadata.robots,
-  };
-}
-
-export default async function QuizResultsPage({ params }: QuizResultsPageProps) {
-  const { slug } = await params;
-  const quiz = await getQuizById(slug);
-  
-  if (!quiz) {
-    notFound();
+  if (error || !quiz) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h1 className="text-2xl font-bold text-destructive mb-4">Quiz Not Found</h1>
+        <p className="text-muted-foreground mb-6">
+          {error || 'The requested quiz could not be found.'}
+        </p>
+        <Link 
+          href="/quiz" 
+          className="text-primary hover:underline"
+        >
+          ← Back to Quizzes
+        </Link>
+      </div>
+    );
   }
 
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading quiz results...</div>}>
-      <QuizResultsClient quiz={quiz} />
-    </Suspense>
+    <QuizResultsClient quiz={quiz} />
   );
 }

@@ -1,64 +1,56 @@
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import QuizTakingClient from "@/components/quiz/QuizTakingClient";
-import { getAllQuizzes, getQuizById } from "@/data/quizzes";
-import { sharedMetadata } from "@/app/shared-metadata";
+"use client"
 
-interface QuizAnsweringPageProps {
-  params: Promise<{ slug: string }>;
-}
+import React, { useState, useEffect } from 'react'
+import { useParams } from 'next/navigation'
+import QuizTakingClient from "@/components/quiz/QuizTakingClient"
+import { quizAPI, transformBackendQuiz } from '@/integration/quiz'
+import type { Quiz } from '@/data/quizzes'
+import { QuizAnsweringPageLoader } from '@/components/quiz/QuizAnsweringPageLoader'
 
-export async function generateStaticParams() {
-  const quizzes = await getAllQuizzes();
-  return quizzes.map((quiz) => ({
-    slug: quiz.id,
-  }));
-}
+export default function QuizAnsweringPage() {
+  const params = useParams()
+  const quizId = params.slug as string
+  const [quiz, setQuiz] = useState<Quiz | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-export async function generateMetadata({ params }: QuizAnsweringPageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const quiz = await getQuizById(slug);
-  
-  if (!quiz) {
-    return {
-      title: "Quiz Not Found",
-      description: "The requested quiz could not be found.",
-    };
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      try {
+        setIsLoading(true)
+        const fetchedQuiz = await quizAPI.getPublicQuizById(quizId)
+        const transformedQuiz = transformBackendQuiz(fetchedQuiz)
+        setQuiz(transformedQuiz)
+      } catch (err: unknown) {
+        console.error('Error fetching quiz:', err)
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load quiz'
+        setError(errorMessage)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    if (quizId) {
+      fetchQuiz()
+    }
+  }, [quizId])
+
+  if (isLoading) {
+    return <QuizAnsweringPageLoader />
   }
 
-  return {
-    title: `Taking ${quiz.title} | Tiny Steps A Day`,
-    description: `Take the ${quiz.title} quiz to discover your personalized recommendations.`,
-    keywords: ["quiz", "assessment", "self-improvement", quiz.category.toLowerCase(), "tiny steps a day"],
-    openGraph: {
-      title: `Taking ${quiz.title} | Tiny Steps A Day`,
-      description: `Take the ${quiz.title} quiz to discover your personalized recommendations.`,
-      url: `${sharedMetadata.metadataBase}/quiz/${quiz.id}/answering`,
-      images: [sharedMetadata.openGraph.images[0]],
-      siteName: sharedMetadata.openGraph.siteName,
-      locale: sharedMetadata.openGraph.locale,
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `Taking ${quiz.title} | Tiny Steps A Day`,
-      description: `Take the ${quiz.title} quiz to discover your personalized recommendations.`,
-      images: [sharedMetadata.twitter.images[0]],
-    },
-    alternates: {
-      canonical: `${sharedMetadata.metadataBase}/quiz/${quiz.id}/answering`,
-    },
-    robots: sharedMetadata.robots,
-  };
-}
-
-export default async function QuizAnsweringPage({ params }: QuizAnsweringPageProps) {
-  const { slug } = await params;
-  const quiz = await getQuizById(slug);
-  
-  if (!quiz) {
-    notFound();
+  if (error || !quiz) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold text-destructive mb-4">Error Loading Quiz</h2>
+          <p className="text-muted-foreground">
+            {error || 'Unable to load the quiz'}
+          </p>
+        </div>
+      </div>
+    )
   }
 
-  return <QuizTakingClient quiz={quiz} />;
-} 
+  return <QuizTakingClient quiz={quiz} />
+}

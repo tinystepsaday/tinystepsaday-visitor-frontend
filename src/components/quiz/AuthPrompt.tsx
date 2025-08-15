@@ -28,7 +28,7 @@ export default function AuthPrompt({ quiz, onAuthenticated }: AuthPromptProps) {
 
   const handleAuthRedirect = (authType: 'login' | 'signup') => {
     setIsRedirecting(true)
-    const currentPath = `/quiz/${quiz.id}/answering`
+    const currentPath = `/quiz/${quiz.id}`
     const authUrl = `/auth/${authType}?returnUrl=${encodeURIComponent(currentPath)}`
     router.push(authUrl)
   }
