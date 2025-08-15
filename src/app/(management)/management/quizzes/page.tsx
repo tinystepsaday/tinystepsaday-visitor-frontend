@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { quizAPI, transformBackendQuiz, type Quiz } from '@/integration/quiz'
+import { CreateQuizData, quizAPI, transformBackendQuiz, UpdateQuizData, type Quiz } from '@/integration/quiz'
 import { ListPageLoader } from '@/components/ui/loaders'
 import { useToast } from '@/hooks/use-toast'
 
@@ -58,7 +58,7 @@ export default function QuizzesManagementPage() {
         category: quiz.category,
         estimatedTime: quiz.estimatedTime,
         difficulty: quiz.difficulty,
-        status: 'draft' as const,
+        status: 'DRAFT' as const,
         isPublic: false,
         tags: quiz.tags,
         questions: quiz.questions.map((q, index) => ({
@@ -84,7 +84,7 @@ export default function QuizzesManagementPage() {
         }))
       }
 
-      await quizAPI.createQuiz(duplicateData)
+      await quizAPI.createQuiz(duplicateData as unknown as CreateQuizData)
       toast({
         title: "Success",
         description: "Quiz duplicated successfully"
@@ -112,19 +112,19 @@ export default function QuizzesManagementPage() {
 
   const handleToggleStatus = async (quizId: string, currentStatus: string) => {
     try {
-      const newStatus = currentStatus === 'active' ? 'archived' : 'active'
+      const newStatus = currentStatus === 'ACTIVE' ? 'ARCHIVED' : 'ACTIVE'
       const quiz = quizzes.find(q => q.id === quizId)
       if (!quiz) return
 
-      await quizAPI.updateQuiz(quizId, { status: newStatus })
+      await quizAPI.updateQuiz(quizId, { status: newStatus as 'DRAFT' | 'ACTIVE' | 'ARCHIVED' } as unknown as UpdateQuizData)
       toast({
         title: "Success",
-        description: `Quiz ${newStatus === 'active' ? 'activated' : 'archived'} successfully`
+        description: `Quiz ${newStatus === 'ACTIVE' ? 'activated' : 'archived'} successfully`
       })
       
       // Update local state
       setQuizzes(prev => prev.map(q => 
-        q.id === quizId ? { ...q, status: newStatus } : q
+        q.id === quizId ? { ...q, status: newStatus as 'ACTIVE' | 'ARCHIVED' } : q
       ))
     } catch (err: unknown) {
       console.error('Error updating quiz status:', err);
@@ -199,7 +199,7 @@ export default function QuizzesManagementPage() {
 
   // Calculate overall stats
   const totalQuizzes = quizzes.length
-  const activeQuizzes = quizzes.filter((q: Quiz) => q.status === 'active').length
+  const activeQuizzes = quizzes.filter((q: Quiz) => q.status === 'ACTIVE').length
   const totalAttempts = quizzes.reduce((sum: number, q: Quiz) => sum + q.totalAttempts, 0)
   const totalCompleted = quizzes.reduce((sum: number, q: Quiz) => sum + q.completedAttempts, 0)
   const averageCompletionRate = totalAttempts > 0 ? (totalCompleted / totalAttempts) * 100 : 0
@@ -346,7 +346,7 @@ export default function QuizzesManagementPage() {
             Duplicate
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleToggleStatus(row.original.id, row.original.status)}>
-            {row.original.status === 'active' ? (
+            {row.original.status === 'ACTIVE' ? (
               <>
                 <Archive className="mr-2 h-4 w-4" />
                 Archive

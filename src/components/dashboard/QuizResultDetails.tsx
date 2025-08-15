@@ -355,8 +355,8 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Difficulty</label>
                 <Badge className={
-                  result.quiz.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
-                  result.quiz.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                  result.quiz.difficulty === 'BEGINNER' ? 'bg-green-100 text-green-800' :
+                  result.quiz.difficulty === 'INTERMEDIATE' ? 'bg-yellow-100 text-yellow-800' :
                   'bg-red-100 text-red-800'
                 }>
                   {result.quiz.difficulty}

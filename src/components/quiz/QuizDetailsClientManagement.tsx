@@ -124,8 +124,8 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Difficulty</label>
                   <Badge className={
-                    quiz.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
-                      quiz.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                    quiz.difficulty === 'BEGINNER' ? 'bg-green-100 text-green-800' :
+                      quiz.difficulty === 'INTERMEDIATE' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-red-100 text-red-800'
                   }>
                     {quiz.difficulty}
@@ -134,8 +134,8 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Status</label>
                   <Badge className={
-                    quiz.status === 'active' ? 'bg-green-100 text-green-800' :
-                      quiz.status === 'draft' ? 'bg-gray-100 text-gray-800' :
+                    quiz.status === 'ACTIVE' ? 'bg-green-100 text-green-800' :
+                      quiz.status === 'DRAFT' ? 'bg-gray-100 text-gray-800' :
                         'bg-red-100 text-red-800'
                   }>
                     {quiz.status}

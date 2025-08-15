@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import apiClient from './apiClient';
 import type { 
   Quiz, 
@@ -183,8 +184,8 @@ export class QuizAPI {
     try {
       const response = await apiClient.get<{ data: { quizzes: Quiz[]; total: number; page: number; totalPages: number } }>(`${this.baseURL}/public/quizzes`, { params: query });
       return response.data;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw error.response.data;
     }
   }
 
@@ -192,8 +193,8 @@ export class QuizAPI {
     try {
       const response = await apiClient.get<{ data: Quiz }>(`${this.baseURL}/public/quizzes/${id}`);
       return response.data;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw error.response.data;
     }
   }
 
@@ -201,8 +202,8 @@ export class QuizAPI {
     try {
       const response = await apiClient.get<{ data: string[] }>(`${this.baseURL}/categories`);
       return response.data;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw error.response.data;
     }
   }
 
@@ -210,8 +211,8 @@ export class QuizAPI {
     try {
       const response = await apiClient.get<{ data: Array<{ value: string; label: string }> }>(`${this.baseURL}/difficulties`);
       return response.data;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw error.response.data;
     }
   }
 
@@ -220,8 +221,8 @@ export class QuizAPI {
     try {
       const response = await apiClient.get<{ data: { quizzes: Quiz[]; total: number; page: number; totalPages: number } }>(`${this.baseURL}/quizzes`, { params: query });
       return response.data;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw error.response.data;
     }
   }
 
@@ -229,8 +230,8 @@ export class QuizAPI {
     try {
       const response = await apiClient.get<{ data: Quiz }>(`${this.baseURL}/quizzes/${id}`);
       return response.data;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw error.response.data;
     }
   }
 
@@ -238,8 +239,8 @@ export class QuizAPI {
     try {
       const response = await apiClient.post<{ data: Quiz }>(`${this.baseURL}/quizzes`, data);
       return response.data;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw error.response.data;
     }
   }
 
@@ -247,16 +248,16 @@ export class QuizAPI {
     try {
       const response = await apiClient.put<{ data: Quiz }>(`${this.baseURL}/quizzes/${id}`, data);
       return response.data;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw error.response.data;
     }
   }
 
   async deleteQuiz(id: string): Promise<void> {
     try {
       await apiClient.delete(`${this.baseURL}/quizzes/${id}`);
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw error.response.data;
     }
   }
 
@@ -265,8 +266,8 @@ export class QuizAPI {
     try {
       const response = await apiClient.post<{ data: QuizResult }>(`${this.baseURL}/quizzes/${quizId}/submit`, submission);
       return response.data;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw error.response.data;
     }
   }
 
@@ -274,8 +275,8 @@ export class QuizAPI {
     try {
       const response = await apiClient.get<{ data: { results: QuizResult[]; total: number; page: number; totalPages: number } }>(`${this.baseURL}/results`, { params: query });
       return response.data;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw error.response.data;
     }
   }
 
@@ -283,8 +284,8 @@ export class QuizAPI {
     try {
       const response = await apiClient.get<{ data: QuizResult }>(`${this.baseURL}/results/${resultId}`);
       return response.data;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw error.response.data;
     }
   }
 
@@ -296,9 +297,8 @@ export class QuizAPI {
 
       const response = await apiClient.get<{ data: { results: QuizResult[]; total: number; page: number; totalPages: number } }>(`${this.baseURL}/results/user?${params.toString()}`);
       return response.data;
-    } catch (error) {
-      console.error('Error fetching user quiz results:', error);
-      throw error;
+    } catch (error: any) {
+      throw error.response.data;
     }
   }
 
@@ -307,8 +307,8 @@ export class QuizAPI {
     try {
       const response = await apiClient.get<{ data: QuizAnalytics }>(`${this.baseURL}/quizzes/${quizId}/analytics`);
       return response.data;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw error.response.data;
     }
   }
 }
@@ -327,8 +327,8 @@ export function transformBackendQuiz(backendQuiz: BackendQuiz): Quiz {
     description: backendQuiz.description,
     category: backendQuiz.category,
     estimatedTime: backendQuiz.estimatedTime,
-    difficulty: (backendQuiz.difficulty?.toLowerCase() as 'beginner' | 'intermediate' | 'advanced') || 'beginner',
-    status: (backendQuiz.status?.toLowerCase() as 'draft' | 'active' | 'archived') || 'draft',
+    difficulty: (backendQuiz.difficulty?.toUpperCase() as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED') || 'BEGINNER',
+    status: (backendQuiz.status?.toUpperCase() as 'DRAFT' | 'ACTIVE' | 'ARCHIVED') || 'DRAFT',
     isPublic: backendQuiz.isPublic,
     createdAt: backendQuiz.createdAt,
     updatedAt: backendQuiz.updatedAt,

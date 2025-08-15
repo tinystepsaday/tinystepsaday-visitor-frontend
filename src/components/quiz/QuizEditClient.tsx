@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
-import { quizAPI } from '@/integration/quiz'
+import { CreateQuizData, quizAPI } from '@/integration/quiz'
 import { type Quiz, type GradingCriteria } from '@/data/quizzes'
 import { GradingCriteriaEditor } from './GradingCriteriaEditor'
 import { DetailPageLoader } from '../ui/loaders'
@@ -48,17 +48,17 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
     description: '',
     category: '',
     estimatedTime: '',
-    difficulty: 'intermediate' as 'beginner' | 'intermediate' | 'advanced',
-    status: 'draft' as 'draft' | 'active' | 'archived',
+    difficulty: 'INTERMEDIATE' as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED',
+    status: 'DRAFT' as 'DRAFT' | 'ACTIVE' | 'ARCHIVED',
     isPublic: false
   })
 
   // Available categories and difficulties from backend
   const [availableCategories, setAvailableCategories] = useState<string[]>([])
   const [availableDifficulties] = useState([
-    { value: 'beginner', label: 'Beginner' },
-    { value: 'intermediate', label: 'Intermediate' },
-    { value: 'advanced', label: 'Advanced' }
+    { value: 'BEGINNER', label: 'Beginner' },
+    { value: 'INTERMEDIATE', label: 'Intermediate' },
+    { value: 'ADVANCED', label: 'Advanced' }
   ])
 
   // Mock data for courses and products - in real app, these would come from API
@@ -97,8 +97,8 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
             description: quiz.description,
             category: quiz.category,
             estimatedTime: quiz.estimatedTime,
-            difficulty: quiz.difficulty,
-            status: quiz.status,
+            difficulty: quiz.difficulty.toUpperCase() as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED',
+            status: quiz.status.toUpperCase() as 'DRAFT' | 'ACTIVE' | 'ARCHIVED',
             isPublic: quiz.isPublic
           })
           setTags(quiz.tags)
@@ -112,8 +112,8 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
             description: '',
             category: '',
             estimatedTime: '',
-            difficulty: 'intermediate',
-            status: 'draft',
+            difficulty: 'INTERMEDIATE' as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED',
+            status: 'DRAFT' as 'DRAFT' | 'ACTIVE' | 'ARCHIVED',
             isPublic: false
           })
           setTags([])
@@ -205,7 +205,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
         description: formData.description,
         category: formData.category,
         estimatedTime: formData.estimatedTime,
-        difficulty: formData.difficulty,
+        difficulty: formData.difficulty.toUpperCase() as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED',
         status: formData.status,
         isPublic: formData.isPublic,
         tags,
@@ -234,14 +234,16 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
 
       if (isEditing && quiz) {
         // Update existing quiz
-        await quizAPI.updateQuiz(quiz.id, quizData)
+        const updatedQuiz = await quizAPI.updateQuiz(quiz.id, quizData as unknown as CreateQuizData)
+        console.log('Updated quiz:', updatedQuiz)
         toast({
           title: "Success",
           description: "Quiz updated successfully!",
         })
       } else {
         // Create new quiz
-        await quizAPI.createQuiz(quizData)
+        const createdQuiz = await quizAPI.createQuiz(quizData as unknown as CreateQuizData)
+        console.log('Created quiz:', createdQuiz)
         toast({
           title: "Success",
           description: "Quiz created successfully!",
@@ -251,7 +253,6 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
       // Redirect to quiz management page
       router.push('/management/quizzes')
     } catch (err: unknown) {
-      console.error('Error saving quiz:', err)
       const errorMessage = err instanceof Error ? err.message : 'Failed to save quiz. Please try again.'
       toast({
         title: "Error",
@@ -316,13 +317,13 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="category">Category *</Label>
-                  <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+                  <Select value={formData.category.toUpperCase()} onValueChange={(value) => handleInputChange('category', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
                       {availableCategories.map((category) => (
-                        <SelectItem key={category} value={category}>
+                        <SelectItem key={category} value={category.toUpperCase()}>
                           {category}
                         </SelectItem>
                       ))}
@@ -331,13 +332,13 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="difficulty">Difficulty *</Label>
-                  <Select value={formData.difficulty} onValueChange={(value) => handleInputChange('difficulty', value as 'beginner' | 'intermediate' | 'advanced')}>
+                  <Select value={formData.difficulty.toUpperCase()} onValueChange={(value) => handleInputChange('difficulty', value as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED')}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select difficulty" />
                     </SelectTrigger>
                     <SelectContent>
                       {availableDifficulties.map((difficulty) => (
-                        <SelectItem key={difficulty.value} value={difficulty.value}>
+                        <SelectItem key={difficulty.value} value={difficulty.value.toUpperCase()}>
                           {difficulty.label}
                         </SelectItem>
                       ))}
@@ -381,14 +382,14 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
               </div>
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
-                <Select value={formData.status} onValueChange={(value) => handleInputChange('status', value)}>
+                <Select value={formData.status.toUpperCase()} onValueChange={(value) => handleInputChange('status', value)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="archived">Archived</SelectItem>
+                    <SelectItem value="DRAFT">Draft</SelectItem>
+                    <SelectItem value="ACTIVE">Active</SelectItem>
+                    <SelectItem value="ARCHIVED">Archived</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

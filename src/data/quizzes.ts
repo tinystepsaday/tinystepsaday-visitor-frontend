@@ -34,9 +34,9 @@ export interface Quiz {
   questions: QuizQuestion[];
   category: string;
   estimatedTime: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
   // Management fields
-  status: 'draft' | 'active' | 'archived';
+  status: 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
   isPublic: boolean;
   createdAt: string;
   updatedAt: string;
@@ -110,8 +110,8 @@ export const quizzes2: Record<string, Quiz> = {
     description: "This comprehensive assessment evaluates your current habit formation practices, self-discipline levels, and routine consistency. It provides personalized insights into your strengths and areas for improvement in building sustainable habits that lead to long-term success.",
     category: "Personal Development",
     estimatedTime: "10-15 minutes",
-    difficulty: "intermediate",
-    status: "active",
+    difficulty: "INTERMEDIATE",
+    status: "ACTIVE",
     isPublic: true,
     createdAt: "2025-01-01",
     updatedAt: "2025-01-15",
@@ -302,8 +302,8 @@ export const quizzes2: Record<string, Quiz> = {
     description: "This assessment helps you understand your relationship with various habits and dependencies, including digital consumption, substances, or behavioral patterns. It provides insights into your current level of awareness and control, offering personalized strategies for building healthier relationships with potentially problematic behaviors.",
     category: "Mental Health",
     estimatedTime: "5-10 minutes",
-    difficulty: "beginner",
-    status: "active",
+    difficulty: "BEGINNER",
+    status: "ACTIVE",
     isPublic: true,
     createdAt: "2025-01-05",
     updatedAt: "2025-01-12",
@@ -424,8 +424,8 @@ export const quizzes2: Record<string, Quiz> = {
     description: "This assessment explores your current understanding of life purpose, values alignment, and career satisfaction. It helps identify areas where you feel fulfilled versus areas that may need more attention, providing guidance for aligning your daily activities with your deeper sense of meaning and purpose.",
     category: "Life Purpose",
     estimatedTime: "5-10 minutes",
-    difficulty: "intermediate",
-    status: "active",
+    difficulty: "INTERMEDIATE",
+    status: "ACTIVE",
     isPublic: true,
     createdAt: "2025-01-10",
     updatedAt: "2025-01-18",
@@ -546,8 +546,8 @@ export const quizzes2: Record<string, Quiz> = {
     description: "This assessment evaluates your relationship with past experiences and current emotional well-being. It helps identify areas where past events may be affecting your present life and provides guidance for developing healthy coping mechanisms and healing practices.",
     category: "Mental Health",
     estimatedTime: "10-15 minutes",
-    difficulty: "advanced",
-    status: "draft",
+    difficulty: "ADVANCED",
+    status: "DRAFT",
     isPublic: false,
     createdAt: "2025-01-15",
     updatedAt: "2025-01-15",
@@ -668,8 +668,8 @@ export const quizzes2: Record<string, Quiz> = {
     description: "This assessment measures your current mindfulness practice, awareness levels, and ability to stay present. It evaluates your meditation habits, stress management techniques, and overall mental clarity, providing personalized recommendations for deepening your mindfulness practice.",
     category: "Wellness",
     estimatedTime: "8-12 minutes",
-    difficulty: "intermediate",
-    status: "active",
+    difficulty: "INTERMEDIATE",
+    status: "ACTIVE",
     isPublic: true,
     createdAt: "2025-01-20",
     updatedAt: "2025-01-25",
