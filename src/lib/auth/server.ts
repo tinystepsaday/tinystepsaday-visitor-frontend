@@ -45,13 +45,13 @@ export async function getServerAuthToken(): Promise<string | null> {
       const decoded = jwtDecode<TokenPayload>(token);
       const now = Math.floor(Date.now() / 1000);
       
-      console.log('Server Auth Debug - Token expires at:', new Date(decoded.exp * 1000));
-      console.log('Server Auth Debug - Current time:', new Date(now * 1000));
-      console.log('Server Auth Debug - Token expired:', decoded.exp < now);
+      // console.log('Server Auth Debug - Token expires at:', new Date(decoded.exp * 1000));
+      // console.log('Server Auth Debug - Current time:', new Date(now * 1000));
+      // console.log('Server Auth Debug - Token expired:', decoded.exp < now);
       
       if (decoded.exp < now) {
         // Token is expired, try to refresh it
-        console.log('Server Auth Debug - Attempting token refresh');
+        // console.log('Server Auth Debug - Attempting token refresh');
         const refreshed = await refreshServerToken();
         if (refreshed) {
           // Get the new token

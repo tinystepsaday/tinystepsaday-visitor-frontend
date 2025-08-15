@@ -199,7 +199,7 @@ export function QuizBuilder({ quiz, onQuizChange, onSave }: QuizBuilderProps) {
               {question.type === "true-false" ? (
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <input
+                    <Input
                       type="radio"
                       id="true"
                       name={`correct-${question.id}`}
@@ -209,7 +209,7 @@ export function QuizBuilder({ quiz, onQuizChange, onSave }: QuizBuilderProps) {
                     <Label htmlFor="true">True</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <input
+                    <Input
                       type="radio"
                       id="false"
                       name={`correct-${question.id}`}
@@ -223,7 +223,7 @@ export function QuizBuilder({ quiz, onQuizChange, onSave }: QuizBuilderProps) {
                 <div className="space-y-2">
                   {question.options?.map((option, index) => (
                     <div key={index} className="flex items-center space-x-2">
-                      <input
+                      <Input
                         type="radio"
                         id={`option-${index}`}
                         name={`correct-${question.id}`}
@@ -562,7 +562,7 @@ export function QuizBuilder({ quiz, onQuizChange, onSave }: QuizBuilderProps) {
                           <div className="space-y-2">
                             {question.options.map((option, optionIndex) => (
                               <div key={optionIndex} className="flex items-center space-x-2">
-                                <input type="radio" disabled />
+                                <Input type="radio" disabled />
                                 <span className="text-sm">{option}</span>
                                 {option === question.correctAnswer && (
                                   <Badge variant="default" className="text-xs">
@@ -577,7 +577,7 @@ export function QuizBuilder({ quiz, onQuizChange, onSave }: QuizBuilderProps) {
                         {question.type === "true-false" && (
                           <div className="space-y-2">
                             <div className="flex items-center space-x-2">
-                              <input type="radio" disabled />
+                              <Input type="radio" disabled />
                               <span className="text-sm">True</span>
                               {question.correctAnswer === "true" && (
                                 <Badge variant="default" className="text-xs">
@@ -586,7 +586,7 @@ export function QuizBuilder({ quiz, onQuizChange, onSave }: QuizBuilderProps) {
                               )}
                             </div>
                             <div className="flex items-center space-x-2">
-                              <input type="radio" disabled />
+                              <Input type="radio" disabled />
                               <span className="text-sm">False</span>
                               {question.correctAnswer === "false" && (
                                 <Badge variant="default" className="text-xs">

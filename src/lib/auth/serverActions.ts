@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use server';
 
 import { redirect } from 'next/navigation';
@@ -39,7 +40,6 @@ export async function getCurrentUser(): Promise<ServerUser | null> {
     const accessToken = cookieStore.get('accessToken')?.value;
     
     if (!accessToken) {
-      console.log('Server Action Debug - No access token found');
       return null;
     }
 
@@ -49,7 +49,6 @@ export async function getCurrentUser(): Promise<ServerUser | null> {
       const now = Math.floor(Date.now() / 1000);
       
       if (decoded.exp < now) {
-        console.log('Server Action Debug - Token expired, attempting refresh');
         const refreshed = await refreshTokenAction();
         if (!refreshed) {
           return null;
@@ -57,8 +56,8 @@ export async function getCurrentUser(): Promise<ServerUser | null> {
         // Retry with new token
         return getCurrentUser();
       }
-    } catch (error) {
-      console.error('Server Action Debug - Error decoding token:', error);
+    } catch (_error) {
+      // Ignore error
       return null;
     }
 
@@ -74,7 +73,6 @@ export async function getCurrentUser(): Promise<ServerUser | null> {
 
     if (!response.ok) {
       if (response.status === 401) {
-        console.log('Server Action Debug - 401 response, attempting refresh');
         const refreshed = await refreshTokenAction();
         if (refreshed) {
           return getCurrentUser();
@@ -86,7 +84,6 @@ export async function getCurrentUser(): Promise<ServerUser | null> {
     const result = await response.json();
     return result.success ? result.data : null;
   } catch (error) {
-    console.error('Server Action Debug - Error getting current user:', error);
     return null;
   }
 }
@@ -100,7 +97,6 @@ async function refreshTokenAction(): Promise<boolean> {
     const refreshToken = cookieStore.get('refreshToken')?.value;
     
     if (!refreshToken) {
-      console.log('Server Action Debug - No refresh token available');
       return false;
     }
 
@@ -110,11 +106,9 @@ async function refreshTokenAction(): Promise<boolean> {
       const now = Math.floor(Date.now() / 1000);
       
       if (decoded.exp < now) {
-        console.log('Server Action Debug - Refresh token expired');
         return false;
       }
     } catch (error) {
-      console.error('Server Action Debug - Error decoding refresh token:', error);
       return false;
     }
 
@@ -127,7 +121,6 @@ async function refreshTokenAction(): Promise<boolean> {
     });
 
     if (!response.ok) {
-      console.log('Server Action Debug - Refresh token request failed:', response.status);
       return false;
     }
 
@@ -151,14 +144,11 @@ async function refreshTokenAction(): Promise<boolean> {
         path: '/',
       });
       
-      console.log('Server Action Debug - Token refresh successful');
       return true;
     }
 
-    console.log('Server Action Debug - Token refresh failed - invalid response');
     return false;
   } catch (error) {
-    console.error('Server Action Debug - Error refreshing token:', error);
     return false;
   }
 }
@@ -167,15 +157,12 @@ async function refreshTokenAction(): Promise<boolean> {
  * Server action to require authentication
  */
 export async function requireAuthAction(): Promise<ServerUser> {
-  console.log('Server Action Debug - requireAuthAction called');
   const user = await getCurrentUser();
   
   if (!user) {
-    console.log('Server Action Debug - No user found, redirecting to login');
     redirect('/auth/login');
   }
   
-  console.log('Server Action Debug - User authenticated:', user.email);
   return user;
 }
 
@@ -183,15 +170,12 @@ export async function requireAuthAction(): Promise<ServerUser> {
  * Server action to require specific role
  */
 export async function requireRoleAction(requiredRole: string): Promise<ServerUser> {
-  console.log('Server Action Debug - requireRoleAction called for:', requiredRole);
   const user = await requireAuthAction();
   
   if (user.role !== requiredRole && user.role !== 'SUPER_ADMIN') {
-    console.log('Server Action Debug - User role insufficient, redirecting to login');
     redirect('/auth/login');
   }
   
-  console.log('Server Action Debug - User has required role');
   return user;
 }
 
@@ -218,7 +202,6 @@ export async function getUserByIdAction(id: string): Promise<ServerUser | null> 
     const result = await response.json();
     return result.success ? result.data : null;
   } catch (error) {
-    console.error('Server Action Debug - Error getting user by ID:', error);
     return null;
   }
 }
