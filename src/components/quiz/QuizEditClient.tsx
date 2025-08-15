@@ -50,7 +50,9 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
     estimatedTime: '',
     difficulty: 'INTERMEDIATE' as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED',
     status: 'DRAFT' as 'DRAFT' | 'ACTIVE' | 'ARCHIVED',
-    isPublic: false
+    isPublic: false,
+    quizType: 'DEFAULT' as 'DEFAULT' | 'ONBOARDING',
+    redirectAfterAnswer: 'HOME' as 'HOME' | 'RESULTS'
   })
 
   // Available categories and difficulties from backend
@@ -99,7 +101,9 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
             estimatedTime: quiz.estimatedTime,
             difficulty: quiz.difficulty.toUpperCase() as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED',
             status: quiz.status.toUpperCase() as 'DRAFT' | 'ACTIVE' | 'ARCHIVED',
-            isPublic: quiz.isPublic
+            isPublic: quiz.isPublic,
+            quizType: quiz.quizType.toUpperCase() as 'DEFAULT' | 'ONBOARDING',
+            redirectAfterAnswer: quiz.redirectAfterAnswer.toUpperCase() as 'HOME' | 'RESULTS'
           })
           setTags(quiz.tags)
           setQuestions(quiz.questions)
@@ -114,7 +118,9 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
             estimatedTime: '',
             difficulty: 'INTERMEDIATE' as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED',
             status: 'DRAFT' as 'DRAFT' | 'ACTIVE' | 'ARCHIVED',
-            isPublic: false
+            isPublic: false,
+            quizType: 'DEFAULT' as 'DEFAULT' | 'ONBOARDING',
+            redirectAfterAnswer: 'HOME' as 'HOME' | 'RESULTS'
           })
           setTags([])
           setQuestions([])
@@ -208,6 +214,8 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
         difficulty: formData.difficulty.toUpperCase() as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED',
         status: formData.status,
         isPublic: formData.isPublic,
+        quizType: formData.quizType.toUpperCase() as 'DEFAULT' | 'ONBOARDING',
+        redirectAfterAnswer: formData.redirectAfterAnswer.toUpperCase() as 'HOME' | 'RESULTS',
         tags,
         questions: questions.map((q, index) => ({
           text: q.text,
@@ -303,47 +311,69 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
             <CardDescription>Update the basic details of your quiz</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Quiz Title</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
+                placeholder="Enter quiz title"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Quiz Title</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  placeholder="Enter quiz title"
-                />
+                <Label htmlFor="category">Category *</Label>
+                <Select value={formData.category.toUpperCase()} onValueChange={(value) => handleInputChange('category', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableCategories.map((category) => (
+                      <SelectItem key={category} value={category.toUpperCase()}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="category">Category *</Label>
-                  <Select value={formData.category.toUpperCase()} onValueChange={(value) => handleInputChange('category', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableCategories.map((category) => (
-                        <SelectItem key={category} value={category.toUpperCase()}>
-                          {category}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="difficulty">Difficulty *</Label>
-                  <Select value={formData.difficulty.toUpperCase()} onValueChange={(value) => handleInputChange('difficulty', value as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED')}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select difficulty" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableDifficulties.map((difficulty) => (
-                        <SelectItem key={difficulty.value} value={difficulty.value.toUpperCase()}>
-                          {difficulty.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="difficulty">Difficulty *</Label>
+                <Select value={formData.difficulty.toUpperCase()} onValueChange={(value) => handleInputChange('difficulty', value as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED')}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select difficulty" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableDifficulties.map((difficulty) => (
+                      <SelectItem key={difficulty.value} value={difficulty.value.toUpperCase()}>
+                        {difficulty.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="quizType">Quiz Type</Label>
+                <Select value={formData.quizType.toUpperCase()} onValueChange={(value) => handleInputChange('quizType', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select quiz type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="DEFAULT">Default</SelectItem>
+                    <SelectItem value="ONBOARDING">Onboarding</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="redirectAfterAnswer">Redirect After Answer</Label>
+                <Select value={formData.redirectAfterAnswer.toUpperCase()} onValueChange={(value) => handleInputChange('redirectAfterAnswer', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select redirect after answer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="HOME">Home</SelectItem>
+                    <SelectItem value="RESULTS">Results</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -373,10 +403,10 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
                 <Label htmlFor="estimatedTime">Estimated Time (minutes)</Label>
                 <Input
                   id="estimatedTime"
-                  type="number"
+                  type="text"
                   value={formData.estimatedTime}
                   onChange={(e) => handleInputChange('estimatedTime', e.target.value)}
-                  placeholder="30"
+                  placeholder="4 - 5 minutes"
                 />
               </div>
               <div className="space-y-2">

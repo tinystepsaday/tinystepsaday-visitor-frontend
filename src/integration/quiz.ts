@@ -11,6 +11,8 @@ export interface CreateQuizData {
   title: string;
   subtitle?: string;
   description: string;
+  quizType: 'DEFAULT' | 'ONBOARDING';
+  redirectAfterAnswer: 'HOME' | 'RESULTS';
   category: string;
   estimatedTime: string;
   difficulty: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
@@ -328,8 +330,8 @@ export const quizAPI = QuizAPI.getInstance();
 export function transformBackendQuiz(backendQuiz: BackendQuiz): Quiz {
   return {
     id: backendQuiz.id,
-    quizType: (backendQuiz.quizType?.toLowerCase() as 'default' | 'onboarding') || 'default',
-    redirectAfterAnswer: (backendQuiz.redirectAfterAnswer?.toLowerCase() as 'home' | 'results') || 'results',
+    quizType: (backendQuiz.quizType?.toUpperCase() as 'DEFAULT' | 'ONBOARDING') || 'DEFAULT',
+    redirectAfterAnswer: (backendQuiz.redirectAfterAnswer?.toUpperCase() as 'HOME' | 'RESULTS') || 'HOME',
     title: backendQuiz.title,
     subtitle: backendQuiz.subtitle || '',
     description: backendQuiz.description,

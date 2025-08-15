@@ -117,11 +117,11 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div>
+                <div className='flex gap-2 items-center'>
                   <label className="text-sm font-medium text-muted-foreground">Category</label>
                   <p className="text-sm">{quiz.category}</p>
                 </div>
-                <div>
+                <div className='flex gap-2 items-center'>
                   <label className="text-sm font-medium text-muted-foreground">Difficulty</label>
                   <Badge className={
                     quiz.difficulty === 'BEGINNER' ? 'bg-green-100 text-green-800' :
@@ -131,7 +131,7 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
                     {quiz.difficulty}
                   </Badge>
                 </div>
-                <div>
+                <div className='flex gap-2 items-center'>
                   <label className="text-sm font-medium text-muted-foreground">Status</label>
                   <Badge className={
                     quiz.status === 'ACTIVE' ? 'bg-green-100 text-green-800' :
@@ -141,7 +141,7 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
                     {quiz.status}
                   </Badge>
                 </div>
-                <div>
+                <div className='flex gap-2 items-center'>
                   <label className="text-sm font-medium text-muted-foreground">Visibility</label>
                   <Badge className={quiz.isPublic ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
                     {quiz.isPublic ? 'Public' : 'Private'}
