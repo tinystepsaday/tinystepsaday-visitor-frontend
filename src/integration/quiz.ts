@@ -181,8 +181,8 @@ export class QuizAPI {
   // Public Quiz Endpoints
   async getPublicQuizzes(query?: Partial<QuizQuery>): Promise<{ quizzes: Quiz[]; total: number; page: number; totalPages: number }> {
     try {
-      const response = await apiClient.get<{ quizzes: Quiz[]; total: number; page: number; totalPages: number }>(`${this.baseURL}/public/quizzes`, { params: query });
-      return response;
+      const response = await apiClient.get<{ data: { quizzes: Quiz[]; total: number; page: number; totalPages: number } }>(`${this.baseURL}/public/quizzes`, { params: query });
+      return response.data;
     } catch (error) {
       throw error;
     }
@@ -190,8 +190,8 @@ export class QuizAPI {
 
   async getPublicQuizById(id: string): Promise<Quiz> {
     try {
-      const response = await apiClient.get<Quiz>(`${this.baseURL}/public/quizzes/${id}`);
-      return response;
+      const response = await apiClient.get<{ data: Quiz }>(`${this.baseURL}/public/quizzes/${id}`);
+      return response.data;
     } catch (error) {
       throw error;
     }
@@ -199,8 +199,8 @@ export class QuizAPI {
 
   async getQuizCategories(): Promise<string[]> {
     try {
-      const response = await apiClient.get<string[]>(`${this.baseURL}/categories`);
-      return response;
+      const response = await apiClient.get<{ data: string[] }>(`${this.baseURL}/categories`);
+      return response.data;
     } catch (error) {
       throw error;
     }
@@ -208,8 +208,8 @@ export class QuizAPI {
 
   async getQuizDifficulties(): Promise<Array<{ value: string; label: string }>> {
     try {
-      const response = await apiClient.get<Array<{ value: string; label: string }>>(`${this.baseURL}/difficulties`);
-      return response;
+      const response = await apiClient.get<{ data: Array<{ value: string; label: string }> }>(`${this.baseURL}/difficulties`);
+      return response.data;
     } catch (error) {
       throw error;
     }
@@ -218,8 +218,8 @@ export class QuizAPI {
   // Protected Quiz Endpoints (require authentication)
   async getQuizzes(query?: Partial<QuizQuery>): Promise<{ quizzes: Quiz[]; total: number; page: number; totalPages: number }> {
     try {
-      const response = await apiClient.get<{ quizzes: Quiz[]; total: number; page: number; totalPages: number }>(`${this.baseURL}/quizzes`, { params: query });
-      return response;
+      const response = await apiClient.get<{ data: { quizzes: Quiz[]; total: number; page: number; totalPages: number } }>(`${this.baseURL}/quizzes`, { params: query });
+      return response.data;
     } catch (error) {
       throw error;
     }
@@ -227,8 +227,8 @@ export class QuizAPI {
 
   async getQuizById(id: string): Promise<Quiz> {
     try {
-      const response = await apiClient.get<Quiz>(`${this.baseURL}/quizzes/${id}`);
-      return response;
+      const response = await apiClient.get<{ data: Quiz }>(`${this.baseURL}/quizzes/${id}`);
+      return response.data;
     } catch (error) {
       throw error;
     }
@@ -236,8 +236,8 @@ export class QuizAPI {
 
   async createQuiz(data: CreateQuizData): Promise<Quiz> {
     try {
-      const response = await apiClient.post<Quiz>(`${this.baseURL}/quizzes`, data);
-      return response;
+      const response = await apiClient.post<{ data: Quiz }>(`${this.baseURL}/quizzes`, data);
+      return response.data;
     } catch (error) {
       throw error;
     }
@@ -245,8 +245,8 @@ export class QuizAPI {
 
   async updateQuiz(id: string, data: UpdateQuizData): Promise<Quiz> {
     try {
-      const response = await apiClient.put<Quiz>(`${this.baseURL}/quizzes/${id}`, data);
-      return response;
+      const response = await apiClient.put<{ data: Quiz }>(`${this.baseURL}/quizzes/${id}`, data);
+      return response.data;
     } catch (error) {
       throw error;
     }
@@ -263,8 +263,8 @@ export class QuizAPI {
   // Quiz Results
   async submitQuiz(quizId: string, submission: QuizSubmission): Promise<QuizResult> {
     try {
-      const response = await apiClient.post<QuizResult>(`${this.baseURL}/quizzes/${quizId}/submit`, submission);
-      return response;
+      const response = await apiClient.post<{ data: QuizResult }>(`${this.baseURL}/quizzes/${quizId}/submit`, submission);
+      return response.data;
     } catch (error) {
       throw error;
     }
@@ -272,8 +272,8 @@ export class QuizAPI {
 
   async getQuizResults(query?: Partial<QuizResultQuery>): Promise<{ results: QuizResult[]; total: number; page: number; totalPages: number }> {
     try {
-      const response = await apiClient.get<{ results: QuizResult[]; total: number; page: number; totalPages: number }>(`${this.baseURL}/results`, { params: query });
-      return response;
+      const response = await apiClient.get<{ data: { results: QuizResult[]; total: number; page: number; totalPages: number } }>(`${this.baseURL}/results`, { params: query });
+      return response.data;
     } catch (error) {
       throw error;
     }
@@ -281,8 +281,8 @@ export class QuizAPI {
 
   async getQuizResultById(resultId: string): Promise<QuizResult> {
     try {
-      const response = await apiClient.get<QuizResult>(`${this.baseURL}/results/${resultId}`);
-      return response;
+      const response = await apiClient.get<{ data: QuizResult }>(`${this.baseURL}/results/${resultId}`);
+      return response.data;
     } catch (error) {
       throw error;
     }
@@ -294,8 +294,8 @@ export class QuizAPI {
       params.append('page', page.toString());
       params.append('limit', limit.toString());
 
-      const response = await apiClient.get<{ results: QuizResult[]; total: number; page: number; totalPages: number }>(`${this.baseURL}/results/user?${params.toString()}`);
-      return response;
+      const response = await apiClient.get<{ data: { results: QuizResult[]; total: number; page: number; totalPages: number } }>(`${this.baseURL}/results/user?${params.toString()}`);
+      return response.data;
     } catch (error) {
       console.error('Error fetching user quiz results:', error);
       throw error;
@@ -305,8 +305,8 @@ export class QuizAPI {
   // Quiz Analytics
   async getQuizAnalytics(quizId: string): Promise<QuizAnalytics> {
     try {
-      const response = await apiClient.get<QuizAnalytics>(`${this.baseURL}/quizzes/${quizId}/analytics`);
-      return response;
+      const response = await apiClient.get<{ data: QuizAnalytics }>(`${this.baseURL}/quizzes/${quizId}/analytics`);
+      return response.data;
     } catch (error) {
       throw error;
     }
