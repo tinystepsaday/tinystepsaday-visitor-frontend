@@ -14,7 +14,7 @@ export default function ConditionalNavbar() {
     return null;
   }
 
-  if (pathname?.includes("answering")) {
+  if (pathname?.includes("answering") || pathname?.includes("onboarding")) {
     return null;
   }
 

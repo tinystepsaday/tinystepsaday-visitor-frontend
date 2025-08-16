@@ -47,7 +47,7 @@ export default function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
-  const returnUrl = searchParams.get('returnUrl') || '/dashboard';
+  const returnUrl = searchParams.get('returnUrl') || '/';
   const { signup } = useAuthStore();
 
   // Initialize social auth providers
@@ -465,7 +465,7 @@ export default function SignupForm() {
       <div className="text-center mt-6">
         <p className="text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link href={`/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`} className="text-primary hover:underline font-medium">
+          <Link href={`/auth/login`} className="text-primary hover:underline font-medium">
             Sign in
           </Link>
         </p>

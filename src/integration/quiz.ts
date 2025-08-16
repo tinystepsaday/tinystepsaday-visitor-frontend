@@ -217,6 +217,15 @@ export class QuizAPI {
     }
   }
 
+  async getOnboardingQuiz(): Promise<Quiz> {
+    try {
+      const response = await apiClient.get<{ data: Quiz }>(`${this.baseURL}/public/onboarding`);
+      return response.data;
+    } catch (error: any) {
+      throw error.response.data;
+    }
+  }
+
   async getQuizCategories(): Promise<string[]> {
     try {
       const response = await apiClient.get<{ data: string[] }>(`${this.baseURL}/categories`);

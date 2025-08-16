@@ -338,7 +338,7 @@ export default function LoginForm() {
               type="button"
               variant="link"
               className="px-0 text-sm"
-              onClick={() => router.push('/auth/forgotpassword')}
+              onClick={() => router.push(`/auth/forgotpassword?returnUrl=${searchParams.get('returnUrl') || '/onboarding'}`)}
               disabled={isLoading}
             >
               Forgot password?
@@ -368,7 +368,7 @@ export default function LoginForm() {
           type="button"
           variant="link"
           className="px-0 text-sm"
-          onClick={() => router.push('/auth/signup')}
+          onClick={() => router.push(`/auth/signup?returnUrl=${searchParams.get('returnUrl') || '/onboarding'}`)}
           disabled={isLoading}
         >
           Sign up
