@@ -300,7 +300,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
           Take Another Quiz
         </Button>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild className='hidden'>
             <Button variant="outline">
               <Download className="h-4 w-4" />
               Download Results
