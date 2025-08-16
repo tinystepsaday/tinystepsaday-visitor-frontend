@@ -79,6 +79,17 @@ export interface QuizResult {
   proposedProducts?: Array<{ id: string; name: string; slug: string }>;
   proposedStreaks?: Array<{ id: string; name: string; slug: string }>;
   proposedBlogPosts?: Array<{ id: string; title: string; slug: string }>;
+  quiz?: {
+    id: string;
+    title: string;
+    category: string;
+  };
+  user?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
 }
 
 export interface QuizAnalytics {

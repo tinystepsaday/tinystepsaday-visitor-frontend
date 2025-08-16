@@ -60,6 +60,7 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
         setResult({
           ...quizResult,
           quiz,
+          user: quizResult.user,
           matchingCriteria: matchingCriteria ? {
             name: matchingCriteria.name,
             description: matchingCriteria.description || "",

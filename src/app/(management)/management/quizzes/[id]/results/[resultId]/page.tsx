@@ -120,7 +120,7 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Quiz Result Details</h1>
             <p className="text-muted-foreground">
-              {result.userName} - {quiz.title}
+              {result.user?.firstName} {result.user?.lastName} - {quiz.title}
             </p>
           </div>
         </div>
@@ -290,11 +290,11 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
             <CardContent className="space-y-3">
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Name</label>
-                <p className="text-sm">{result.userName}</p>
+                <p className="text-sm">{result.user?.firstName} {result.user?.lastName}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Email</label>
-                <p className="text-sm">{result.userEmail}</p>
+                <p className="text-sm">{result.user?.email}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Quiz</label>
