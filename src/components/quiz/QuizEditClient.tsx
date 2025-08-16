@@ -57,7 +57,52 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
   })
 
   // Available categories and difficulties from backend
-  const [availableCategories, setAvailableCategories] = useState<string[]>([])
+  const availableCategories = [
+    "Personal Development",
+    "Mental Health",
+    "Life Purpose",
+    "Wellness",
+    "Career",
+    "Relationships",
+    "Productivity",
+    "Mindfulness",
+    "Finance",
+    "Family",
+    "Social",
+    "Spirituality",
+    "Personal Growth",
+    "Self-Improvement",
+    "Leadership",
+    "Entrepreneurship",
+    "Marketing",
+    "Sales",
+    "Technology",
+    "Design",
+    "Writing",
+    "Reading",
+    "Listening",
+    "Speaking",
+    "Travel",
+    "Food",
+    "Fashion",
+    "Art",
+    "Music",
+    "Movies",
+    "TV",
+    "Books",
+    "Podcasts",
+    "Gaming",
+    "Health",
+    "Fitness",
+    "Sleep",
+    "Meditation",
+    "Yoga",
+    "Onboarding",
+    "Productivity",
+    "Time Management",
+    "Goal Setting",
+    "Habit Building"
+  ];
   const [availableDifficulties] = useState([
     { value: 'BEGINNER', label: 'Beginner' },
     { value: 'INTERMEDIATE', label: 'Intermediate' },
@@ -103,10 +148,6 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
   useEffect(() => {
     const initializeData = async () => {
       try {
-        // Fetch available categories from backend
-        const categories = await quizAPI.getQuizCategories()
-        setAvailableCategories(categories)
-
         if (quiz && !isInitialized) {
           // Editing existing quiz
           setFormData({
