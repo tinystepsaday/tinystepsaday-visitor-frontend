@@ -85,7 +85,7 @@ export default function QuizDetailsClient({ quiz }: QuizDetailsClientProps) {
       {/* Hero Section with CTA */}
       <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
         <CardHeader>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center flex-wrap gap-4">
             <Badge variant="secondary" className="text-sm">
               {quiz.category}
             </Badge>
@@ -106,7 +106,7 @@ export default function QuizDetailsClient({ quiz }: QuizDetailsClientProps) {
                 <h2 className="text-2xl font-semibold">Ready to discover your personalized path?</h2>
                 <p className="text-muted-foreground">
                   This {quiz.questions.length}-question assessment will help you understand your current state
-                  and provide tailored recommendations for courses, products, and resources that match your unique needs.
+                  and provide tailored recommendations for articles (Blog posts), streaks, courses, and resources that match your unique needs.
                 </p>
               </div>
 
@@ -143,7 +143,7 @@ export default function QuizDetailsClient({ quiz }: QuizDetailsClientProps) {
               <CardTitle>About This Quiz</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="text-muted-foreground leading-relaxed text-justify">
                 {quiz.description}
               </p>
             </CardContent>

@@ -136,13 +136,13 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
       {/* Score Summary */}
       <Card className="text-center">
         <CardHeader>
-          <CardTitle className="text-2xl">Your Score</CardTitle>
+          <CardTitle>
+            <div className="flex items-center justify-center gap-4">
+              {getLevelIcon(result.level)}
+            </div>
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center justify-center gap-4 mb-6">
-            {getLevelIcon(result.level)}
-          </div>
-          
           <div className={`text-lg px-4 py-2 ${getLevelColor(result.level)}`}>
             <h2 className="text-2xl font-bold">{result.classification}</h2>
             <p className="text-lg">
@@ -188,36 +188,6 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
               </div>
             </div>
           )}
-
-          {/* Areas of Improvement */}
-          {/* {result.areasOfImprovement && result.areasOfImprovement.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="font-semibold text-lg">Areas of Improvement</h4>
-              <div className="space-y-2">
-                {result.areasOfImprovement.map((area: string, index: number) => (
-                  <div key={index} className="flex items-start gap-2">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <p className="text-muted-foreground">{area}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )} */}
-
-          {/* Support Needed */}
-          {/* {result.supportNeeded && result.supportNeeded.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="font-semibold text-lg">Support & Resources</h4>
-              <div className="space-y-2">
-                {result.supportNeeded.map((support: string, index: number) => (
-                  <div key={index} className="flex items-start gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <p className="text-muted-foreground">{support}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )} */}
         </CardContent>
       </Card>
 

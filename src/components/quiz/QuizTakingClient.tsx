@@ -151,11 +151,11 @@ export default function QuizTakingClient({ quiz }: QuizTakingClientProps) {
       <div className="w-full bg-muted/50 border-b border-border sticky top-0 z-10">
         <div className="flex items-center justify-between w-full px-4 py-3 max-w-7xl mx-auto">
           <div className="flex flex-col">
-            <h1 className="text-2xl md:text-3xl text-wrap font-bold">{quiz.title}</h1>
-            <p className="text-base md:text-lg text-muted-foreground">{quiz.subtitle}</p>
+            <h1 className="text-xl md:text-3xl text-wrap font-bold">{quiz.title}</h1>
+            <p className="text-sm md:text-lg text-muted-foreground">{quiz.subtitle}</p>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={() => router.push(`/quiz/${quiz.id}`)}>
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            <Button variant="outline" size="sm" onClick={() => router.push(`/quiz/${quiz.id}`)}>
               <ArrowLeft className="h-4 w-4" />
               Go Back
             </Button>
@@ -188,7 +188,7 @@ export default function QuizTakingClient({ quiz }: QuizTakingClientProps) {
         {/* Current Question */}
         <Card className="w-full">
           <CardHeader>
-            <CardTitle className="text-xl">
+            <CardTitle className="text-lg md:text-xl">
               {currentQuestion.text}
             </CardTitle>
           </CardHeader>
@@ -200,8 +200,8 @@ export default function QuizTakingClient({ quiz }: QuizTakingClientProps) {
             >
               {currentQuestion.options.map((option) => (
                 <div key={option.id} className="flex items-center space-x-3">
-                  <RadioGroupItem value={option.id} id={option.id} />
-                  <Label htmlFor={option.id} className="text-base cursor-pointer">
+                  <RadioGroupItem value={option.id} id={option.id} className="size-6" />
+                  <Label htmlFor={option.id} className="text-sm md:text-base cursor-pointer">
                     {option.text}
                   </Label>
                 </div>

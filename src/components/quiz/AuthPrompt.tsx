@@ -38,7 +38,7 @@ export default function AuthPrompt({ quiz, onAuthenticated }: AuthPromptProps) {
       {/* Quiz Info Card */}
       <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
         <CardHeader>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
             <Badge variant="secondary" className="text-sm">
               {quiz.category}
             </Badge>
@@ -58,7 +58,7 @@ export default function AuthPrompt({ quiz, onAuthenticated }: AuthPromptProps) {
               <p className="text-muted-foreground">{quiz.description}</p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-3 md:grid-cols-3 gap-4 text-center">
               <div className="flex flex-col items-center gap-2">
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
                   <Target className="h-6 w-6 text-primary" />
