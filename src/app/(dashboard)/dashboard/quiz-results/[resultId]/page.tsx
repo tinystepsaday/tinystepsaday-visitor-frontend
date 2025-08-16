@@ -1,44 +1,34 @@
+"use client"
+
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import QuizResultDetails from "@/components/dashboard/QuizResultDetails";
-import { getQuizResultById, getQuizById } from "@/data/quizzes";
-import { notFound } from "next/navigation";
-import { Metadata } from "next";
+import { DetailPageLoader } from '@/components/ui/loaders';
 
-interface QuizResultPageProps {
-  params: Promise<{ resultId: string }>;
-}
+export default function QuizResultPage() {
+  const params = useParams();
+  const resultId = params.resultId as string;
+  const [isLoading, setIsLoading] = useState(true);
 
-export async function generateMetadata({ params }: QuizResultPageProps): Promise<Metadata> {
-  const { resultId } = await params;
-  const result = await getQuizResultById(resultId);
-  
-  if (!result) {
-    return {
-      title: "Quiz Result Not Found | Tiny Steps A Day",
-      description: "The requested quiz result could not be found.",
-      robots: "noindex, nofollow",
-    };
+  useEffect(() => {
+    if (resultId) {
+      setIsLoading(false);
+    }
+  }, [resultId]);
+
+  if (isLoading) {
+    return <DetailPageLoader />;
   }
 
-  // Get the quiz data to access the title
-  const quiz = await getQuizById(result.quizId);
-  const quizTitle = quiz?.title || 'Assessment';
-
-  return {
-    title: `Quiz Result - ${quizTitle} | Tiny Steps A Day`,
-    description: `View detailed results for your ${quizTitle} assessment. Score: ${result.score || 'N/A'}`,
-    keywords: "quiz result, assessment score, learning progress, detailed results",
-    robots: "noindex, nofollow", // Dashboard pages should not be indexed
-  };
-}
-
-export default async function QuizResultPage({ params }: QuizResultPageProps) {
-  const { resultId } = await params;
-  
-  // Get the specific quiz result
-  const result = await getQuizResultById(resultId);
-  
-  if (!result) {
-    notFound();
+  if (!resultId) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Invalid Result ID</h1>
+          <p className="text-muted-foreground">No result ID provided.</p>
+        </div>
+      </div>
+    );
   }
 
   return <QuizResultDetails resultId={resultId} />;

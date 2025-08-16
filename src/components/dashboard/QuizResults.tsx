@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Book, Target, Package, ArrowRight, Clock, TrendingUp, BarChart3 } from "lucide-react";
+import { ArrowRight, BarChart3, Clock } from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
 import DashboardPageHeader from "./DashboardPageHeader";
@@ -81,10 +80,7 @@ const QuizResults = () => {
 
   // Calculate statistics
   const totalQuizzes = quizResults.length;
-  const averageScore = totalQuizzes > 0 ? Math.round(quizResults.reduce((sum, r) => sum + r.percentage, 0) / totalQuizzes) : 0;
   const totalTimeSpent = quizResults.reduce((sum, r) => sum + r.timeSpent, 0);
-  const excellentResults = quizResults.filter(r => r.level === 'excellent').length;
-  const goodResults = quizResults.filter(r => r.level === 'good').length;
 
   const getLevelColor = (level: string) => {
     switch (level) {
@@ -136,7 +132,7 @@ const QuizResults = () => {
       
       {/* Statistics Overview */}
       {quizResults.length > 0 && (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div className="grid gap-4 md:grid-cols-2 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Quizzes</CardTitle>
@@ -146,19 +142,6 @@ const QuizResults = () => {
               <div className="text-2xl font-bold">{totalQuizzes}</div>
               <p className="text-xs text-muted-foreground">
                 Assessments completed
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Average Score</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{averageScore}%</div>
-              <p className="text-xs text-muted-foreground">
-                Across all quizzes
               </p>
             </CardContent>
           </Card>
@@ -175,19 +158,6 @@ const QuizResults = () => {
               </p>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Best Results</CardTitle>
-              <Target className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{excellentResults + goodResults}</div>
-              <p className="text-xs text-muted-foreground">
-                Excellent & Good scores
-              </p>
-            </CardContent>
-          </Card>
         </div>
       )}
       
@@ -197,7 +167,7 @@ const QuizResults = () => {
             <Card key={result.id} className="overflow-hidden">
               <div className={`h-2 ${getLevelColor(result.level)}`} />
               <CardHeader>
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-start flex-col md:flex-row gap-4 md:gap-0">
                   <div>
                     <CardTitle className="flex items-center gap-2">
                       {result.quiz.title}
@@ -221,18 +191,6 @@ const QuizResults = () => {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Score Section */}
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span className="text-sm font-medium">Score</span>
-                    <span className="text-sm font-medium">{result.percentage}%</span>
-                  </div>
-                  <Progress value={result.percentage} className="h-2" />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {result.score}/{result.maxScore} points
-                  </p>
-                </div>
-
                 {/* Analysis */}
                 {result.matchingCriteria?.description && (
                   <div>
@@ -253,78 +211,6 @@ const QuizResults = () => {
                         </li>
                       ))}
                     </ul>
-                  </div>
-                )}
-
-                {/* Proposed Resources */}
-                {(result.matchingCriteria?.proposedCourses.length || 
-                  result.matchingCriteria?.proposedProducts.length || 
-                  result.matchingCriteria?.proposedStreaks.length ||
-                  result.matchingCriteria?.proposedBlogPosts.length) && (
-                  <div>
-                    <h4 className="text-sm font-medium mb-2">Recommended Resources</h4>
-                    <div className="space-y-2">
-                      {/* Courses */}
-                      {result.matchingCriteria?.proposedCourses.slice(0, 2).map((course, index) => (
-                        <div key={index} className="flex items-center gap-2 text-sm">
-                          <Book className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-muted-foreground">{course.name}</span>
-                        </div>
-                      ))}
-                      
-                      {/* Products */}
-                      {result.matchingCriteria?.proposedProducts.slice(0, 2).map((product, index) => (
-                        <div key={index} className="flex items-center gap-2 text-sm">
-                          <Package className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-muted-foreground">{product.name}</span>
-                        </div>
-                      ))}
-                      
-                      {/* Streaks */}
-                      {result.matchingCriteria?.proposedStreaks.slice(0, 2).map((streak, index) => (
-                        <div key={index} className="flex items-center gap-2 text-sm">
-                          <Target className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-muted-foreground">{streak.name}</span>
-                        </div>
-                      ))}
-
-                      {/* Blog Posts */}
-                      {result.matchingCriteria?.proposedBlogPosts.slice(0, 2).map((blogPost, index) => (
-                        <div key={index} className="flex items-center gap-2 text-sm">
-                          <Book className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-muted-foreground">{blogPost.title}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Proposed Blog Posts */}
-                {result.matchingCriteria?.proposedBlogPosts && result.matchingCriteria.proposedBlogPosts.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium mb-2">Recommended Blog Posts</h4>
-                    <div className="space-y-2">
-                      {result.matchingCriteria.proposedBlogPosts.slice(0, 2).map((blogPost, index) => (
-                        <div key={index} className="flex items-center gap-2 text-sm">
-                          <Book className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-muted-foreground">{blogPost.title}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Areas for Improvement */}
-                {result.areasOfImprovement.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium mb-1">Areas for Improvement</h4>
-                    <div className="flex flex-wrap gap-1">
-                      {result.areasOfImprovement.slice(0, 3).map((area, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {area}
-                        </Badge>
-                      ))}
-                    </div>
                   </div>
                 )}
 

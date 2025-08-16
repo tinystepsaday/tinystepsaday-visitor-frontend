@@ -1,16 +1,14 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { ArrowLeft, Book, Target, Package, Clock, Calendar, CheckCircle, XCircle, AlertCircle, FileText } from "lucide-react";
+import { ArrowLeft, Book, Target, Package } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
-import { getQuizResultById, getQuizById, type QuizResult, type Quiz } from "@/data/quizzes";
-import { downloadQuizResultPDF } from "@/utils/pdfGenerator";
+import { quizAPI, transformBackendQuiz } from "@/integration/quiz";
+// import { downloadQuizResultPDF } from "@/utils/pdfGenerator";
+import type { QuizResult, Quiz } from "@/data/quizzes";
 
 interface QuizResultDetailsProps {
   resultId: string;
@@ -25,6 +23,7 @@ interface QuizResultWithQuiz extends QuizResult {
     proposedCourses: Array<{ id: string; name: string; slug: string }>;
     proposedProducts: Array<{ id: string; name: string; slug: string }>;
     proposedStreaks: Array<{ id: string; name: string; slug: string }>;
+    proposedBlogPosts: Array<{ id: string; title: string; slug: string }>;
   };
 }
 
@@ -37,21 +36,24 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
     const fetchQuizResult = async () => {
       try {
         setIsLoading(true);
-        const quizResult = await getQuizResultById(resultId);
-        
+        const quizResult = await quizAPI.getQuizResultById(resultId);
+
         if (!quizResult) {
           setError('Quiz result not found');
           return;
         }
 
-        const quiz = await getQuizById(quizResult.quizId);
-        if (!quiz) {
+        const backendQuiz = await quizAPI.getQuizById(quizResult.quizId);
+        if (!backendQuiz) {
           setError('Quiz not found');
           return;
         }
 
+        // Transform backend quiz data to frontend format
+        const quiz = transformBackendQuiz(backendQuiz);
+
         // Find matching grading criteria based on score
-        const matchingCriteria = quiz.gradingCriteria.find(criteria => 
+        const matchingCriteria = quiz.gradingCriteria.find(criteria =>
           quizResult.percentage >= criteria.minScore && quizResult.percentage <= criteria.maxScore
         );
 
@@ -64,7 +66,8 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
             recommendations: matchingCriteria.recommendations,
             proposedCourses: matchingCriteria.proposedCourses,
             proposedProducts: matchingCriteria.proposedProducts,
-            proposedStreaks: matchingCriteria.proposedStreaks
+            proposedStreaks: matchingCriteria.proposedStreaks,
+            proposedBlogPosts: matchingCriteria.proposedBlogPosts
           } : undefined
         });
       } catch (err) {
@@ -91,31 +94,6 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
       default:
         return 'bg-gray-100 text-gray-800';
     }
-  };
-
-  const getAnswerValue = (questionId: string, answerId: string | null) => {
-    if (!result || !answerId) return 0;
-    
-    const question = result.quiz.questions.find(q => q.id === questionId);
-    if (!question) return 0;
-    
-    const option = question.options.find(o => o.id === answerId);
-    return option ? option.value : 0;
-  };
-
-  const getUserAnswer = (questionId: string) => {
-    if (!result) return null;
-    
-    // Handle both array and Record formats for backward compatibility
-    if (Array.isArray(result.answers)) {
-      // New format: array of { questionId, optionId }
-      const userAnswer = result.answers.find((answer: { questionId: string; optionId: string }) => answer.questionId === questionId);
-      return userAnswer ? userAnswer.optionId : null;
-    } else if (typeof result.answers === 'object' && result.answers !== null) {
-      // Old format: Record<string, string>
-      return (result.answers as Record<string, string>)[questionId] || null;
-    }
-    return null;
   };
 
   if (error) {
@@ -184,85 +162,29 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between flex-col md:flex-row gap-4 md:gap-0 w-full">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Quiz Result Details</h1>
+          <p className="text-muted-foreground">
+            {result.quiz.title} - {format(new Date(result.completedAt), "MMM d, yyyy")}
+          </p>
+        </div>
+        <div className="flex items-center gap-4 justify-end w-full">
           <Link href="/dashboard/quiz-results">
             <Button variant="outline" size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Results
             </Button>
           </Link>
-          <Button 
-            variant="outline" 
+          {/* <Button
+            variant="outline"
             size="sm"
             onClick={() => downloadQuizResultPDF(result.quiz, result)}
           >
             <FileText className="mr-2 h-4 w-4" />
             Download PDF
-          </Button>
+          </Button> */}
         </div>
-        <div>
-            <h1 className="text-3xl font-bold tracking-tight">Quiz Result Details</h1>
-            <p className="text-muted-foreground">
-              {result.quiz.title} - {format(new Date(result.completedAt), "MMM d, yyyy")}
-            </p>
-          </div>
-      </div>
-
-      {/* Result Overview */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Score</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{result.percentage}%</div>
-            <p className="text-xs text-muted-foreground">
-              {result.score}/{result.maxScore} points
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Classification</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <Badge className={getLevelBadgeColor(result.level)}>
-              {result.matchingCriteria?.name || result.classification}
-            </Badge>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Time Spent</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{result.timeSpent} min</div>
-            <p className="text-xs text-muted-foreground">
-              Estimated: {result.quiz.estimatedTime}
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm font-medium">
-              {format(new Date(result.completedAt), "MMM d, yyyy")}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {format(new Date(result.completedAt), "h:mm a")}
-            </p>
-          </CardContent>
-        </Card>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -278,117 +200,14 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Performance Level</span>
-                  <Badge className={getLevelBadgeColor(result.level)}>
-                    {result.matchingCriteria?.name || result.level}
-                  </Badge>
+                <div className={`${getLevelBadgeColor(result.level)} text-xl md:text-3xl font-bold text-center mb-4 p-4 rounded-lg`}>
+                  {result.matchingCriteria?.name || result.classification}
                 </div>
-                <Progress value={result.percentage} className="h-2" />
               </div>
-              
+
               <div className="p-4 bg-muted rounded-lg">
                 <h4 className="font-medium mb-2">Feedback</h4>
                 <p className="text-sm">{result.matchingCriteria?.description || result.feedback}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Question Responses */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Question Responses</CardTitle>
-              <CardDescription>
-                Detailed breakdown of each question and answer
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {result.quiz.questions.map((question, index) => {
-                  const userAnswer = getUserAnswer(question.id);
-                  const userAnswerValue = getAnswerValue(question.id, userAnswer);
-                  const maxValue = Math.max(...question.options.map(o => o.value));
-                  const isGoodAnswer = userAnswerValue <= maxValue / 2; // Lower values are better in this system
-                  
-                  return (
-                    <div key={question.id} className="space-y-3">
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                          {index + 1}
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <p className="font-medium">{question.text}</p>
-                            {userAnswer ? (
-                              isGoodAnswer ? (
-                                <CheckCircle className="h-4 w-4 text-green-500" />
-                              ) : (
-                                <XCircle className="h-4 w-4 text-red-500" />
-                              )
-                            ) : (
-                              <AlertCircle className="h-4 w-4 text-yellow-500" />
-                            )}
-                          </div>
-                          
-                          <div className="space-y-2">
-                            {question.options.map((option) => (
-                              <div 
-                                key={option.id} 
-                                className={`flex items-center gap-3 p-2 border rounded ${
-                                  option.id === userAnswer ? 'bg-blue-50 border-blue-200' : ''
-                                }`}
-                              >
-                                <div className="w-4 h-4 border rounded flex items-center justify-center text-xs">
-                                  {String.fromCharCode(65 + question.options.indexOf(option))}
-                                </div>
-                                <span className="text-sm flex-1">{option.text}</span>
-                                <Badge variant="outline" className="ml-auto">
-                                  {option.value} pts
-                                </Badge>
-                                {option.id === userAnswer && (
-                                  <Badge className="bg-blue-100 text-blue-800">
-                                    Selected
-                                  </Badge>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                      {index < result.quiz.questions.length - 1 && <Separator />}
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Quiz Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quiz Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Quiz</label>
-                <p className="text-sm">{result.quiz.title}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Category</label>
-                <p className="text-sm">{result.quiz.category}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Difficulty</label>
-                <Badge className={
-                  result.quiz.difficulty === 'BEGINNER' ? 'bg-green-100 text-green-800' :
-                  result.quiz.difficulty === 'INTERMEDIATE' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-red-100 text-red-800'
-                }>
-                  {result.quiz.difficulty}
-                </Badge>
               </div>
             </CardContent>
           </Card>
@@ -494,45 +313,52 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
             </Card>
           )}
 
-          {/* Areas of Improvement */}
-          {result.areasOfImprovement.length > 0 && (
+          {/* Proposed Blog Posts */}
+          {result.matchingCriteria?.proposedBlogPosts && result.matchingCriteria.proposedBlogPosts.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>Areas of Improvement</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Book className="h-4 w-4" />
+                  Recommended Blog Posts
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {result.areasOfImprovement.map((area, index) => (
-                    <Badge key={index} variant="secondary" className="mr-1 mb-1">
-                      {area}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Support Needed */}
-          {result.supportNeeded.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Support Needed</CardTitle>
-                <CardDescription>
-                  Resources and assistance recommended
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {result.supportNeeded.map((support, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full" />
-                      <span className="text-sm">{support}</span>
+                  {result.matchingCriteria.proposedBlogPosts.map((post, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 border rounded">
+                      <span className="text-sm font-medium">{post.title}</span>
+                      <Link href={`/blog/${post.slug}`}>
+                        <Button variant="outline" size="sm">
+                          Read Post
+                          <ArrowLeft className="ml-2 h-4 w-4 rotate-180" />
+                        </Button>
+                      </Link>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
           )}
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Quiz Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quiz Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Quiz</label>
+                <p className="text-sm">{result.quiz.title}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Category</label>
+                <p className="text-sm">{result.quiz.category}</p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
@@ -545,13 +371,13 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
         >
           Back to Results
         </Button>
-        
+
         <Link href={`/quiz/${result.quizId}`} className="flex-1">
           <Button className="w-full">
             Retake Quiz
           </Button>
         </Link>
-        
+
         <Link href="/quiz" className="flex-1">
           <Button variant="outline" className="w-full">
             Try Another Quiz
