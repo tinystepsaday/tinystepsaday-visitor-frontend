@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Lock, User, ArrowRight, CheckCircle, Clock, Target } from 'lucide-react'
+import { User, ArrowRight, CheckCircle, Clock, Target } from 'lucide-react'
 import Link from 'next/link'
 import { type Quiz } from '@/data/quizzes'
 
@@ -35,17 +35,6 @@ export default function AuthPrompt({ quiz, onAuthenticated }: AuthPromptProps) {
 
   return (
     <div className="container max-w-4xl mx-auto px-4 py-12 space-y-8 mt-16">
-      {/* Header */}
-      <div className="text-center space-y-4">
-        <div className="flex items-center justify-center gap-2">
-          <Lock className="h-6 w-6 text-primary" />
-          <h1 className="text-3xl font-bold">Authentication Required</h1>
-        </div>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          To take this quiz and receive personalized results, please sign in or create an account.
-        </p>
-      </div>
-
       {/* Quiz Info Card */}
       <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
         <CardHeader>
@@ -65,7 +54,7 @@ export default function AuthPrompt({ quiz, onAuthenticated }: AuthPromptProps) {
         <CardContent>
           <div className="space-y-4">
             <div>
-              <h2 className="text-2xl font-semibold mb-2">{quiz.title}</h2>
+              <h1 className="text-2xl font-semibold mb-2">{quiz.title}</h1>
               <p className="text-muted-foreground">{quiz.description}</p>
             </div>
             
