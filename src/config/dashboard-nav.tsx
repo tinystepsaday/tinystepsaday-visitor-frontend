@@ -4,7 +4,7 @@ import { Home,
   // Heart, Calendar, 
   // CreditCard, 
   // Activity, 
-  // ChevronUp, 
+  ChevronUp, 
   User, 
 //  List 
 } from "lucide-react";
@@ -50,11 +50,11 @@ export const dashboardNavItems = [
   //   path: "/dashboard/streaks",
   //   icon: <Activity className="h-5 w-5" />
   // },
-  // {
-  //   title: "Quiz Results",
-  //   path: "/dashboard/quiz-results",
-  //   icon: <ChevronUp className="h-5 w-5" />
-  // },
+  {
+    title: "Quiz Results",
+    path: "/dashboard/quiz-results",
+    icon: <ChevronUp className="h-5 w-5" />
+  },
   // {
   //   title: "Recommendations",
   //   path: "/dashboard/recommendations",

@@ -17,6 +17,7 @@ import { CreateQuizData, quizAPI } from '@/integration/quiz'
 import { type Quiz, type GradingCriteria } from '@/data/quizzes'
 import { GradingCriteriaEditor } from './GradingCriteriaEditor'
 import { DetailPageLoader } from '../ui/loaders'
+import { usePublicBlogPosts } from '@/lib/api/blog'
 
 interface QuizEditClientProps {
   quiz?: Quiz // Optional for creating new quizzes
@@ -83,6 +84,21 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
     { id: 'streak-2', name: 'Reading Streak', slug: 'reading-streak' },
     { id: 'streak-3', name: 'Gratitude Streak', slug: 'gratitude-streak' }
   ]
+
+  // Fetch real blog posts from the API
+  const { data: blogPostsData, isLoading: isLoadingBlogPosts } = usePublicBlogPosts({
+    limit: 100, // Get as many blog posts as possible
+    page: 1,
+    sortBy: 'createdAt',
+    sortOrder: 'desc'
+  })
+
+  // Transform blog posts data for the component
+  const availableBlogPosts = blogPostsData?.posts?.map(post => ({
+    id: post.id,
+    title: post.title,
+    slug: post.slug
+  })) || []
 
   useEffect(() => {
     const initializeData = async () => {
@@ -236,6 +252,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
           proposedCourses: gc.proposedCourses,
           proposedProducts: gc.proposedProducts,
           proposedStreaks: gc.proposedStreaks,
+          proposedBlogPosts: gc.proposedBlogPosts,
           description: gc.description
         }))
       }
@@ -485,6 +502,8 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
               availableCourses={availableCourses}
               availableProducts={availableProducts}
               availableStreaks={availableStreaks}
+              availableBlogPosts={availableBlogPosts}
+              isLoadingBlogPosts={isLoadingBlogPosts}
             />
           </CardContent>
         </Card>

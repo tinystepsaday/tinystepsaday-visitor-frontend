@@ -214,7 +214,7 @@ export class QuizResultPDFGenerator {
   }
 
   private addRecommendedResources(result: QuizResult) {
-    if (!result.proposedCourses?.length && !result.proposedProducts?.length && !result.proposedStreaks?.length) {
+    if (!result.proposedCourses?.length && !result.proposedProducts?.length && !result.proposedStreaks?.length && !result.proposedBlogPosts?.length) {
       return;
     }
 
@@ -240,6 +240,14 @@ export class QuizResultPDFGenerator {
       this.addText('Streaks:');
       result.proposedStreaks.forEach((streak) => {
         this.addText(`• ${streak.name}`, this.margin + 10);
+      });
+      this.currentY += 5;
+    }
+
+    if (result.proposedBlogPosts && result.proposedBlogPosts.length > 0) {
+      this.addText('Blog Posts:');
+      result.proposedBlogPosts.forEach((blogPost) => {
+        this.addText(`• ${blogPost.title}`, this.margin + 10);
       });
       this.currentY += 5;
     }

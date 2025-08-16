@@ -18,6 +18,8 @@ interface GradingCriteriaEditorProps {
   availableCourses?: Array<{ id: string; name: string; slug: string }>
   availableProducts?: Array<{ id: string; name: string; slug: string }>
   availableStreaks?: Array<{ id: string; name: string; slug: string }>
+  availableBlogPosts?: Array<{ id: string; title: string; slug: string }>
+  isLoadingBlogPosts?: boolean
 }
 
 export function GradingCriteriaEditor({
@@ -25,7 +27,9 @@ export function GradingCriteriaEditor({
   onChange,
   availableCourses = [],
   availableProducts = [],
-  availableStreaks = []
+  availableStreaks = [],
+  availableBlogPosts = [],
+  isLoadingBlogPosts = false
 }: GradingCriteriaEditorProps) {
   const [newRecommendation, setNewRecommendation] = useState('')
 
@@ -41,12 +45,13 @@ export function GradingCriteriaEditor({
       proposedCourses: [],
       proposedProducts: [],
       proposedStreaks: [],
+      proposedBlogPosts: [],
       description: ''
     }
     onChange([...criteria, newCriteria])
   }
 
-  const updateCriteria = (id: string, field: keyof GradingCriteria, value: string | number | string[] | Array<{ id: string; name: string; slug: string }>) => {
+  const updateCriteria = (id: string, field: keyof GradingCriteria, value: string | number | string[] | Array<{ id: string; name: string; slug: string }> | Array<{ id: string; title: string; slug: string }>) => {
     onChange(criteria.map(c =>
       c.id === id ? { ...c, [field]: value } : c
     ))
@@ -116,6 +121,21 @@ export function GradingCriteriaEditor({
     const targetCriteria = criteria.find(c => c.id === criteriaId)
     if (targetCriteria) {
       updateCriteria(criteriaId, 'proposedStreaks', targetCriteria.proposedStreaks.filter(s => s.id !== streakId))
+    }
+  }
+
+  const addBlogPost = (criteriaId: string, blogPostId: string) => {
+    const targetCriteria = criteria.find(c => c.id === criteriaId)
+    const blogPost = availableBlogPosts.find(b => b.id === blogPostId)
+    if (targetCriteria && blogPost && !targetCriteria.proposedBlogPosts.some(b => b.id === blogPostId)) {
+      updateCriteria(criteriaId, 'proposedBlogPosts', [...targetCriteria.proposedBlogPosts, blogPost])
+    }
+  }
+
+  const removeBlogPost = (criteriaId: string, blogPostId: string) => {
+    const targetCriteria = criteria.find(c => c.id === criteriaId)
+    if (targetCriteria) {
+      updateCriteria(criteriaId, 'proposedBlogPosts', targetCriteria.proposedBlogPosts.filter(b => b.id !== blogPostId))
     }
   }
 
@@ -346,6 +366,47 @@ export function GradingCriteriaEditor({
                   </Badge>
                 ))}
               </div>
+            </div>
+
+            {/* Proposed Blog Posts */}
+            <div className="space-y-3">
+              <Label>Proposed Blog Posts</Label>
+              {isLoadingBlogPosts ? (
+                <div className="text-sm text-muted-foreground">
+                  Loading available blog posts...
+                </div>
+              ) : (
+                <>
+                  <Select onValueChange={(value) => addBlogPost(criterion.id, value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a blog post to add..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableBlogPosts.map((blogPost) => (
+                        <SelectItem key={blogPost.id} value={blogPost.id}>
+                          {blogPost.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="flex flex-wrap gap-2">
+                    {criterion.proposedBlogPosts.map((blogPost) => (
+                      <Badge key={blogPost.id} variant="outline" className="flex items-center space-x-1">
+                        <span>{blogPost.title}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeBlogPost(criterion.id, blogPost.id)}
+                          className="ml-1 hover:text-destructive"
+                          title="Remove blog post"
+                          aria-label="Remove blog post"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>

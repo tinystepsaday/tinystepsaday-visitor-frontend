@@ -5,11 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Book, Target, Package, ArrowRight, Clock } from "lucide-react";
+import { Book, Target, Package, ArrowRight, Clock, TrendingUp, BarChart3 } from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
 import DashboardPageHeader from "./DashboardPageHeader";
-import { getUserQuizResults, getQuizById, type QuizResult, type Quiz } from "@/data/quizzes";
+import { quizAPI, transformBackendQuiz } from "@/integration/quiz";
+import { type Quiz, type QuizResult } from "@/data/quizzes";
 
 interface QuizResultWithQuiz extends QuizResult {
   quiz: Quiz;
@@ -20,6 +21,7 @@ interface QuizResultWithQuiz extends QuizResult {
     proposedCourses: Array<{ id: string; name: string; slug: string }>;
     proposedProducts: Array<{ id: string; name: string; slug: string }>;
     proposedStreaks: Array<{ id: string; name: string; slug: string }>;
+    proposedBlogPosts: Array<{ id: string; title: string; slug: string }>;
   };
 }
 
@@ -30,27 +32,32 @@ const QuizResults = () => {
   useEffect(() => {
     const fetchQuizResults = async () => {
       try {
-        const userResults = await getUserQuizResults();
+        const userResultsResponse = await quizAPI.getUserQuizResults();
+        const userResults = userResultsResponse.results;
         const resultsWithQuizData: QuizResultWithQuiz[] = [];
 
         for (const result of userResults) {
-          const quiz = await getQuizById(result.quizId);
+          const quiz = await quizAPI.getQuizById(result.quizId);
           if (quiz) {
+            // Transform the backend quiz data to frontend format
+            const transformedQuiz = transformBackendQuiz(quiz);
+            
             // Find matching grading criteria based on score
-            const matchingCriteria = quiz.gradingCriteria.find(criteria => 
+            const matchingCriteria = transformedQuiz.gradingCriteria.find(criteria => 
               result.percentage >= criteria.minScore && result.percentage <= criteria.maxScore
             );
 
             resultsWithQuizData.push({
               ...result,
-              quiz,
+              quiz: transformedQuiz,
               matchingCriteria: matchingCriteria ? {
                 name: matchingCriteria.name,
                 description: matchingCriteria.description || "",
                 recommendations: matchingCriteria.recommendations,
                 proposedCourses: matchingCriteria.proposedCourses,
                 proposedProducts: matchingCriteria.proposedProducts,
-                proposedStreaks: matchingCriteria.proposedStreaks
+                proposedStreaks: matchingCriteria.proposedStreaks,
+                proposedBlogPosts: matchingCriteria.proposedBlogPosts
               } : undefined
             });
           }
@@ -71,6 +78,13 @@ const QuizResults = () => {
 
     fetchQuizResults();
   }, []);
+
+  // Calculate statistics
+  const totalQuizzes = quizResults.length;
+  const averageScore = totalQuizzes > 0 ? Math.round(quizResults.reduce((sum, r) => sum + r.percentage, 0) / totalQuizzes) : 0;
+  const totalTimeSpent = quizResults.reduce((sum, r) => sum + r.timeSpent, 0);
+  const excellentResults = quizResults.filter(r => r.level === 'excellent').length;
+  const goodResults = quizResults.filter(r => r.level === 'good').length;
 
   const getLevelColor = (level: string) => {
     switch (level) {
@@ -119,6 +133,63 @@ const QuizResults = () => {
   return (
     <div>
       <DashboardPageHeader title="Your Quiz Results" subtitle="Review your assessment results and track your progress" />
+      
+      {/* Statistics Overview */}
+      {quizResults.length > 0 && (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Quizzes</CardTitle>
+              <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{totalQuizzes}</div>
+              <p className="text-xs text-muted-foreground">
+                Assessments completed
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Average Score</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{averageScore}%</div>
+              <p className="text-xs text-muted-foreground">
+                Across all quizzes
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Time</CardTitle>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{totalTimeSpent}</div>
+              <p className="text-xs text-muted-foreground">
+                Minutes spent
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Best Results</CardTitle>
+              <Target className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{excellentResults + goodResults}</div>
+              <p className="text-xs text-muted-foreground">
+                Excellent & Good scores
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
       
       {quizResults.length > 0 ? (
         <div className="space-y-6">
@@ -188,7 +259,8 @@ const QuizResults = () => {
                 {/* Proposed Resources */}
                 {(result.matchingCriteria?.proposedCourses.length || 
                   result.matchingCriteria?.proposedProducts.length || 
-                  result.matchingCriteria?.proposedStreaks.length) && (
+                  result.matchingCriteria?.proposedStreaks.length ||
+                  result.matchingCriteria?.proposedBlogPosts.length) && (
                   <div>
                     <h4 className="text-sm font-medium mb-2">Recommended Resources</h4>
                     <div className="space-y-2">
@@ -213,6 +285,29 @@ const QuizResults = () => {
                         <div key={index} className="flex items-center gap-2 text-sm">
                           <Target className="h-4 w-4 text-muted-foreground" />
                           <span className="text-muted-foreground">{streak.name}</span>
+                        </div>
+                      ))}
+
+                      {/* Blog Posts */}
+                      {result.matchingCriteria?.proposedBlogPosts.slice(0, 2).map((blogPost, index) => (
+                        <div key={index} className="flex items-center gap-2 text-sm">
+                          <Book className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-muted-foreground">{blogPost.title}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Proposed Blog Posts */}
+                {result.matchingCriteria?.proposedBlogPosts && result.matchingCriteria.proposedBlogPosts.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-medium mb-2">Recommended Blog Posts</h4>
+                    <div className="space-y-2">
+                      {result.matchingCriteria.proposedBlogPosts.slice(0, 2).map((blogPost, index) => (
+                        <div key={index} className="flex items-center gap-2 text-sm">
+                          <Book className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-muted-foreground">{blogPost.title}</span>
                         </div>
                       ))}
                     </div>

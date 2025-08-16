@@ -222,7 +222,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
       </Card>
 
       {/* Recommended Resources */}
-      {(result.proposedCourses?.length || result.proposedProducts?.length || result.proposedStreaks?.length) && (
+      {(result.proposedCourses?.length || result.proposedProducts?.length || result.proposedStreaks?.length || result.proposedBlogPosts?.length) && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -231,7 +231,6 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Recommended Courses */}
             {result.proposedCourses && result.proposedCourses.length > 0 && (
               <div className="space-y-3">
                 <h4 className="font-semibold text-lg text-primary">Courses</h4>
@@ -250,8 +249,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
                 </div>
               </div>
             )}
-
-            {/* Recommended Products */}
+            
             {result.proposedProducts && result.proposedProducts.length > 0 && (
               <div className="space-y-3">
                 <h4 className="font-semibold text-lg text-primary">Products</h4>
@@ -270,8 +268,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
                 </div>
               </div>
             )}
-
-            {/* Recommended Streaks */}
+            
             {result.proposedStreaks && result.proposedStreaks.length > 0 && (
               <div className="space-y-3">
                 <h4 className="font-semibold text-lg text-primary">Streaks</h4>
@@ -280,10 +277,29 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
                     <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                       <div>
                         <h5 className="font-medium">{streak.name}</h5>
-                        <p className="text-sm text-muted-foreground">Streak Challenge</p>
+                        <p className="text-sm text-muted-foreground">Streak</p>
                       </div>
                       <Button variant="outline" size="sm" onClick={() => router.push(`/streaks/${streak.slug}`)}>
-                        Start Streak
+                        View Streak
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {result.proposedBlogPosts && result.proposedBlogPosts.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="font-semibold text-lg text-primary">Blog Posts</h4>
+                <div className="grid gap-3">
+                  {result.proposedBlogPosts.map((blogPost, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div>
+                        <h5 className="font-medium">{blogPost.title}</h5>
+                        <p className="text-sm text-muted-foreground">Blog Post</p>
+                      </div>
+                      <Button variant="outline" size="sm" onClick={() => router.push(`/blog/${blogPost.slug}`)}>
+                        Read Post
                       </Button>
                     </div>
                   ))}

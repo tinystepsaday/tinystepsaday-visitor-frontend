@@ -38,6 +38,7 @@ export interface CreateQuizData {
     proposedCourses: Array<{ id: string; name: string; slug: string }>;
     proposedProducts: Array<{ id: string; name: string; slug: string }>;
     proposedStreaks: Array<{ id: string; name: string; slug: string }>;
+    proposedBlogPosts: Array<{ id: string; title: string; slug: string }>;
     description?: string;
   }>;
 }
@@ -122,6 +123,7 @@ interface BackendQuiz {
     proposedCourses?: Array<{ id: string; name: string; slug: string }>;
     proposedProducts?: Array<{ id: string; name: string; slug: string }>;
     proposedStreaks?: Array<{ id: string; name: string; slug: string }>;
+    proposedBlogPosts?: Array<{ id: string; title: string; slug: string }>;
     description?: string;
   }>;
 }
@@ -150,6 +152,7 @@ interface BackendQuizResult {
   proposedCourses?: Array<{ id: string; name: string; slug: string }>;
   proposedProducts?: Array<{ id: string; name: string; slug: string }>;
   proposedStreaks?: Array<{ id: string; name: string; slug: string }>;
+  proposedBlogPosts?: Array<{ id: string; title: string; slug: string }>;
 }
 
 interface BackendQuizAnalytics {
@@ -381,6 +384,7 @@ export function transformBackendQuiz(backendQuiz: BackendQuiz): Quiz {
       proposedCourses: gc.proposedCourses || [],
       proposedProducts: gc.proposedProducts || [],
       proposedStreaks: gc.proposedStreaks || [],
+      proposedBlogPosts: gc.proposedBlogPosts || [],
       description: gc.description
     })) || []
   };
@@ -409,7 +413,8 @@ export function transformBackendQuizResult(backendResult: BackendQuizResult): Qu
     supportNeeded: backendResult.supportNeeded || [],
     proposedCourses: backendResult.proposedCourses || [],
     proposedProducts: backendResult.proposedProducts || [],
-    proposedStreaks: backendResult.proposedStreaks || []
+    proposedStreaks: backendResult.proposedStreaks || [],
+    proposedBlogPosts: backendResult.proposedBlogPosts || []
   };
 }
 

@@ -308,6 +308,23 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
                               </div>
                             </div>
                           )}
+
+                          {/* Proposed Blog Posts */}
+                          {criteria.proposedBlogPosts.length > 0 && (
+                            <div>
+                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                <Book className="h-4 w-4" />
+                                Recommended Blog Posts ({criteria.proposedBlogPosts.length})
+                              </h4>
+                              <div className="flex flex-wrap gap-2">
+                                {criteria.proposedBlogPosts.map((blogPost) => (
+                                  <Badge key={blogPost.id} variant="outline" className="text-xs">
+                                    {blogPost.title}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </CollapsibleContent>
                     </div>

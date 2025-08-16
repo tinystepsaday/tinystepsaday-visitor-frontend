@@ -153,8 +153,8 @@ const DashboardOverview = () => {
       </div>
       
       {/* Courses In Progress */}
-      <div className="mb-10">
-        <div className="flex items-center justify-between mb-6">
+      <div className="mb-6">
+        <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold">Courses In Progress</h2>
           {coursesInProgress.length > 0 && <Button variant="outline" size="sm" asChild>
             <Link href="/dashboard/courses">
