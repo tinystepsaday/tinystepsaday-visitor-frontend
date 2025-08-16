@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { ArrowLeft, Book, Target, Package, Clock, Calendar, CheckCircle, XCircle } from "lucide-react";
+import { ArrowLeft, Book, Target, Package, Clock, Calendar, CheckCircle, XCircle, AlertCircle, FileText } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { getQuizResultById, getQuizById, type QuizResult, type Quiz } from "@/data/quizzes";
+import { downloadQuizResultPDF } from "@/utils/pdfGenerator";
 
 interface QuizResultDetailsProps {
   resultId: string;
@@ -92,14 +93,29 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
     }
   };
 
-  const getAnswerValue = (questionId: string, answerId: string) => {
-    if (!result) return 0;
+  const getAnswerValue = (questionId: string, answerId: string | null) => {
+    if (!result || !answerId) return 0;
     
     const question = result.quiz.questions.find(q => q.id === questionId);
     if (!question) return 0;
     
     const option = question.options.find(o => o.id === answerId);
     return option ? option.value : 0;
+  };
+
+  const getUserAnswer = (questionId: string) => {
+    if (!result) return null;
+    
+    // Handle both array and Record formats for backward compatibility
+    if (Array.isArray(result.answers)) {
+      // New format: array of { questionId, optionId }
+      const userAnswer = result.answers.find((answer: { questionId: string; optionId: string }) => answer.questionId === questionId);
+      return userAnswer ? userAnswer.optionId : null;
+    } else if (typeof result.answers === 'object' && result.answers !== null) {
+      // Old format: Record<string, string>
+      return (result.answers as Record<string, string>)[questionId] || null;
+    }
+    return null;
   };
 
   if (error) {
@@ -176,13 +192,21 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
               Back to Results
             </Button>
           </Link>
-          <div>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => downloadQuizResultPDF(result.quiz, result)}
+          >
+            <FileText className="mr-2 h-4 w-4" />
+            Download PDF
+          </Button>
+        </div>
+        <div>
             <h1 className="text-3xl font-bold tracking-tight">Quiz Result Details</h1>
             <p className="text-muted-foreground">
               {result.quiz.title} - {format(new Date(result.completedAt), "MMM d, yyyy")}
             </p>
           </div>
-        </div>
       </div>
 
       {/* Result Overview */}
@@ -281,7 +305,7 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
             <CardContent>
               <div className="space-y-6">
                 {result.quiz.questions.map((question, index) => {
-                  const userAnswer = result.answers[question.id];
+                  const userAnswer = getUserAnswer(question.id);
                   const userAnswerValue = getAnswerValue(question.id, userAnswer);
                   const maxValue = Math.max(...question.options.map(o => o.value));
                   const isGoodAnswer = userAnswerValue <= maxValue / 2; // Lower values are better in this system
@@ -295,10 +319,14 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <p className="font-medium">{question.text}</p>
-                            {isGoodAnswer ? (
-                              <CheckCircle className="h-4 w-4 text-green-500" />
+                            {userAnswer ? (
+                              isGoodAnswer ? (
+                                <CheckCircle className="h-4 w-4 text-green-500" />
+                              ) : (
+                                <XCircle className="h-4 w-4 text-red-500" />
+                              )
                             ) : (
-                              <XCircle className="h-4 w-4 text-red-500" />
+                              <AlertCircle className="h-4 w-4 text-yellow-500" />
                             )}
                           </div>
                           

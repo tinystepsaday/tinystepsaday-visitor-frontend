@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { quizAPI, transformBackendQuiz } from '@/integration/quiz';
 import QuizResultsClient from '@/components/quiz/QuizResultsClient';
 import type { Quiz } from '@/data/quizzes';
-import { DetailPageLoader } from '@/components/ui/loaders';
 
 export default function QuizResultsPage() {
   const params = useParams();
@@ -38,7 +37,7 @@ export default function QuizResultsPage() {
   }, [quizId]);
 
   if (isLoading) {
-    return <DetailPageLoader />;
+    return <QuizResultsPageLoader />;
   }
 
   if (error || !quiz) {
@@ -61,4 +60,17 @@ export default function QuizResultsPage() {
   return (
     <QuizResultsClient quiz={quiz} />
   );
+}
+
+const QuizResultsPageLoader = () => {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="flex flex-col items-center justify-center gap-4">
+        <div className="w-full h-10 rounded-full bg-muted animate-pulse" />
+        <div className="w-full h-40 rounded-full bg-muted animate-pulse" />
+        <div className="w-full h-40 rounded-full bg-muted animate-pulse" />
+        <div className="w-full h-40 rounded-full bg-muted animate-pulse" />
+      </div>
+    </div>
+  )
 }

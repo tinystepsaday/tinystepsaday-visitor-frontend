@@ -70,10 +70,13 @@ export interface QuizResult {
   recommendations: string[];
   completedAt: string;
   timeSpent: number; // in minutes
-  answers: Record<string, string>;
+  answers: Record<string, string> | Array<{ questionId: string; optionId: string }>;
   classification: string;
   areasOfImprovement: string[];
   supportNeeded: string[];
+  proposedCourses?: Array<{ id: string; name: string; slug: string }>;
+  proposedProducts?: Array<{ id: string; name: string; slug: string }>;
+  proposedStreaks?: Array<{ id: string; name: string; slug: string }>;
 }
 
 export interface QuizAnalytics {
@@ -865,7 +868,10 @@ export const quizResults: QuizResult[] = [
     },
     classification: "Habit Master",
     areasOfImprovement: ["Focus management"],
-    supportNeeded: ["Advanced habit optimization"]
+    supportNeeded: ["Advanced habit optimization"],
+    proposedCourses: [{ id: "1", name: "Habit Mastery Course", slug: "habit-mastery-course" }],
+    proposedProducts: [{ id: "1", name: "Habit Mastery Book", slug: "habit-mastery-book" }],
+    proposedStreaks: [{ id: "1", name: "Meditation Streak", slug: "meditation-streak" }]
   },
   {
     id: "result-2",
@@ -899,7 +905,10 @@ export const quizResults: QuizResult[] = [
     },
     classification: "Habit Builder",
     areasOfImprovement: ["Consistency", "Goal setting"],
-    supportNeeded: ["Habit tracking tools", "Accountability partner"]
+    supportNeeded: ["Habit tracking tools", "Accountability partner"],
+    proposedCourses: [{ id: "2", name: "Habit Building Course", slug: "habit-building-course" }],
+    proposedProducts: [{ id: "2", name: "Habit Building Book", slug: "habit-building-book" }],
+    proposedStreaks: [{ id: "2", name: "Reading Streak", slug: "reading-streak" }]
   },
   {
     id: "result-3",
@@ -926,7 +935,10 @@ export const quizResults: QuizResult[] = [
     },
     classification: "Freedom Seeker",
     areasOfImprovement: ["Digital boundaries", "Social media usage"],
-    supportNeeded: ["Digital wellness tools", "Screen time management"]
+    supportNeeded: ["Digital wellness tools", "Screen time management"],
+    proposedCourses: [{ id: "6", name: "Freedom Seeking Course", slug: "freedom-seeking-course" }],
+    proposedProducts: [{ id: "6", name: "Freedom Seeking Book", slug: "freedom-seeking-book" }],
+    proposedStreaks: [{ id: "2", name: "Reading Streak", slug: "reading-streak" }]
   },
   {
     id: "result-4",
@@ -953,7 +965,10 @@ export const quizResults: QuizResult[] = [
     },
     classification: "Purpose Explorer",
     areasOfImprovement: ["Career clarity", "Value identification"],
-    supportNeeded: ["Career counseling", "Purpose coaching"]
+    supportNeeded: ["Career counseling", "Purpose coaching"],
+    proposedCourses: [{ id: "10", name: "Purpose Seeking Course", slug: "purpose-seeking-course" }],
+    proposedProducts: [{ id: "10", name: "Purpose Seeking Book", slug: "purpose-seeking-book" }],
+    proposedStreaks: [{ id: "2", name: "Reading Streak", slug: "reading-streak" }]
   },
   {
     id: "result-5",
@@ -980,7 +995,10 @@ export const quizResults: QuizResult[] = [
     },
     classification: "Mindfulness Master",
     areasOfImprovement: [],
-    supportNeeded: ["Advanced meditation resources"]
+    supportNeeded: ["Advanced meditation resources"],
+    proposedCourses: [{ id: "17", name: "Mindfulness Mastery Course", slug: "mindfulness-mastery-course" }],
+    proposedProducts: [{ id: "17", name: "Mindfulness Mastery Book", slug: "mindfulness-mastery-book" }],
+    proposedStreaks: [{ id: "1", name: "Meditation Streak", slug: "meditation-streak" }]
   }
 ];
 
@@ -1018,7 +1036,10 @@ export const userQuizResults: QuizResult[] = [
     },
     classification: "Habit Builder",
     areasOfImprovement: ["Consistency", "Goal setting"],
-    supportNeeded: ["Habit tracking tools", "Accountability partner"]
+    supportNeeded: ["Habit tracking tools", "Accountability partner"],
+    proposedCourses: [{ id: "2", name: "Habit Building Course", slug: "habit-building-course" }],
+    proposedProducts: [{ id: "2", name: "Habit Building Book", slug: "habit-building-book" }],
+    proposedStreaks: [{ id: "2", name: "Reading Streak", slug: "reading-streak" }]
   },
   {
     id: "user-result-2",
@@ -1045,7 +1066,10 @@ export const userQuizResults: QuizResult[] = [
     },
     classification: "Purpose Explorer",
     areasOfImprovement: ["Career clarity", "Value identification"],
-    supportNeeded: ["Career counseling", "Purpose coaching"]
+    supportNeeded: ["Career counseling", "Purpose coaching"],
+    proposedCourses: [{ id: "10", name: "Purpose Seeking Course", slug: "purpose-seeking-course" }],
+    proposedProducts: [{ id: "10", name: "Purpose Seeking Book", slug: "purpose-seeking-book" }],
+    proposedStreaks: [{ id: "2", name: "Reading Streak", slug: "reading-streak" }]
   },
   {
     id: "user-result-3",
@@ -1072,7 +1096,10 @@ export const userQuizResults: QuizResult[] = [
     },
     classification: "Mindfulness Practitioner",
     areasOfImprovement: ["Consistency", "Advanced techniques"],
-    supportNeeded: ["Practice tools", "Accountability partner"]
+    supportNeeded: ["Practice tools", "Accountability partner"],
+    proposedCourses: [{ id: "18", name: "Mindfulness Practitioner Course", slug: "mindfulness-practitioner-course" }],
+    proposedProducts: [{ id: "18", name: "Mindfulness Practitioner Book", slug: "mindfulness-practitioner-book" }],
+    proposedStreaks: [{ id: "2", name: "Reading Streak", slug: "reading-streak" }]
   },
   {
     id: "user-result-4",
@@ -1099,7 +1126,10 @@ export const userQuizResults: QuizResult[] = [
     },
     classification: "Freedom Seeker",
     areasOfImprovement: ["Digital boundaries", "Social media usage"],
-    supportNeeded: ["Digital wellness tools", "Screen time management"]
+    supportNeeded: ["Digital wellness tools", "Screen time management"],
+    proposedCourses: [{ id: "6", name: "Freedom Seeking Course", slug: "freedom-seeking-course" }],
+    proposedProducts: [{ id: "6", name: "Freedom Seeking Book", slug: "freedom-seeking-book" }],
+    proposedStreaks: [{ id: "2", name: "Reading Streak", slug: "reading-streak" }]
   }
 ];
 
@@ -1128,6 +1158,9 @@ export function calculateQuizResult(answers: Record<string, string>, quizId: str
   let classification: string;
   let areasOfImprovement: string[];
   let supportNeeded: string[];
+  let proposedCourses: Array<{ id: string; name: string; slug: string }> | undefined;
+  let proposedProducts: Array<{ id: string; name: string; slug: string }> | undefined;
+  let proposedStreaks: Array<{ id: string; name: string; slug: string }> | undefined;
 
   // Find the appropriate grading criteria based on percentage
   const matchingCriteria = quiz.gradingCriteria.find(criteria => 
@@ -1152,6 +1185,9 @@ export function calculateQuizResult(answers: Record<string, string>, quizId: str
     classification = matchingCriteria.label;
     areasOfImprovement = ["Focus on areas for improvement"];
     supportNeeded = ["Consider the recommended courses and products"];
+    proposedCourses = matchingCriteria.proposedCourses;
+    proposedProducts = matchingCriteria.proposedProducts;
+    proposedStreaks = matchingCriteria.proposedStreaks;
   } else {
     // Fallback to default logic
   if (percentage >= 80) {
@@ -1165,6 +1201,9 @@ export function calculateQuizResult(answers: Record<string, string>, quizId: str
       classification = "Master";
       areasOfImprovement = [];
       supportNeeded = ["Advanced resources", "Mentorship opportunities"];
+      proposedCourses = [{ id: "1", name: "Habit Mastery Course", slug: "habit-mastery-course" }];
+      proposedProducts = [{ id: "1", name: "Habit Mastery Book", slug: "habit-mastery-book" }];
+      proposedStreaks = [{ id: "1", name: "Meditation Streak", slug: "meditation-streak" }];
   } else if (percentage >= 60) {
     level = 'good';
     feedback = "Good! You have a solid foundation with room for improvement.";
@@ -1176,6 +1215,9 @@ export function calculateQuizResult(answers: Record<string, string>, quizId: str
       classification = "Builder";
       areasOfImprovement = ["Consistency", "Advanced techniques"];
       supportNeeded = ["Practice tools", "Accountability partner"];
+      proposedCourses = [{ id: "2", name: "Habit Building Course", slug: "habit-building-course" }];
+      proposedProducts = [{ id: "2", name: "Habit Building Book", slug: "habit-building-book" }];
+      proposedStreaks = [{ id: "2", name: "Reading Streak", slug: "reading-streak" }];
   } else if (percentage >= 40) {
     level = 'fair';
       feedback = "Fair. You have potential but need to develop better practices.";
@@ -1187,6 +1229,9 @@ export function calculateQuizResult(answers: Record<string, string>, quizId: str
       classification = "Learner";
       areasOfImprovement = ["Basic practices", "Consistency", "Understanding"];
       supportNeeded = ["Beginner resources", "Practice guidance", "Community support"];
+      proposedCourses = [{ id: "3", name: "Habit Learning Course", slug: "habit-learning-course" }];
+      proposedProducts = [{ id: "3", name: "Habit Learning Book", slug: "habit-learning-book" }];
+      proposedStreaks = [{ id: "3", name: "Gratitude Streak", slug: "gratitude-streak" }];
   } else {
     level = 'needs-improvement';
       feedback = "You have significant room for improvement in this area.";
@@ -1198,6 +1243,9 @@ export function calculateQuizResult(answers: Record<string, string>, quizId: str
       classification = "Starter";
       areasOfImprovement = ["Basic understanding", "Practice habits", "Consistency"];
       supportNeeded = ["Professional guidance", "Structured programs", "Regular check-ins"];
+      proposedCourses = [{ id: "4", name: "Habit Starting Course", slug: "habit-starting-course" }];
+      proposedProducts = [{ id: "4", name: "Habit Starting Book", slug: "habit-starting-book" }];
+      proposedStreaks = [{ id: "1", name: "Meditation Streak", slug: "meditation-streak" }];
     }
   }
 
@@ -1218,7 +1266,10 @@ export function calculateQuizResult(answers: Record<string, string>, quizId: str
     answers,
     classification,
     areasOfImprovement,
-    supportNeeded
+    supportNeeded,
+    proposedCourses,
+    proposedProducts,
+    proposedStreaks
   };
 }
 

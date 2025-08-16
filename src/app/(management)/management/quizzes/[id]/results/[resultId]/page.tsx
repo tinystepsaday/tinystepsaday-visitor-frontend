@@ -2,14 +2,16 @@
 
 import React from 'react'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, Calendar, Clock, Target, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Calendar, Clock, Target, CheckCircle, AlertCircle, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
-import { getQuizById, getQuizResultById, type Quiz, type QuizResult } from '@/data/quizzes'
+import { quizAPI, transformBackendQuiz } from '@/integration/quiz'
+import { downloadQuizResultPDF } from '@/utils/pdfGenerator'
+import type { Quiz, QuizResult } from '@/data/quizzes'
 import { DetailPageLoader } from '@/components/ui/loaders'
 
 interface QuizResultDetailsPageProps {
@@ -41,16 +43,13 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
       try {
         setIsLoading(true)
         const [quizData, resultData] = await Promise.all([
-          getQuizById(paramsData.id),
-          getQuizResultById(paramsData.resultId)
+          quizAPI.getQuizById(paramsData.id),
+          quizAPI.getQuizResultById(paramsData.resultId)
         ])
 
-        if (!quizData || !resultData) {
-          setError('Quiz or result not found')
-          return
-        }
-
-        setQuiz(quizData)
+        const transformedQuiz = transformBackendQuiz(quizData)
+        // resultData is already transformed, so we don't need to transform it again
+        setQuiz(transformedQuiz)
         setResult(resultData)
       } catch (err) {
         setError('Failed to load quiz result')
@@ -69,23 +68,28 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
 
   if (isLoading || !quiz || !result || !paramsData) {
     return (
-      <DetailPageLoader 
-        backHref={`/management/quizzes/${paramsData?.id || ''}/analytics`}
-        backText="Back to Analytics"
+      <DetailPageLoader
+        backHref={`/management/quizzes/${paramsData?.id || ''}/results`}
+        backText="Back to Results"
       />
     )
   }
 
-  const getAnswerValue = (questionId: string, answerId: string) => {
-    const question = quiz.questions.find(q => q.id === questionId)
-    if (!question) return 0
-    
-    const option = question.options.find(o => o.id === answerId)
-    return option ? option.value : 0
+  const getUserAnswer = (questionId: string) => {
+    // Handle both array and Record formats for backward compatibility
+    if (Array.isArray(result.answers)) {
+      // New format: array of { questionId, optionId }
+      const userAnswer = result.answers.find((answer: { questionId: string; optionId: string }) => answer.questionId === questionId)
+      return userAnswer ? userAnswer.optionId : null
+    } else if (typeof result.answers === 'object' && result.answers !== null) {
+      // Old format: Record<string, string>
+      return (result.answers as Record<string, string>)[questionId] || null
+    }
+    return null
   }
 
   const getCriteriaForScore = (percentage: number) => {
-    return quiz.gradingCriteria.find(c => 
+    return quiz.gradingCriteria.find(c =>
       percentage >= c.minScore && percentage <= c.maxScore
     )
   }
@@ -96,13 +100,23 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href={`/management/quizzes/${quiz.id}/analytics`}>
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Analytics
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between gap-4">
+            <Link href={`/management/quizzes/${quiz.id}/analytics`}>
+              <Button variant="outline" size="sm">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Results
+              </Button>
+            </Link>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => downloadQuizResultPDF(quiz, result)}
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              Download PDF
             </Button>
-          </Link>
+          </div>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Quiz Result Details</h1>
             <p className="text-muted-foreground">
@@ -126,7 +140,7 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Classification</CardTitle>
@@ -135,15 +149,15 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
           <CardContent>
             <Badge className={
               result.level === 'excellent' ? 'bg-green-100 text-green-800' :
-              result.level === 'good' ? 'bg-blue-100 text-blue-800' :
-              result.level === 'fair' ? 'bg-yellow-100 text-yellow-800' :
-              'bg-red-100 text-red-800'
+                result.level === 'good' ? 'bg-blue-100 text-blue-800' :
+                  result.level === 'fair' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-red-100 text-red-800'
             }>
               {matchingCriteria?.name || result.classification}
             </Badge>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Time Spent</CardTitle>
@@ -156,7 +170,7 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Completed</CardTitle>
@@ -190,16 +204,16 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
                   <span className="text-sm font-medium">Performance Level</span>
                   <Badge className={
                     result.level === 'excellent' ? 'bg-green-100 text-green-800' :
-                    result.level === 'good' ? 'bg-blue-100 text-blue-800' :
-                    result.level === 'fair' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-red-100 text-red-800'
+                      result.level === 'good' ? 'bg-blue-100 text-blue-800' :
+                        result.level === 'fair' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-red-100 text-red-800'
                   }>
                     {matchingCriteria?.name || result.level}
                   </Badge>
                 </div>
                 <Progress value={result.percentage} className="h-2" />
               </div>
-              
+
               <div className="p-4 bg-muted rounded-lg">
                 <h4 className="font-medium mb-2">Feedback</h4>
                 <p className="text-sm">{matchingCriteria?.description || result.feedback}</p>
@@ -218,11 +232,8 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
             <CardContent>
               <div className="space-y-6">
                 {quiz.questions.map((question, index) => {
-                  const userAnswer = result.answers[question.id]
-                  const userAnswerValue = getAnswerValue(question.id, userAnswer)
-                  const maxValue = Math.max(...question.options.map(o => o.value))
-                  const isGoodAnswer = userAnswerValue <= maxValue / 2 // Lower values are better in this system
-                  
+                  const userAnswer = getUserAnswer(question.id)
+
                   return (
                     <div key={question.id} className="space-y-3">
                       <div className="flex items-start gap-3">
@@ -232,19 +243,15 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <p className="font-medium">{question.text}</p>
-                            {isGoodAnswer ? (
-                              <CheckCircle className="h-4 w-4 text-green-500" />
-                            ) : (
-                              <XCircle className="h-4 w-4 text-red-500" />
-                            )}
+                            
                           </div>
-                          
+
                           <div className="space-y-2">
                             {question.options.map((option) => (
-                              <div 
-                                key={option.id} 
+                              <div
+                                key={option.id}
                                 className={`flex items-center gap-3 p-2 border rounded ${
-                                  option.id === userAnswer ? 'bg-blue-50 border-blue-200' : ''
+                                  option.id === userAnswer ? 'bg-blue-50 border-blue-200 dark:bg-blue-900 dark:border-blue-800' : ''
                                 }`}
                               >
                                 <div className="w-4 h-4 border rounded flex items-center justify-center text-xs">

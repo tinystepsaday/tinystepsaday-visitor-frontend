@@ -143,10 +143,13 @@ interface BackendQuizResult {
   recommendations?: string[];
   completedAt: string;
   timeSpent?: number;
-  answers?: Record<string, string>;
+  answers?: Record<string, string> | Array<{ questionId: string; optionId: string }>;
   classification?: string;
   areasOfImprovement?: string[];
   supportNeeded?: string[];
+  proposedCourses?: Array<{ id: string; name: string; slug: string }>;
+  proposedProducts?: Array<{ id: string; name: string; slug: string }>;
+  proposedStreaks?: Array<{ id: string; name: string; slug: string }>;
 }
 
 interface BackendQuizAnalytics {
@@ -403,7 +406,10 @@ export function transformBackendQuizResult(backendResult: BackendQuizResult): Qu
     answers: backendResult.answers || {},
     classification: backendResult.classification || 'Unknown',
     areasOfImprovement: backendResult.areasOfImprovement || [],
-    supportNeeded: backendResult.supportNeeded || []
+    supportNeeded: backendResult.supportNeeded || [],
+    proposedCourses: backendResult.proposedCourses || [],
+    proposedProducts: backendResult.proposedProducts || [],
+    proposedStreaks: backendResult.proposedStreaks || []
   };
 }
 

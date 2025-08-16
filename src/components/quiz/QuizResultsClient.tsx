@@ -4,19 +4,17 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Trophy,
-  Target, 
-  TrendingUp, 
-  Clock, 
-  Share2, 
-  Download,
-  Star,
-  Calendar
-} from 'lucide-react';
+import { Trophy, Target, TrendingUp, Clock, Star, Calendar, Download, FileText, Share2 } from 'lucide-react';
 import { quizAPI, transformBackendQuizResult } from '@/integration/quiz';
+import { downloadQuizResultPDF, downloadQuizResultPDFWithOptions } from '@/utils/pdfGenerator';
 import type { Quiz, QuizResult } from '@/data/quizzes';
 import { SectionHeader } from '../ui/section-header';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface QuizResultsClientProps {
   quiz: Quiz;
@@ -192,7 +190,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
           )}
 
           {/* Areas of Improvement */}
-          {result.areasOfImprovement && result.areasOfImprovement.length > 0 && (
+          {/* {result.areasOfImprovement && result.areasOfImprovement.length > 0 && (
             <div className="space-y-2">
               <h4 className="font-semibold text-lg">Areas of Improvement</h4>
               <div className="space-y-2">
@@ -204,10 +202,10 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Support Needed */}
-          {result.supportNeeded && result.supportNeeded.length > 0 && (
+          {/* {result.supportNeeded && result.supportNeeded.length > 0 && (
             <div className="space-y-2">
               <h4 className="font-semibold text-lg">Support & Resources</h4>
               <div className="space-y-2">
@@ -219,43 +217,115 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
         </CardContent>
       </Card>
+
+      {/* Recommended Resources */}
+      {(result.proposedCourses?.length || result.proposedProducts?.length || result.proposedStreaks?.length) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Star className="h-5 w-5" />
+              Recommended Resources
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Recommended Courses */}
+            {result.proposedCourses && result.proposedCourses.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="font-semibold text-lg text-primary">Courses</h4>
+                <div className="grid gap-3">
+                  {result.proposedCourses.map((course, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div>
+                        <h5 className="font-medium">{course.name}</h5>
+                        <p className="text-sm text-muted-foreground">Course</p>
+                      </div>
+                      <Button variant="outline" size="sm" onClick={() => router.push(`/courses/${course.slug}`)}>
+                        View Course
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Recommended Products */}
+            {result.proposedProducts && result.proposedProducts.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="font-semibold text-lg text-primary">Products</h4>
+                <div className="grid gap-3">
+                  {result.proposedProducts.map((product, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div>
+                        <h5 className="font-medium">{product.name}</h5>
+                        <p className="text-sm text-muted-foreground">Product</p>
+                      </div>
+                      <Button variant="outline" size="sm" onClick={() => router.push(`/shop/${product.slug}`)}>
+                        View Product
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Recommended Streaks */}
+            {result.proposedStreaks && result.proposedStreaks.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="font-semibold text-lg text-primary">Streaks</h4>
+                <div className="grid gap-3">
+                  {result.proposedStreaks.map((streak, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div>
+                        <h5 className="font-medium">{streak.name}</h5>
+                        <p className="text-sm text-muted-foreground">Streak Challenge</p>
+                      </div>
+                      <Button variant="outline" size="sm" onClick={() => router.push(`/streaks/${streak.slug}`)}>
+                        Start Streak
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <Button onClick={() => router.push('/quiz')}>
           Take Another Quiz
         </Button>
-        <Button variant="outline">
-          <Share2 className="mr-2 h-4 w-4" />
-          Share Results
-        </Button>
-        <Button variant="outline">
-          <Download className="mr-2 h-4 w-4" />
-          Download PDF
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              <Download className="h-4 w-4" />
+              Download Results
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => downloadQuizResultPDF(quiz, result)}>
+              <FileText className="mr-2 h-4 w-4" />
+              PDF Report (Full)
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadQuizResultPDFWithOptions(quiz, result, { includeAnswers: false, includeRecommendations: true })}>
+              <FileText className="mr-2 h-4 w-4" />
+              PDF Summary
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => alert('CSV export coming soon!')}>
+              <FileText className="mr-2 h-4 w-4" />
+              CSV Export
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => alert('Share functionality not yet implemented')}>
+              <Share2 className="mr-2 h-4 w-4" />
+              Share Results
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
-
-      {/* Support Needed */}
-      {result.supportNeeded && result.supportNeeded.length > 0 && (
-        <Card className="border-amber-200 bg-amber-50">
-          <CardHeader>
-            <CardTitle className="text-amber-800">Additional Support</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-amber-700 mb-3">
-              Based on your results, you might benefit from:
-            </p>
-            <ul className="list-disc list-inside space-y-1 text-amber-700">
-              {result.supportNeeded.map((support, index) => (
-                <li key={index}>{support}</li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 } 
