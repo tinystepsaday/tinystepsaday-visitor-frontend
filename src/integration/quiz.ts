@@ -46,15 +46,17 @@ export interface CreateQuizData {
 export type UpdateQuizData = Partial<CreateQuizData>;
 
 export interface QuizQuery {
-  search?: string;
-  category?: string;
-  difficulty?: string;
-  status?: string;
-  isPublic?: boolean;
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  search?: string
+  category?: string
+  status?: string
+  isPublic?: boolean
+  createdBy?: string
+  tags?: string[]
+  quizType?: string
+  page?: number
+  limit?: number
+  sortBy?: 'createdAt' | 'updatedAt' | 'title' | 'totalAttempts' | 'averageScore'
+  sortOrder?: 'asc' | 'desc'
 }
 
 export interface QuizResultQuery {
@@ -199,9 +201,23 @@ export class QuizAPI {
   }
 
   // Public Quiz Endpoints
-  async getPublicQuizzes(query?: Partial<QuizQuery>): Promise<{ quizzes: Quiz[]; total: number; page: number; totalPages: number }> {
+  async getPublicQuizzes(query?: Partial<QuizQuery>): Promise<{ 
+    quizzes: Quiz[]; 
+    total: number; 
+    page: number; 
+    totalPages: number;
+    categories: string[];
+  }> {
     try {
-      const response = await apiClient.get<{ data: { quizzes: Quiz[]; total: number; page: number; totalPages: number } }>(`${this.baseURL}/public/quizzes`, { params: query });
+      const response = await apiClient.get<{ 
+        data: { 
+          quizzes: Quiz[]; 
+          total: number; 
+          page: number; 
+          totalPages: number;
+          categories: string[];
+        } 
+      }>(`${this.baseURL}/public/quizzes`, { params: query });
       return response.data;
     } catch (error: any) {
       throw error.response.data;
