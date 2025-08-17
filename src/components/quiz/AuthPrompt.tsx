@@ -55,7 +55,7 @@ export default function AuthPrompt({ quiz, onAuthenticated }: AuthPromptProps) {
           <div className="space-y-4">
             <div>
               <h1 className="text-2xl font-semibold mb-2">{quiz.title}</h1>
-              <p className="text-muted-foreground">{quiz.description}</p>
+              <p className="text-muted-foreground text-justify">{quiz.description}</p>
             </div>
             
             <div className="grid grid-cols-3 md:grid-cols-3 gap-4 text-center">
