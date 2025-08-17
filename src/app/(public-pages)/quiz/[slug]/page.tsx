@@ -32,14 +32,15 @@ export async function generateMetadata({ params }: QuizPageProps): Promise<Metad
   try {
     const quiz = await quizAPI.getPublicQuizById(slug);
     const transformedQuiz = transformBackendQuiz(quiz);
+    const seoOptimizedDescription = transformedQuiz.description.length > 150 ? transformedQuiz.description.substring(0, 150) + "..." : transformedQuiz.description;
     
     return {
       title: `${transformedQuiz.title}`,
-      description: transformedQuiz.description,
-      keywords: ["quiz", "assessment", "self-improvement", transformedQuiz.category.toLowerCase(), "tiny steps a day"],
+      description: seoOptimizedDescription,
+      keywords: ["quiz", "online quiz", transformedQuiz.title, "self-assessment", "self-improvement", transformedQuiz.category.toLowerCase(), transformedQuiz.tags.map((tag) => tag).join(", "), "tiny steps a day"],
       openGraph: {
         title: `${transformedQuiz.title} | Tiny Steps A Day`,
-        description: transformedQuiz.description,
+        description: seoOptimizedDescription,
         type: "website",
         url: `${sharedMetadata.metadataBase}/quiz/${transformedQuiz.id}`,
         images: [sharedMetadata.openGraph.images[0]],
@@ -49,7 +50,7 @@ export async function generateMetadata({ params }: QuizPageProps): Promise<Metad
       twitter: {
         card: "summary_large_image" as const,
         title: `${transformedQuiz.title} | Tiny Steps A Day`,
-        description: transformedQuiz.description,
+        description: seoOptimizedDescription,
         images: [sharedMetadata.twitter.images[0]],
       },
       alternates: {
