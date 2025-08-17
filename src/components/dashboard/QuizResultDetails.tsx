@@ -170,7 +170,7 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
       <div className="flex items-center justify-between flex-col md:flex-row gap-4 md:gap-0 w-full">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Quiz Result Details</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground md:text-nowrap">
             {result.quiz.title} - {format(new Date(result.completedAt), "MMM d, yyyy")}
           </p>
         </div>
@@ -218,24 +218,38 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
           </Card>
 
           {/* Recommendations */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recommendations</CardTitle>
-              <CardDescription>
-                Personalized suggestions for improvement
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {(result.matchingCriteria?.recommendations || result.recommendations).map((recommendation, index) => (
-                  <div key={index} className="flex items-start gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
-                    <p className="text-sm">{recommendation}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          {((result.matchingCriteria?.recommendations && result.matchingCriteria.recommendations.length > 0) || (result.recommendations && result.recommendations.length > 0)) ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Recommendations</CardTitle>
+                <CardDescription>
+                  Personalized suggestions for improvement
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {(result.matchingCriteria?.recommendations || result.recommendations).map((recommendation, index) => (
+                    <div key={index} className="flex items-start gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
+                      <p className="text-sm">{recommendation}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>Recommendations</CardTitle>
+                <CardDescription>
+                  Personalized suggestions for improvement
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">No specific recommendations available for your score level at this time.</p>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Proposed Courses */}
           {result.matchingCriteria?.proposedCourses && result.matchingCriteria.proposedCourses.length > 0 && (

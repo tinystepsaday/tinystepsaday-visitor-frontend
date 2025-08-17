@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trophy, Target, TrendingUp, Clock, Star, Calendar, Download, FileText, Share2 } from 'lucide-react';
+import { TrendingUp, Clock, Star, Calendar, Download, FileText, Share2 } from 'lucide-react';
 import { quizAPI, transformBackendQuizResult } from '@/integration/quiz';
 import { downloadQuizResultPDF, downloadQuizResultPDFWithOptions } from '@/utils/pdfGenerator';
 import type { Quiz, QuizResult } from '@/data/quizzes';
@@ -51,30 +51,11 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
     fetchResult();
   }, [resultId]);
 
-  const getLevelIcon = (level: string, color?: string) => {
-    if (color) {
-      return <Trophy className={`h-6 w-6`} style={{ color: color }} />;
-    }
-    
-    switch (level) {
-      case 'excellent':
-        return <Trophy className="h-6 w-6 text-green-600" />;
-      case 'good':
-        return <TrendingUp className="h-6 w-6 text-blue-600" />;
-      case 'fair':
-        return <Target className="h-6 w-6 text-yellow-600" />;
-      case 'needs-improvement':
-        return <Target className="h-6 w-6 text-red-600" />;
-      default:
-        return <Star className="h-6 w-6 text-gray-600" />;
-    }
-  };
-
   const getLevelColor = (level: string, color?: string) => {
     if (color) {
       return `text-[${color}]`;
     }
-    
+
     switch (level) {
       case 'excellent':
         return 'text-green-500';
@@ -140,31 +121,22 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8 w-full mb-16">
       {/* Header */}
-      <SectionHeader title={`Your Quiz Results for ${quiz.title}`} subtitle={quiz.subtitle} />
+      <SectionHeader title={`Your Assessment Results`} subtitle={`${quiz.title} - ${quiz.subtitle}`} />
 
       {/* Score Summary */}
-      <Card className="text-center">
-        <CardHeader>
-          <CardTitle>
-            <div className="flex items-center justify-center gap-4">
-              {getLevelIcon(result.level, result.color)}
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <h2 className={`text-3xl font-bold ${getLevelColor(result.level, result.color)}`}>You are a {result.classification}</h2>
-          <div className="grid grid-cols-2 gap-4 max-w-md mx-auto text-sm">
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <span>Time: {result.timeSpent} min</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span>Completed: {new Date(result.completedAt).toLocaleDateString()}</span>
-            </div>
+      <div className="space-y-6 text-center bg-muted p-6 border border-primary/20 rounded-lg">
+        <h2 className={`text-3xl font-bold ${getLevelColor(result.level, result.color)}`}>You are {result.classification}</h2>
+        <div className="grid grid-cols-2 gap-4 max-w-md mx-auto text-sm">
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <span>Time: {result.timeSpent} min</span>
           </div>
-        </CardContent>
-      </Card>
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <span>Completed: {new Date(result.completedAt).toLocaleDateString()}</span>
+          </div>
+        </div>
+      </div>
 
       {/* Feedback */}
       <Card>
@@ -178,7 +150,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
           <p className="text-base mb-4">{result.feedback}</p>
 
           {/* Recommendations based on score level */}
-          {result.recommendations && result.recommendations.length > 0 && (
+          {result.recommendations && result.recommendations.length > 0 ? (
             <div className="space-y-2">
               <h4 className="font-semibold text-lg">Recommendations</h4>
               <div className="space-y-2">
@@ -190,12 +162,17 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
                 ))}
               </div>
             </div>
+          ) : (
+            <div className="space-y-2">
+              <h4 className="font-semibold text-lg">Recommendations</h4>
+              <p className="text-muted-foreground">No specific recommendations available for your score level.</p>
+            </div>
           )}
         </CardContent>
       </Card>
 
       {/* Recommended Resources */}
-      {(result.proposedCourses?.length || result.proposedProducts?.length || result.proposedStreaks?.length || result.proposedBlogPosts?.length) && (
+      {(result.proposedCourses?.length || result.proposedProducts?.length || result.proposedStreaks?.length || result.proposedBlogPosts?.length) ? (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -212,7 +189,6 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
                     <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                       <div>
                         <h5 className="font-medium">{course.name}</h5>
-                        <p className="text-sm text-muted-foreground">Course</p>
                       </div>
                       <Button variant="outline" size="sm" onClick={() => router.push(`/courses/${course.slug}`)}>
                         View Course
@@ -231,11 +207,10 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
                     <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                       <div>
                         <h5 className="font-medium">{product.name}</h5>
-                        <p className="text-sm text-muted-foreground">Product</p>
                       </div>
-                      <Button variant="outline" size="sm" onClick={() => router.push(`/shop/${product.slug}`)}>
-                        View Product
-                      </Button>
+                                              <Button variant="outline" size="sm" onClick={() => router.push(`/shop/${product.slug}`)}>
+                          View Product
+                        </Button>
                     </div>
                   ))}
                 </div>
@@ -250,7 +225,6 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
                     <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                       <div>
                         <h5 className="font-medium">{streak.name}</h5>
-                        <p className="text-sm text-muted-foreground">Streak</p>
                       </div>
                       <Button variant="outline" size="sm" onClick={() => router.push(`/streaks/${streak.slug}`)}>
                         View Streak
@@ -269,7 +243,6 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
                     <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                       <div>
                         <h5 className="font-medium">{blogPost.title}</h5>
-                        <p className="text-sm text-muted-foreground">Blog Post</p>
                       </div>
                       <Button variant="outline" size="sm" onClick={() => router.push(`/blog/${blogPost.slug}`)}>
                         Read Post
@@ -279,6 +252,18 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
                 </div>
               </div>
             )}
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Star className="h-5 w-5" />
+              Recommended Resources
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">No specific resources recommended for your score level at this time.</p>
           </CardContent>
         </Card>
       )}

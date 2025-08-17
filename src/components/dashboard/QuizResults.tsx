@@ -82,25 +82,6 @@ const QuizResults = () => {
   const totalQuizzes = quizResults.length;
   const totalTimeSpent = quizResults.reduce((sum, r) => sum + r.timeSpent, 0);
 
-  const getLevelColor = (level: string, color?: string) => {
-    if (color) {
-      return `bg-[${color}]`;
-    }
-    
-    switch (level) {
-      case 'excellent':
-        return 'bg-green-500';
-      case 'good':
-        return 'bg-blue-500';
-      case 'fair':
-        return 'bg-yellow-500';
-      case 'needs-improvement':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
-
   const getLevelBadgeColor = (level: string) => {
     switch (level) {
       case 'excellent':
@@ -169,7 +150,6 @@ const QuizResults = () => {
         <div className="space-y-6">
           {quizResults.map((result) => (
             <Card key={result.id} className="overflow-hidden">
-              <div className={`h-2 ${getLevelColor(result.level, result.color)}`} />
               <CardHeader>
                 <div className="flex justify-between items-start flex-col md:flex-row gap-4 md:gap-0">
                   <div>
