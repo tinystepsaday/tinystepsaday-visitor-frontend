@@ -236,7 +236,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         </div>
 
         {/* Tags Filter */}
-        <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 max-w-7xl mx-auto w-full justify-center">
+        <div className="flex gap-2 overflow-x-scroll pb-2 md:pb-0 max-w-7xl mx-auto justify-center w-full pl-10">
           {displayTags.map((tag) => (
             <button
               key={tag.slug}

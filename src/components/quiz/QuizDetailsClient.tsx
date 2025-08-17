@@ -84,7 +84,7 @@ export default function QuizDetailsClient({ quiz }: QuizDetailsClientProps) {
 
       {/* Hero Section with CTA */}
       <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
-        <CardHeader>
+        <CardHeader className="px-4 md:px-8">
           <div className="flex items-center flex-wrap gap-4">
             <Badge variant="secondary" className="text-sm">
               {quiz.category}
@@ -95,10 +95,9 @@ export default function QuizDetailsClient({ quiz }: QuizDetailsClientProps) {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="px-8">
+        <CardContent className="px-4 md:px-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             <div className="flex-1 space-y-4">
-
               <div className="space-y-2">
                 <h2 className="text-xl md:text-2xl leading-tight font-semibold">Ready to discover your personalized path?</h2>
                 <p className="text-muted-foreground text-justify">
