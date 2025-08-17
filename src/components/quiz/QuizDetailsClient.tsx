@@ -105,8 +105,7 @@ export default function QuizDetailsClient({ quiz }: QuizDetailsClientProps) {
               <div className="space-y-2">
                 <h2 className="text-2xl font-semibold">Ready to discover your personalized path?</h2>
                 <p className="text-muted-foreground">
-                  This {quiz.questions.length}-question assessment will help you understand your current state
-                  and provide tailored recommendations for articles (Blog posts), streaks, courses, and resources that match your unique needs.
+                  This {quiz.questions.length}-question assessment will help you {quiz.subtitle}&nbsp;and provide tailored recommendations for articles (Blog posts), streaks, courses, and resources that match your unique needs.
                 </p>
               </div>
 
@@ -215,7 +214,7 @@ export default function QuizDetailsClient({ quiz }: QuizDetailsClientProps) {
             <CardHeader>
               <CardTitle>Quiz Statistics</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-1">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Total Attempts</span>
                 <span className="font-medium">{quiz.totalAttempts.toLocaleString()}</span>

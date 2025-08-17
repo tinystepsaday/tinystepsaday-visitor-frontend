@@ -9,7 +9,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     <div className="min-h-screen flex flex-col bg-muted/30 w-full">
       <div className="pt-8 pb-4 px-4 md:px-8">
         <div className="max-w-sm mx-auto">
-          <Link href="/" className="text-xl md:text-2xl w-full text-center font-bold gradient-text inline-block mb-8">
+          <Link href="/" className="text-xl md:text-2xl w-full text-center font-bold inline-block mb-8 text-primary">
             Tiny Steps A Day
           </Link>
         </div>
