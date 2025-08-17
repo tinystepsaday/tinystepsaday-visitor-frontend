@@ -59,7 +59,7 @@ export interface Order {
 export const mockOrders: Order[] = [
   {
     id: "1",
-    orderNumber: "ORD-2024-001",
+    orderNumber: "ORD-2025-001",
     customerId: "user-1",
     customerName: "John Doe",
     customerEmail: "john.doe@example.com",
@@ -95,7 +95,7 @@ export const mockOrders: Order[] = [
     currency: "USD",
     status: {
       status: "processing",
-      updatedAt: "2024-01-15T10:30:00Z",
+      updatedAt: "2025-01-15T10:30:00Z",
       updatedBy: "admin",
       notes: "Order confirmed and being prepared for shipping"
     },
@@ -124,15 +124,15 @@ export const mockOrders: Order[] = [
       country: "USA"
     },
     notes: "Customer requested eco-friendly packaging",
-    createdAt: "2024-01-15T09:00:00Z",
-    updatedAt: "2024-01-15T10:30:00Z",
-    estimatedDelivery: "2024-01-20",
+    createdAt: "2025-01-15T09:00:00Z",
+    updatedAt: "2025-01-15T10:30:00Z",
+    estimatedDelivery: "2025-01-20",
     trackingNumber: "1Z999AA1234567890",
     hasDeliverableItems: true,
   },
   {
     id: "2",
-    orderNumber: "ORD-2024-002",
+    orderNumber: "ORD-2025-002",
     customerId: "user-2",
     customerName: "Jane Smith",
     customerEmail: "jane.smith@example.com",
@@ -157,7 +157,7 @@ export const mockOrders: Order[] = [
     currency: "USD",
     status: {
       status: "delivered",
-      updatedAt: "2024-01-14T16:00:00Z",
+      updatedAt: "2025-01-14T16:00:00Z",
       updatedBy: "system",
       notes: "Digital product delivered via email"
     },
@@ -185,13 +185,13 @@ export const mockOrders: Order[] = [
       zipCode: "90210",
       country: "USA"
     },
-    createdAt: "2024-01-14T14:00:00Z",
-    updatedAt: "2024-01-14T16:00:00Z",
+    createdAt: "2025-01-14T14:00:00Z",
+    updatedAt: "2025-01-14T16:00:00Z",
     hasDeliverableItems: false,
   },
   {
     id: "3",
-    orderNumber: "ORD-2024-003",
+    orderNumber: "ORD-2025-003",
     customerId: "user-3",
     customerName: "Mike Johnson",
     customerEmail: "mike.johnson@example.com",
@@ -227,7 +227,7 @@ export const mockOrders: Order[] = [
     currency: "USD",
     status: {
       status: "shipped",
-      updatedAt: "2024-01-13T11:15:00Z",
+      updatedAt: "2025-01-13T11:15:00Z",
       updatedBy: "admin",
       notes: "Package shipped via FedEx"
     },
@@ -255,15 +255,15 @@ export const mockOrders: Order[] = [
       zipCode: "60601",
       country: "USA"
     },
-    createdAt: "2024-01-13T09:30:00Z",
-    updatedAt: "2024-01-13T11:15:00Z",
-    estimatedDelivery: "2024-01-18",
+    createdAt: "2025-01-13T09:30:00Z",
+    updatedAt: "2025-01-13T11:15:00Z",
+    estimatedDelivery: "2025-01-18",
     trackingNumber: "1Z999AA1234567891",
     hasDeliverableItems: true,
   },
   {
     id: "4",
-    orderNumber: "ORD-2024-004",
+    orderNumber: "ORD-2025-004",
     customerId: "user-4",
     customerName: "Sarah Wilson",
     customerEmail: "sarah.wilson@example.com",
@@ -288,7 +288,7 @@ export const mockOrders: Order[] = [
     currency: "USD",
     status: {
       status: "confirmed",
-      updatedAt: "2024-01-12T15:45:00Z",
+      updatedAt: "2025-01-12T15:45:00Z",
       updatedBy: "admin",
       notes: "Subscription activated"
     },
@@ -316,13 +316,13 @@ export const mockOrders: Order[] = [
       zipCode: "33101",
       country: "USA"
     },
-    createdAt: "2024-01-12T14:00:00Z",
-    updatedAt: "2024-01-12T15:45:00Z",
+    createdAt: "2025-01-12T14:00:00Z",
+    updatedAt: "2025-01-12T15:45:00Z",
     hasDeliverableItems: false,
   },
   {
     id: "5",
-    orderNumber: "ORD-2024-005",
+    orderNumber: "ORD-2025-005",
     customerId: "user-5",
     customerName: "David Brown",
     customerEmail: "david.brown@example.com",
@@ -347,7 +347,7 @@ export const mockOrders: Order[] = [
     currency: "USD",
     status: {
       status: "pending",
-      updatedAt: "2024-01-16T08:00:00Z",
+      updatedAt: "2025-01-16T08:00:00Z",
       updatedBy: "system",
       notes: "Order received, awaiting payment confirmation"
     },
@@ -375,13 +375,13 @@ export const mockOrders: Order[] = [
       zipCode: "98101",
       country: "USA"
     },
-    createdAt: "2024-01-16T08:00:00Z",
-    updatedAt: "2024-01-16T08:00:00Z",
+    createdAt: "2025-01-16T08:00:00Z",
+    updatedAt: "2025-01-16T08:00:00Z",
     hasDeliverableItems: true,
   },
   {
     id: "6",
-    orderNumber: "ORD-2024-006",
+    orderNumber: "ORD-2025-006",
     customerId: "user-6",
     customerName: "Emily Davis",
     customerEmail: "emily.davis@example.com",
@@ -417,7 +417,7 @@ export const mockOrders: Order[] = [
     currency: "USD",
     status: {
       status: "cancelled",
-      updatedAt: "2024-01-11T12:30:00Z",
+      updatedAt: "2025-01-11T12:30:00Z",
       updatedBy: "admin",
       notes: "Cancelled by customer request"
     },
@@ -445,8 +445,8 @@ export const mockOrders: Order[] = [
       zipCode: "73301",
       country: "USA"
     },
-    createdAt: "2024-01-11T10:00:00Z",
-    updatedAt: "2024-01-11T12:30:00Z",
+    createdAt: "2025-01-11T10:00:00Z",
+    updatedAt: "2025-01-11T12:30:00Z",
     hasDeliverableItems: true,
   }
 ];

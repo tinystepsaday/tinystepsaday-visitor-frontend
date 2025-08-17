@@ -130,7 +130,7 @@ export const communities2: Community[] = [
       "Respect different meditation traditions and practices"
     ],
     tags: ["meditation", "mindfulness", "wellness", "spirituality"],
-    createdAt: "2024-01-15T00:00:00.000Z",
+    createdAt: "2025-01-15T00:00:00.000Z",
     updatedAt: "2025-01-20T00:00:00.000Z",
     lastActivity: "2025-01-20T10:30:00.000Z",
     averageRating: 4.8,
@@ -167,7 +167,7 @@ export const communities2: Community[] = [
         name: "Sarah Johnson",
         avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786",
         role: "leader",
-        joinedAt: "2024-01-15T00:00:00.000Z",
+        joinedAt: "2025-01-15T00:00:00.000Z",
         lastActive: "2025-01-20T10:30:00.000Z",
         contributionCount: 156,
         status: "active"
@@ -177,7 +177,7 @@ export const communities2: Community[] = [
         name: "Alex Chen",
         avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
         role: "moderator",
-        joinedAt: "2024-02-01T00:00:00.000Z",
+        joinedAt: "2025-02-01T00:00:00.000Z",
         lastActive: "2025-01-19T15:45:00.000Z",
         contributionCount: 89,
         status: "active"
@@ -249,7 +249,7 @@ export const communities2: Community[] = [
       "Keep discussions civil and constructive"
     ],
     tags: ["books", "reading", "literature", "education"],
-    createdAt: "2024-03-10T00:00:00.000Z",
+    createdAt: "2025-03-10T00:00:00.000Z",
     updatedAt: "2025-01-19T00:00:00.000Z",
     lastActivity: "2025-01-19T16:20:00.000Z",
     averageRating: 4.6,
@@ -274,7 +274,7 @@ export const communities2: Community[] = [
         name: "David Kim",
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
         role: "leader",
-        joinedAt: "2024-03-10T00:00:00.000Z",
+        joinedAt: "2025-03-10T00:00:00.000Z",
         lastActive: "2025-01-19T16:20:00.000Z",
         contributionCount: 203,
         status: "active"
@@ -345,7 +345,7 @@ export const communities2: Community[] = [
       "No promotion of fad diets or unsafe practices"
     ],
     tags: ["wellness", "health", "fitness", "nutrition"],
-    createdAt: "2024-05-20T00:00:00.000Z",
+    createdAt: "2025-05-20T00:00:00.000Z",
     updatedAt: "2025-01-18T00:00:00.000Z",
     lastActivity: "2025-01-18T12:15:00.000Z",
     averageRating: 4.7,
@@ -370,7 +370,7 @@ export const communities2: Community[] = [
         name: "Lisa Thompson",
         avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
         role: "leader",
-        joinedAt: "2024-05-20T00:00:00.000Z",
+        joinedAt: "2025-05-20T00:00:00.000Z",
         lastActive: "2025-01-18T12:15:00.000Z",
         contributionCount: 178,
         status: "active"
@@ -441,7 +441,7 @@ export const communities2: Community[] = [
       "Be encouraging and supportive"
     ],
     tags: ["productivity", "time-management", "goals", "efficiency"],
-    createdAt: "2024-07-15T00:00:00.000Z",
+    createdAt: "2025-07-15T00:00:00.000Z",
     updatedAt: "2025-01-17T00:00:00.000Z",
     lastActivity: "2025-01-17T09:45:00.000Z",
     averageRating: 4.5,
@@ -466,7 +466,7 @@ export const communities2: Community[] = [
         name: "James Wilson",
         avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
         role: "leader",
-        joinedAt: "2024-07-15T00:00:00.000Z",
+        joinedAt: "2025-07-15T00:00:00.000Z",
         lastActive: "2025-01-17T09:45:00.000Z",
         contributionCount: 145,
         status: "active"

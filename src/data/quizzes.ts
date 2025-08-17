@@ -1158,7 +1158,7 @@ export const userQuizResults: QuizResult[] = [
       "Set specific boundaries for digital consumption",
       "Consider digital detox periods"
     ],
-    completedAt: "2024-12-28T09:15:00Z",
+    completedAt: "2025-12-28T09:15:00Z",
     timeSpent: 8,
     answers: {
       "q1": "q1-b",

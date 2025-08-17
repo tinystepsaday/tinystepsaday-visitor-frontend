@@ -73,10 +73,10 @@ export default function StreakAnalyticsManagementClient({ streakId }: StreakAnal
       { week: "Week 4", participants: 112, checkIns: 445, avgStreak: 15 },
     ],
     topPerformers: [
-      { name: "John Doe", currentStreak: 45, totalCheckIns: 67, joinedDate: "2024-01-01" },
-      { name: "Jane Smith", currentStreak: 38, totalCheckIns: 58, joinedDate: "2024-01-05" },
-      { name: "Mike Johnson", currentStreak: 32, totalCheckIns: 52, joinedDate: "2024-01-10" },
-      { name: "Sarah Wilson", currentStreak: 28, totalCheckIns: 45, joinedDate: "2024-01-15" },
+      { name: "John Doe", currentStreak: 45, totalCheckIns: 67, joinedDate: "2025-01-01" },
+      { name: "Jane Smith", currentStreak: 38, totalCheckIns: 58, joinedDate: "2025-01-05" },
+      { name: "Mike Johnson", currentStreak: 32, totalCheckIns: 52, joinedDate: "2025-01-10" },
+      { name: "Sarah Wilson", currentStreak: 28, totalCheckIns: 45, joinedDate: "2025-01-15" },
     ]
   };
 

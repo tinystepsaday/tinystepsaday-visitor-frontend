@@ -274,7 +274,7 @@ export const careersData2: Career[] = [
     status: "closed",
     applicationsCount: 15,
     lastApplicationDate: "2025-01-08",
-    createdAt: "2024-12-15",
+    createdAt: "2025-12-15",
     updatedAt: "2025-01-08",
     tags: ["engineering", "frontend", "react", "remote"],
     requirements: [
@@ -657,7 +657,7 @@ export const applicationsData: JobApplication[] = [
     workAuth: true,
     sponsorship: false,
     status: 'offered',
-    appliedAt: '2024-12-20T10:15:00Z',
+    appliedAt: '2025-12-20T10:15:00Z',
     lastUpdated: '2025-01-05T14:30:00Z',
     notes: 'Excellent technical skills. Offer letter sent.',
     rating: 5,

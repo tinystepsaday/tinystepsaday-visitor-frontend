@@ -384,7 +384,7 @@ export const courses2: Course[] = [
       }
     ],
     badges: ["Bestseller", "Highest Rated"],
-    lastUpdated: "2024-03",
+    lastUpdated: "2025-03",
     certification: true
   },
   {
@@ -691,7 +691,7 @@ export const courses2: Course[] = [
         answer: "Our course focuses on practical application through real-world scenarios and personalized feedback."
       }
     ],
-    lastUpdated: "2024-02",
+    lastUpdated: "2025-02",
     certification: true
   },
   {
@@ -971,7 +971,7 @@ export const courses2: Course[] = [
       }
     ],
     badges: ["Most Popular", "High Impact"],
-    lastUpdated: "2024-03",
+    lastUpdated: "2025-03",
     certification: true
   },
   {
@@ -1189,7 +1189,7 @@ export const courses2: Course[] = [
       }
     ],
     badges: ["Quick Start", "Beginner Friendly"],
-    lastUpdated: "2024-04",
+    lastUpdated: "2025-04",
     certification: true
   }
 ];

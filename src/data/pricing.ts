@@ -119,8 +119,8 @@ const enhancedPricingTiers: PricingTierEnhanced[] = [
       events: { discountPercentage: 0 },
       growthPlan: { type: 'none' },
     },
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
+    createdAt: new Date('2025-01-01'),
+    updatedAt: new Date('2025-01-01'),
   },
   {
     id: "starter-tier",
@@ -160,8 +160,8 @@ const enhancedPricingTiers: PricingTierEnhanced[] = [
       events: { discountPercentage: 10 },
       growthPlan: { type: 'starter' },
     },
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
+    createdAt: new Date('2025-01-01'),
+    updatedAt: new Date('2025-01-01'),
   },
   {
     id: "transformation-tier",
@@ -203,8 +203,8 @@ const enhancedPricingTiers: PricingTierEnhanced[] = [
       events: { discountPercentage: 25, freeTicketsPerYear: 2, priorityBooking: true },
       growthPlan: { type: 'customized', quarterlyReviews: true },
     },
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
+    createdAt: new Date('2025-01-01'),
+    updatedAt: new Date('2025-01-01'),
     metadata: {
       popular: true,
       bestValue: true,
@@ -248,8 +248,8 @@ const enhancedPricingTiers: PricingTierEnhanced[] = [
       events: { discountPercentage: 100, freeTicketsPerYear: 4, priorityBooking: true },
       growthPlan: { type: 'transformational', quarterlyReviews: true },
     },
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
+    createdAt: new Date('2025-01-01'),
+    updatedAt: new Date('2025-01-01'),
     metadata: {
       featured: true,
     },

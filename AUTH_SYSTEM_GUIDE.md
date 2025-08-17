@@ -175,7 +175,7 @@ const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me`, 
     "permissions": ["read_courses", "manage_profile"],
     "subscriptionTier": "premium",
     "subscriptionStatus": "active",
-    "subscriptionExpiry": "2024-12-31T23:59:59Z",
+    "subscriptionExpiry": "2025-12-31T23:59:59Z",
     "createdAt": "...",
     "updatedAt": "..."
   }

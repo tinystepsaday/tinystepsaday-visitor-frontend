@@ -45,7 +45,7 @@ export const mockTeamMembers: TeamMember[] = [
     isFeatured: true,
     order: 1,
     createdAt: "2020-01-15T00:00:00Z",
-    updatedAt: "2024-01-15T00:00:00Z"
+    updatedAt: "2025-01-15T00:00:00Z"
   },
   {
     id: "2",
@@ -67,7 +67,7 @@ export const mockTeamMembers: TeamMember[] = [
     isFeatured: true,
     order: 2,
     createdAt: "2020-03-20T00:00:00Z",
-    updatedAt: "2024-01-15T00:00:00Z"
+    updatedAt: "2025-01-15T00:00:00Z"
   },
   {
     id: "3",
@@ -89,7 +89,7 @@ export const mockTeamMembers: TeamMember[] = [
     isFeatured: true,
     order: 3,
     createdAt: "2020-05-10T00:00:00Z",
-    updatedAt: "2024-01-15T00:00:00Z"
+    updatedAt: "2025-01-15T00:00:00Z"
   },
   {
     id: "4",
@@ -111,7 +111,7 @@ export const mockTeamMembers: TeamMember[] = [
     isFeatured: true,
     order: 4,
     createdAt: "2020-07-15T00:00:00Z",
-    updatedAt: "2024-01-15T00:00:00Z"
+    updatedAt: "2025-01-15T00:00:00Z"
   },
   {
     id: "5",
@@ -133,7 +133,7 @@ export const mockTeamMembers: TeamMember[] = [
     isFeatured: true,
     order: 5,
     createdAt: "2020-09-01T00:00:00Z",
-    updatedAt: "2024-01-15T00:00:00Z"
+    updatedAt: "2025-01-15T00:00:00Z"
   },
   {
     id: "6",
@@ -155,7 +155,7 @@ export const mockTeamMembers: TeamMember[] = [
     isFeatured: false,
     order: 6,
     createdAt: "2021-01-15T00:00:00Z",
-    updatedAt: "2024-01-15T00:00:00Z"
+    updatedAt: "2025-01-15T00:00:00Z"
   },
   {
     id: "7",
@@ -177,7 +177,7 @@ export const mockTeamMembers: TeamMember[] = [
     isFeatured: false,
     order: 7,
     createdAt: "2021-03-20T00:00:00Z",
-    updatedAt: "2024-01-15T00:00:00Z"
+    updatedAt: "2025-01-15T00:00:00Z"
   },
   {
     id: "8",
@@ -199,7 +199,7 @@ export const mockTeamMembers: TeamMember[] = [
     isFeatured: false,
     order: 8,
     createdAt: "2021-06-01T00:00:00Z",
-    updatedAt: "2024-01-15T00:00:00Z"
+    updatedAt: "2025-01-15T00:00:00Z"
   }
 ];
 

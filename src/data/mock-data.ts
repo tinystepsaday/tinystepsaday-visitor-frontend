@@ -30,11 +30,11 @@ export const mockUsers: User[] = [
     email: "john@example.com",
     avatar: "/placeholder.svg?height=40&width=40",
     role: "admin",
-    createdAt: new Date("2024-01-15"),
-    lastLogin: new Date("2024-02-25"),
+    createdAt: new Date("2025-01-15"),
+    lastLogin: new Date("2025-02-25"),
     isActive: true,
     totalLogins: 156,
-    lastActivity: new Date("2024-02-25"),
+    lastActivity: new Date("2025-02-25"),
     phone: "+1 (555) 123-4567",
     bio: "System administrator with 5+ years of experience in educational technology.",
     location: "San Francisco, CA",
@@ -55,11 +55,11 @@ export const mockUsers: User[] = [
     email: "jane@example.com",
     avatar: "/placeholder.svg?height=40&width=40",
     role: "editor",
-    createdAt: new Date("2024-02-20"),
-    lastLogin: new Date("2024-02-24"),
+    createdAt: new Date("2025-02-20"),
+    lastLogin: new Date("2025-02-24"),
     isActive: true,
     totalLogins: 89,
-    lastActivity: new Date("2024-02-24"),
+    lastActivity: new Date("2025-02-24"),
     phone: "+1 (555) 234-5678",
     bio: "Content editor passionate about creating engaging educational materials.",
     location: "New York, NY",
@@ -75,11 +75,11 @@ export const mockUsers: User[] = [
     email: "mike@example.com",
     avatar: "/placeholder.svg?height=40&width=40",
     role: "viewer",
-    createdAt: new Date("2024-01-10"),
-    lastLogin: new Date("2024-02-20"),
+    createdAt: new Date("2025-01-10"),
+    lastLogin: new Date("2025-02-20"),
     isActive: false,
     totalLogins: 23,
-    lastActivity: new Date("2024-02-20"),
+    lastActivity: new Date("2025-02-20"),
     preferences: {
       emailNotifications: false,
       pushNotifications: false,
@@ -92,14 +92,14 @@ export const mockUsers: User[] = [
     email: "sarah@example.com",
     avatar: "/placeholder.svg?height=40&width=40",
     role: "subscriber",
-    createdAt: new Date("2024-02-01"),
-    lastLogin: new Date("2024-02-23"),
+    createdAt: new Date("2025-02-01"),
+    lastLogin: new Date("2025-02-23"),
     isActive: true,
     totalLogins: 67,
-    lastActivity: new Date("2024-02-23"),
+    lastActivity: new Date("2025-02-23"),
     subscriptionTier: "premium",
     subscriptionStatus: "active",
-    subscriptionExpiry: new Date("2024-12-31"),
+    subscriptionExpiry: new Date("2025-12-31"),
     preferences: {
       emailNotifications: true,
       pushNotifications: true,
@@ -112,11 +112,11 @@ export const mockUsers: User[] = [
     email: "alex@example.com",
     avatar: "/placeholder.svg?height=40&width=40",
     role: "learner",
-    createdAt: new Date("2024-01-25"),
-    lastLogin: new Date("2024-02-25"),
+    createdAt: new Date("2025-01-25"),
+    lastLogin: new Date("2025-02-25"),
     isActive: true,
     totalLogins: 45,
-    lastActivity: new Date("2024-02-25"),
+    lastActivity: new Date("2025-02-25"),
     enrolledCourses: ["course-1", "course-3"],
     completedCourses: ["course-2"],
     totalLearningHours: 28,
@@ -133,14 +133,14 @@ export const mockUsers: User[] = [
     email: "emily@example.com",
     avatar: "/placeholder.svg?height=40&width=40",
     role: "learner-subscriber",
-    createdAt: new Date("2024-02-10"),
-    lastLogin: new Date("2024-02-25"),
+    createdAt: new Date("2025-02-10"),
+    lastLogin: new Date("2025-02-25"),
     isActive: true,
     totalLogins: 34,
-    lastActivity: new Date("2024-02-25"),
+    lastActivity: new Date("2025-02-25"),
     subscriptionTier: "basic",
     subscriptionStatus: "active",
-    subscriptionExpiry: new Date("2024-11-30"),
+    subscriptionExpiry: new Date("2025-11-30"),
     enrolledCourses: ["course-1", "course-2", "course-4"],
     completedCourses: ["course-1"],
     totalLearningHours: 42,
@@ -161,7 +161,7 @@ export const mockUserActivities: UserActivity[] = [
     type: "course_enrollment",
     description: "Enrolled in Mindfulness Basics course",
     metadata: { courseId: "course-1", courseName: "Mindfulness Basics" },
-    timestamp: new Date("2024-02-20")
+    timestamp: new Date("2025-02-20")
   },
   {
     id: "2",
@@ -169,7 +169,7 @@ export const mockUserActivities: UserActivity[] = [
     type: "course_completion",
     description: "Completed Stress Management course",
     metadata: { courseId: "course-2", courseName: "Stress Management", score: 85 },
-    timestamp: new Date("2024-02-18")
+    timestamp: new Date("2025-02-18")
   },
   {
     id: "3",
@@ -177,7 +177,7 @@ export const mockUserActivities: UserActivity[] = [
     type: "quiz_taken",
     description: "Took Mindfulness Assessment quiz",
     metadata: { quizId: "mindfulness", score: 78, maxScore: 100 },
-    timestamp: new Date("2024-02-15")
+    timestamp: new Date("2025-02-15")
   },
   {
     id: "4",
@@ -185,7 +185,7 @@ export const mockUserActivities: UserActivity[] = [
     type: "streak_joined",
     description: "Joined Daily Meditation streak",
     metadata: { streakId: "meditation", streakName: "Daily Meditation" },
-    timestamp: new Date("2024-02-22")
+    timestamp: new Date("2025-02-22")
   },
   {
     id: "5",
@@ -193,7 +193,7 @@ export const mockUserActivities: UserActivity[] = [
     type: "course_enrollment",
     description: "Enrolled in Advanced Mindfulness course",
     metadata: { courseId: "course-4", courseName: "Advanced Mindfulness" },
-    timestamp: new Date("2024-02-21")
+    timestamp: new Date("2025-02-21")
   }
 ]
 
@@ -208,7 +208,7 @@ export const mockUserStats: Record<string, UserStats> = {
     averageQuizScore: 78,
     longestStreak: 0,
     currentStreak: 0,
-    lastActivity: new Date("2024-02-25")
+    lastActivity: new Date("2025-02-25")
   },
   "6": {
     totalCoursesEnrolled: 3,
@@ -219,7 +219,7 @@ export const mockUserStats: Record<string, UserStats> = {
     averageQuizScore: 82,
     longestStreak: 7,
     currentStreak: 3,
-    lastActivity: new Date("2024-02-25")
+    lastActivity: new Date("2025-02-25")
   }
 }
 
@@ -232,7 +232,7 @@ export const mockCategories: Category[] = [
     color: "#3B82F6",
     postCount: 15,
     courseCount: 5,
-    createdAt: new Date("2024-01-01"),
+    createdAt: new Date("2025-01-01"),
   },
   {
     id: "2",
@@ -242,7 +242,7 @@ export const mockCategories: Category[] = [
     color: "#10B981",
     postCount: 8,
     courseCount: 3,
-    createdAt: new Date("2024-01-05"),
+    createdAt: new Date("2025-01-05"),
   },
   {
     id: "3",
@@ -252,7 +252,7 @@ export const mockCategories: Category[] = [
     color: "#8B5CF6",
     postCount: 12,
     courseCount: 4,
-    createdAt: new Date("2024-01-10"),
+    createdAt: new Date("2025-01-10"),
   },
 ]
 
@@ -263,7 +263,7 @@ export const mockTags: Tag[] = [
     slug: "react",
     color: "#61DAFB",
     postCount: 25,
-    createdAt: new Date("2024-01-01"),
+    createdAt: new Date("2025-01-01"),
   },
   {
     id: "2",
@@ -271,7 +271,7 @@ export const mockTags: Tag[] = [
     slug: "typescript",
     color: "#3178C6",
     postCount: 18,
-    createdAt: new Date("2024-01-02"),
+    createdAt: new Date("2025-01-02"),
   },
   {
     id: "3",
@@ -279,7 +279,7 @@ export const mockTags: Tag[] = [
     slug: "nextjs",
     color: "#000000",
     postCount: 12,
-    createdAt: new Date("2024-01-03"),
+    createdAt: new Date("2025-01-03"),
   },
   {
     id: "4",
@@ -287,7 +287,7 @@ export const mockTags: Tag[] = [
     slug: "javascript",
     color: "#F7DF1E",
     postCount: 30,
-    createdAt: new Date("2024-01-04"),
+    createdAt: new Date("2025-01-04"),
   },
 ]
 
@@ -298,7 +298,7 @@ export const mockStudents: Student[] = [
     enrolledCourses: [],
     totalCoursesCompleted: 3,
     totalHoursLearned: 45,
-    createdAt: new Date("2024-01-20"),
+    createdAt: new Date("2025-01-20"),
   },
   {
     id: "2",
@@ -308,14 +308,14 @@ export const mockStudents: Student[] = [
       email: "sarah@example.com",
       avatar: "/placeholder.svg?height=40&width=40",
       role: "viewer",
-      createdAt: new Date("2024-02-01"),
+      createdAt: new Date("2025-02-01"),
       isActive: true,
       totalLogins: 67, // Add missing required field
     },
     enrolledCourses: [],
     totalCoursesCompleted: 1,
     totalHoursLearned: 20,
-    createdAt: new Date("2024-02-01"),
+    createdAt: new Date("2025-02-01"),
   },
 ]
 
@@ -392,7 +392,7 @@ const fallbackBlogPosts: BlogPost[] = [
     commentsCount: 23,
     sharesCount: 12,
     isFeatured: true,
-    publishedAt: new Date("2024-04-15"),
+    publishedAt: new Date("2025-04-15"),
     seoTitle: "Finding Inner Peace in a Chaotic World",
     seoDescription: "Discover practical methods to maintain calm and balance in today's fast-paced environment.",
     seoKeywords: ["mindfulness", "inner peace", "stress management"],
@@ -412,8 +412,8 @@ const fallbackBlogPosts: BlogPost[] = [
       { id: "2", name: "inner peace", slug: "inner-peace", color: "#6b7280" },
       { id: "3", name: "stress management", slug: "stress-management", color: "#6b7280" },
     ],
-    createdAt: new Date("2024-04-15"),
-    updatedAt: new Date("2024-04-15"),
+    createdAt: new Date("2025-04-15"),
+    updatedAt: new Date("2025-04-15"),
   },
   {
     id: "2",
@@ -429,7 +429,7 @@ const fallbackBlogPosts: BlogPost[] = [
     commentsCount: 15,
     sharesCount: 8,
     isFeatured: false,
-    publishedAt: new Date("2024-04-10"),
+    publishedAt: new Date("2025-04-10"),
     seoTitle: "5 Mindful Meditation Techniques for Beginners",
     seoDescription: "Start your meditation journey with these simple yet powerful techniques anyone can master.",
     seoKeywords: ["meditation", "mindfulness", "beginners", "techniques"],
@@ -449,8 +449,8 @@ const fallbackBlogPosts: BlogPost[] = [
       { id: "5", name: "mindfulness", slug: "mindfulness", color: "#6b7280" },
       { id: "6", name: "beginners", slug: "beginners", color: "#6b7280" },
     ],
-    createdAt: new Date("2024-04-10"),
-    updatedAt: new Date("2024-04-10"),
+    createdAt: new Date("2025-04-10"),
+    updatedAt: new Date("2025-04-10"),
   },
 ]
 
@@ -480,8 +480,8 @@ export const mockCourses: Course[] = [
       altText: "React course thumbnail",
       caption: "Complete React development course",
     },
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-15"),
+    createdAt: new Date("2025-01-01"),
+    updatedAt: new Date("2025-01-15"),
   },
 ]
 
@@ -498,8 +498,8 @@ export const mockMediaFiles: MediaFile[] = [
     caption: "Beautiful landscape image",
     isPublic: true,
     tags: ["hero", "landscape"],
-    createdAt: new Date("2024-01-15"),
-    updatedAt: new Date("2024-01-15"),
+    createdAt: new Date("2025-01-15"),
+    updatedAt: new Date("2025-01-15"),
   },
   {
     id: "2",
@@ -513,8 +513,8 @@ export const mockMediaFiles: MediaFile[] = [
     caption: "How to use our product",
     isPublic: true,
     tags: ["product", "demo"],
-    createdAt: new Date("2024-01-10"),
-    updatedAt: new Date("2024-01-10"),
+    createdAt: new Date("2025-01-10"),
+    updatedAt: new Date("2025-01-10"),
   },
   {
     id: "3",
@@ -528,8 +528,8 @@ export const mockMediaFiles: MediaFile[] = [
     caption: "Complete user manual",
     isPublic: true,
     tags: ["documentation", "manual"],
-    createdAt: new Date("2024-01-05"),
-    updatedAt: new Date("2024-01-05"),
+    createdAt: new Date("2025-01-05"),
+    updatedAt: new Date("2025-01-05"),
   },
   {
     id: "4",
@@ -543,8 +543,8 @@ export const mockMediaFiles: MediaFile[] = [
     caption: "Abstract background pattern",
     isPublic: true,
     tags: ["background", "pattern"],
-    createdAt: new Date("2024-01-20"),
-    updatedAt: new Date("2024-01-20"),
+    createdAt: new Date("2025-01-20"),
+    updatedAt: new Date("2025-01-20"),
   },
   {
     id: "5",
@@ -558,8 +558,8 @@ export const mockMediaFiles: MediaFile[] = [
     caption: "Ambient background music",
     isPublic: true,
     tags: ["audio", "music"],
-    createdAt: new Date("2024-01-12"),
-    updatedAt: new Date("2024-01-12"),
+    createdAt: new Date("2025-01-12"),
+    updatedAt: new Date("2025-01-12"),
   },
 ]
 
@@ -570,7 +570,7 @@ export const mockNotifications: Notification[] = [
     message: "Someone commented on your blog post",
     type: "info",
     read: false,
-    createdAt: new Date("2024-02-25"),
+    createdAt: new Date("2025-02-25"),
     userId: "1",
     actionUrl: "/management/blog/1",
   },
@@ -580,7 +580,7 @@ export const mockNotifications: Notification[] = [
     message: "Your course has been successfully published",
     type: "success",
     read: true,
-    createdAt: new Date("2024-02-24"),
+    createdAt: new Date("2025-02-24"),
     userId: "1",
     actionUrl: "/management/courses/1",
   },
@@ -615,9 +615,9 @@ export const mockUserCourseEnrollments: UserCourseEnrollment[] = [
     courseId: "course-1",
     courseName: "Mindfulness Basics",
     courseSlug: "mindfulness-basics",
-    enrolledAt: new Date("2024-02-20"),
+    enrolledAt: new Date("2025-02-20"),
     progress: 75,
-    lastAccessed: new Date("2024-02-25"),
+    lastAccessed: new Date("2025-02-25"),
     totalTimeSpent: 420,
     modulesCompleted: 3,
     totalModules: 4
@@ -628,8 +628,8 @@ export const mockUserCourseEnrollments: UserCourseEnrollment[] = [
     courseId: "course-2",
     courseName: "Stress Management",
     courseSlug: "stress-management",
-    enrolledAt: new Date("2024-01-15"),
-    completedAt: new Date("2024-02-18"),
+    enrolledAt: new Date("2025-01-15"),
+    completedAt: new Date("2025-02-18"),
     progress: 100,
     certificateEarned: true,
     certificateId: "cert-001",
@@ -643,8 +643,8 @@ export const mockUserCourseEnrollments: UserCourseEnrollment[] = [
     courseId: "course-1",
     courseName: "Mindfulness Basics",
     courseSlug: "mindfulness-basics",
-    enrolledAt: new Date("2024-02-10"),
-    completedAt: new Date("2024-02-20"),
+    enrolledAt: new Date("2025-02-10"),
+    completedAt: new Date("2025-02-20"),
     progress: 100,
     certificateEarned: true,
     certificateId: "cert-002",
@@ -658,9 +658,9 @@ export const mockUserCourseEnrollments: UserCourseEnrollment[] = [
     courseId: "course-4",
     courseName: "Advanced Mindfulness",
     courseSlug: "advanced-mindfulness",
-    enrolledAt: new Date("2024-02-21"),
+    enrolledAt: new Date("2025-02-21"),
     progress: 25,
-    lastAccessed: new Date("2024-02-25"),
+    lastAccessed: new Date("2025-02-25"),
     totalTimeSpent: 120,
     modulesCompleted: 1,
     totalModules: 6
@@ -674,11 +674,11 @@ export const mockUserStreakEnrollments: UserStreakEnrollment[] = [
     streakId: "meditation",
     streakName: "Daily Meditation",
     streakSlug: "daily-meditation",
-    enrolledAt: new Date("2024-02-22"),
+    enrolledAt: new Date("2025-02-22"),
     currentStreak: 3,
     longestStreak: 7,
     totalCheckIns: 3,
-    lastCheckIn: new Date("2024-02-25"),
+    lastCheckIn: new Date("2025-02-25"),
     isActive: true
   },
   {
@@ -687,11 +687,11 @@ export const mockUserStreakEnrollments: UserStreakEnrollment[] = [
     streakId: "gratitude",
     streakName: "Gratitude Journal",
     streakSlug: "gratitude-journal",
-    enrolledAt: new Date("2024-01-20"),
+    enrolledAt: new Date("2025-01-20"),
     currentStreak: 0,
     longestStreak: 5,
     totalCheckIns: 8,
-    lastCheckIn: new Date("2024-02-15"),
+    lastCheckIn: new Date("2025-02-15"),
     isActive: false
   }
 ]
@@ -707,7 +707,7 @@ export const mockUserPayments: UserPayment[] = [
     status: "completed",
     paymentMethod: "Credit Card",
     transactionId: "txn_001",
-    createdAt: new Date("2024-02-01"),
+    createdAt: new Date("2025-02-01"),
     metadata: { subscriptionTier: "premium" }
   },
   {
@@ -720,7 +720,7 @@ export const mockUserPayments: UserPayment[] = [
     status: "completed",
     paymentMethod: "PayPal",
     transactionId: "txn_002",
-    createdAt: new Date("2024-02-20"),
+    createdAt: new Date("2025-02-20"),
     metadata: { courseId: "course-1", courseName: "Mindfulness Basics" }
   },
   {
@@ -733,7 +733,7 @@ export const mockUserPayments: UserPayment[] = [
     status: "completed",
     paymentMethod: "Credit Card",
     transactionId: "txn_003",
-    createdAt: new Date("2024-02-15"),
+    createdAt: new Date("2025-02-15"),
     metadata: { mentorshipId: "mentor-1" }
   }
 ]
@@ -744,8 +744,8 @@ export const mockUserSubscriptions: UserSubscription[] = [
     userId: "4",
     tier: "premium",
     status: "active",
-    startDate: new Date("2024-02-01"),
-    endDate: new Date("2024-12-31"),
+    startDate: new Date("2025-02-01"),
+    endDate: new Date("2025-12-31"),
     autoRenew: true,
     paymentMethod: "Credit Card",
     monthlyAmount: 29.99,
@@ -757,8 +757,8 @@ export const mockUserSubscriptions: UserSubscription[] = [
     userId: "6",
     tier: "basic",
     status: "active",
-    startDate: new Date("2024-02-10"),
-    endDate: new Date("2024-11-30"),
+    startDate: new Date("2025-02-10"),
+    endDate: new Date("2025-11-30"),
     autoRenew: true,
     paymentMethod: "Credit Card",
     monthlyAmount: 9.99,
@@ -775,7 +775,7 @@ export const mockUserConsultations: UserConsultation[] = [
     consultantName: "Dr. Sarah Johnson",
     type: "career",
     status: "completed",
-    scheduledAt: new Date("2024-02-15T10:00:00Z"),
+    scheduledAt: new Date("2025-02-15T10:00:00Z"),
     duration: 60,
     amount: 150,
     currency: "USD",
@@ -783,7 +783,7 @@ export const mockUserConsultations: UserConsultation[] = [
     feedback: {
       rating: 5,
       comment: "Excellent session, very helpful insights",
-      submittedAt: new Date("2024-02-15T11:30:00Z")
+      submittedAt: new Date("2025-02-15T11:30:00Z")
     },
     meetingLink: "https://meet.google.com/abc-defg-hij",
     recordingUrl: "https://recordings.example.com/consultation-1"
@@ -795,7 +795,7 @@ export const mockUserConsultations: UserConsultation[] = [
     consultantName: "Michael Chen",
     type: "life",
     status: "scheduled",
-    scheduledAt: new Date("2024-03-05T14:00:00Z"),
+    scheduledAt: new Date("2025-03-05T14:00:00Z"),
     duration: 45,
     amount: 120,
     currency: "USD",
@@ -812,10 +812,10 @@ export const mockUserMentorships: UserMentorship[] = [
     programId: "program-1",
     programName: "Career Transition Program",
     status: "in-progress",
-    appliedAt: new Date("2024-02-10"),
-    acceptedAt: new Date("2024-02-12"),
-    startDate: new Date("2024-02-15"),
-    endDate: new Date("2024-05-15"),
+    appliedAt: new Date("2025-02-10"),
+    acceptedAt: new Date("2025-02-12"),
+    startDate: new Date("2025-02-15"),
+    endDate: new Date("2025-05-15"),
     sessionsCompleted: 2,
     totalSessions: 12,
     amount: 999.99,
@@ -836,7 +836,7 @@ export const mockUserQuizResults: UserQuizResult[] = [
     maxScore: 100,
     percentage: 78,
     level: "intermediate",
-    completedAt: new Date("2024-02-15"),
+    completedAt: new Date("2025-02-15"),
     timeSpent: 15,
     answers: {
       "q1": "q1-b",
@@ -860,7 +860,7 @@ export const mockUserQuizResults: UserQuizResult[] = [
     maxScore: 80,
     percentage: 81,
     level: "advanced",
-    completedAt: new Date("2024-02-20"),
+    completedAt: new Date("2025-02-20"),
     timeSpent: 12,
     answers: {
       "q1": "q1-c",
@@ -885,8 +885,8 @@ export const mockUserReadingList: UserReadingList[] = [
     articleId: "article-1",
     articleTitle: "10 Ways to Practice Mindfulness Daily",
     articleSlug: "10-ways-to-practice-mindfulness-daily",
-    addedAt: new Date("2024-02-20"),
-    readAt: new Date("2024-02-21"),
+    addedAt: new Date("2025-02-20"),
+    readAt: new Date("2025-02-21"),
     isBookmarked: true,
     category: "Mindfulness",
     tags: ["mindfulness", "daily-practice", "wellness"]
@@ -897,7 +897,7 @@ export const mockUserReadingList: UserReadingList[] = [
     articleId: "article-2",
     articleTitle: "The Science of Stress Management",
     articleSlug: "science-of-stress-management",
-    addedAt: new Date("2024-02-18"),
+    addedAt: new Date("2025-02-18"),
     isBookmarked: false,
     category: "Stress Management",
     tags: ["stress", "science", "management"]
@@ -908,8 +908,8 @@ export const mockUserReadingList: UserReadingList[] = [
     articleId: "article-3",
     articleTitle: "Career Transition Strategies",
     articleSlug: "career-transition-strategies",
-    addedAt: new Date("2024-02-15"),
-    readAt: new Date("2024-02-16"),
+    addedAt: new Date("2025-02-15"),
+    readAt: new Date("2025-02-16"),
     isBookmarked: true,
     category: "Career",
     tags: ["career", "transition", "strategy"]
@@ -925,7 +925,7 @@ export const mockUserPurchases: UserPurchase[] = [
     productType: "ebook",
     amount: 19.99,
     currency: "USD",
-    purchasedAt: new Date("2024-02-10"),
+    purchasedAt: new Date("2025-02-10"),
     status: "completed",
     downloadUrl: "https://downloads.example.com/mindfulness-workbook.pdf",
     accessExpiry: new Date("2025-02-10")
@@ -938,9 +938,9 @@ export const mockUserPurchases: UserPurchase[] = [
     productType: "workshop",
     amount: 79.99,
     currency: "USD",
-    purchasedAt: new Date("2024-02-05"),
+    purchasedAt: new Date("2025-02-05"),
     status: "completed",
-    accessExpiry: new Date("2024-05-05")
+    accessExpiry: new Date("2025-05-05")
   }
 ]
 
@@ -951,7 +951,7 @@ export const mockUserPreferences: UserPreference[] = [
     category: "notifications",
     key: "emailNotifications",
     value: true,
-    updatedAt: new Date("2024-02-20")
+    updatedAt: new Date("2025-02-20")
   },
   {
     id: "pref-2",
@@ -959,7 +959,7 @@ export const mockUserPreferences: UserPreference[] = [
     category: "notifications",
     key: "pushNotifications",
     value: true,
-    updatedAt: new Date("2024-02-20")
+    updatedAt: new Date("2025-02-20")
   },
   {
     id: "pref-3",
@@ -967,7 +967,7 @@ export const mockUserPreferences: UserPreference[] = [
     category: "notifications",
     key: "newsletter",
     value: false,
-    updatedAt: new Date("2024-02-20")
+    updatedAt: new Date("2025-02-20")
   },
   {
     id: "pref-4",
@@ -975,7 +975,7 @@ export const mockUserPreferences: UserPreference[] = [
     category: "learning",
     key: "autoEnroll",
     value: true,
-    updatedAt: new Date("2024-02-15")
+    updatedAt: new Date("2025-02-15")
   },
   {
     id: "pref-5",
@@ -983,6 +983,6 @@ export const mockUserPreferences: UserPreference[] = [
     category: "appearance",
     key: "theme",
     value: "dark",
-    updatedAt: new Date("2024-02-15")
+    updatedAt: new Date("2025-02-15")
   }
 ] 

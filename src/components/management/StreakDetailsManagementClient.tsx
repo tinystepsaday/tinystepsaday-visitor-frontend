@@ -65,9 +65,9 @@ export default function StreakDetailsManagementClient({ streakId }: StreakDetail
 
   // Mock participant data
   const participants = [
-    { id: "1", name: "John Doe", email: "john@example.com", joinedDate: "2024-01-15", status: "active", currentStreak: 7, totalCheckIns: 25 },
-    { id: "2", name: "Jane Smith", email: "jane@example.com", joinedDate: "2024-01-10", status: "active", currentStreak: 12, totalCheckIns: 35 },
-    { id: "3", name: "Bob Johnson", email: "bob@example.com", joinedDate: "2024-01-20", status: "inactive", currentStreak: 0, totalCheckIns: 5 },
+    { id: "1", name: "John Doe", email: "john@example.com", joinedDate: "2025-01-15", status: "active", currentStreak: 7, totalCheckIns: 25 },
+    { id: "2", name: "Jane Smith", email: "jane@example.com", joinedDate: "2025-01-10", status: "active", currentStreak: 12, totalCheckIns: 35 },
+    { id: "3", name: "Bob Johnson", email: "bob@example.com", joinedDate: "2025-01-20", status: "inactive", currentStreak: 0, totalCheckIns: 5 },
   ];
 
   const getStatusBadge = (status: string) => {

@@ -70,8 +70,8 @@ export const events2: Event[] = [
     tags: ["mindfulness", "meditation", "stress-relief", "online"],
     requirements: ["Comfortable seating", "Quiet environment"],
     materials: ["Meditation cushion (optional)", "Journal and pen"],
-    createdAt: "2024-01-15T10:00:00Z",
-    updatedAt: "2024-01-20T14:30:00Z"
+    createdAt: "2025-01-15T10:00:00Z",
+    updatedAt: "2025-01-20T14:30:00Z"
   },
   {
     id: "2",
@@ -102,8 +102,8 @@ export const events2: Event[] = [
     tags: ["retreat", "meditation", "nature", "immersive"],
     requirements: ["Comfortable walking shoes", "Weather-appropriate clothing"],
     materials: ["Meditation cushion", "Yoga mat", "Journal"],
-    createdAt: "2024-01-10T09:00:00Z",
-    updatedAt: "2024-01-18T16:45:00Z"
+    createdAt: "2025-01-10T09:00:00Z",
+    updatedAt: "2025-01-18T16:45:00Z"
   },
   {
     id: "3",
@@ -133,8 +133,8 @@ export const events2: Event[] = [
     tags: ["stress-management", "wellness", "workplace", "seminar"],
     requirements: ["Comfortable clothing", "Open mind"],
     materials: ["Workbook", "Stress assessment tools"],
-    createdAt: "2024-01-12T11:30:00Z",
-    updatedAt: "2024-01-22T10:15:00Z"
+    createdAt: "2025-01-12T11:30:00Z",
+    updatedAt: "2025-01-22T10:15:00Z"
   },
   {
     id: "4",
@@ -164,8 +164,8 @@ export const events2: Event[] = [
     tags: ["yoga", "beginners", "online", "fitness"],
     requirements: ["Yoga mat", "Comfortable space"],
     materials: ["Yoga mat", "Props (blocks, straps)"],
-    createdAt: "2024-01-25T08:00:00Z",
-    updatedAt: "2024-01-25T08:00:00Z"
+    createdAt: "2025-01-25T08:00:00Z",
+    updatedAt: "2025-01-25T08:00:00Z"
   }
 ];
 
@@ -178,7 +178,7 @@ export const eventApplicants: EventApplicant[] = [
     email: "john.smith@email.com",
     phone: "+1-555-0123",
     status: "approved",
-    appliedAt: "2024-01-16T14:30:00Z",
+    appliedAt: "2025-01-16T14:30:00Z",
     notes: "Experienced meditator, looking to deepen practice",
     dietaryRestrictions: "Vegetarian",
     specialRequirements: "None"
@@ -189,7 +189,7 @@ export const eventApplicants: EventApplicant[] = [
     name: "Sarah Wilson",
     email: "sarah.wilson@email.com",
     status: "pending",
-    appliedAt: "2024-01-17T09:15:00Z",
+    appliedAt: "2025-01-17T09:15:00Z",
     notes: "First time attending mindfulness workshop",
     dietaryRestrictions: "None",
     specialRequirements: "None"
@@ -201,7 +201,7 @@ export const eventApplicants: EventApplicant[] = [
     email: "michael.brown@email.com",
     phone: "+1-555-0456",
     status: "approved",
-    appliedAt: "2024-01-11T16:20:00Z",
+    appliedAt: "2025-01-11T16:20:00Z",
     notes: "Looking for intensive retreat experience",
     dietaryRestrictions: "Vegan",
     specialRequirements: "Accessibility accommodations needed"
@@ -212,7 +212,7 @@ export const eventApplicants: EventApplicant[] = [
     name: "Lisa Davis",
     email: "lisa.davis@email.com",
     status: "rejected",
-    appliedAt: "2024-01-13T11:45:00Z",
+    appliedAt: "2025-01-13T11:45:00Z",
     notes: "Application received after deadline",
     dietaryRestrictions: "None",
     specialRequirements: "None"

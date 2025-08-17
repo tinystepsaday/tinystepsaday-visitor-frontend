@@ -84,7 +84,7 @@ const allCourses = [
     totalLessons: 10,
     completedLessons: 10,
     instructor: "David Wilson",
-    enrolledDate: "December 10, 2024",
+    enrolledDate: "December 10, 2025",
     expiryDate: "Lifetime Access",
     certificate: true,
     slug: "relationship-healing",

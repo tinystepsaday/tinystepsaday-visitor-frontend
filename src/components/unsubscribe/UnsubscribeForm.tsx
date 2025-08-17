@@ -108,11 +108,6 @@ export function UnsubscribeForm({ initialEmail, initialType }: UnsubscribeFormPr
             >
               Return to Home
             </Button>
-            <Button
-              onClick={() => router.push("/subscribe")}
-            >
-              Resubscribe
-            </Button>
           </div>
         </CardContent>
       </Card>

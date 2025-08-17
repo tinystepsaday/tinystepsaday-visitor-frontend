@@ -51,8 +51,8 @@ const mockCategories: ProductCategory[] = [
     slug: "electronics",
     color: "#3b82f6",
     productCount: 5,
-    createdAt: new Date("2024-01-15"),
-    updatedAt: new Date("2024-01-15"),
+    createdAt: new Date("2025-01-15"),
+    updatedAt: new Date("2025-01-15"),
   },
   {
     id: "2",
@@ -61,8 +61,8 @@ const mockCategories: ProductCategory[] = [
     slug: "clothing",
     color: "#10b981",
     productCount: 3,
-    createdAt: new Date("2024-01-10"),
-    updatedAt: new Date("2024-01-10"),
+    createdAt: new Date("2025-01-10"),
+    updatedAt: new Date("2025-01-10"),
   },
   {
     id: "3",
@@ -71,8 +71,8 @@ const mockCategories: ProductCategory[] = [
     slug: "books",
     color: "#f59e0b",
     productCount: 2,
-    createdAt: new Date("2024-01-05"),
-    updatedAt: new Date("2024-01-05"),
+    createdAt: new Date("2025-01-05"),
+    updatedAt: new Date("2025-01-05"),
   },
   {
     id: "4",
@@ -81,8 +81,8 @@ const mockCategories: ProductCategory[] = [
     slug: "home-garden",
     color: "#8b5cf6",
     productCount: 4,
-    createdAt: new Date("2024-01-20"),
-    updatedAt: new Date("2024-01-20"),
+    createdAt: new Date("2025-01-20"),
+    updatedAt: new Date("2025-01-20"),
   },
   {
     id: "5",
@@ -91,8 +91,8 @@ const mockCategories: ProductCategory[] = [
     slug: "sports",
     color: "#ef4444",
     productCount: 1,
-    createdAt: new Date("2024-01-25"),
-    updatedAt: new Date("2024-01-25"),
+    createdAt: new Date("2025-01-25"),
+    updatedAt: new Date("2025-01-25"),
   },
 ];
 

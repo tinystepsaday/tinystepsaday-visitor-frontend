@@ -41,7 +41,7 @@ const paymentHistory = [
   },
   {
     id: "INV-2025-0015",
-    date: "December 10, 2024",
+    date: "December 10, 2025",
     amount: 179.00,
     description: "Relationship Healing & Growth Course",
     status: "successful",

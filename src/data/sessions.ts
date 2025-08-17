@@ -80,36 +80,36 @@ export const mockSessionRequests: SessionRequest[] = [
     name: "Sarah Johnson",
     email: "sarah.johnson@example.com",
     phone: "+1-555-0101",
-    date: "2024-01-20",
+    date: "2025-01-20",
     time: "10:00 AM",
     type: "individual",
     notes: "I'm dealing with anxiety and stress from work. Looking for coping strategies.",
     status: "pending",
-    createdAt: "2024-01-15T10:30:00Z",
-    updatedAt: "2024-01-15T10:30:00Z"
+    createdAt: "2025-01-15T10:30:00Z",
+    updatedAt: "2025-01-15T10:30:00Z"
   },
   {
     id: "req_002",
     name: "Michael Chen",
     email: "michael.chen@example.com",
     phone: "+1-555-0102",
-    date: "2024-01-21",
+    date: "2025-01-21",
     time: "2:00 PM",
     type: "couple",
     notes: "We're having communication issues and need help improving our relationship.",
     status: "confirmed",
     assignedTo: "3",
     assignedToName: "Aisha Patel",
-    confirmedAt: "2024-01-16T14:00:00Z",
-    createdAt: "2024-01-15T14:20:00Z",
-    updatedAt: "2024-01-16T14:00:00Z"
+    confirmedAt: "2025-01-16T14:00:00Z",
+    createdAt: "2025-01-15T14:20:00Z",
+    updatedAt: "2025-01-16T14:00:00Z"
   },
   {
     id: "req_003",
     name: "Emily Davis",
     email: "emily.davis@example.com",
     phone: "+1-555-0103",
-    date: "2024-01-22",
+    date: "2025-01-22",
     time: "11:00 AM",
     type: "initial",
     notes: "First time seeking therapy. Not sure what to expect.",
@@ -117,39 +117,39 @@ export const mockSessionRequests: SessionRequest[] = [
     assignedTo: "1",
     assignedToName: "Sarah Johnson",
     rescheduledTo: {
-      date: "2024-01-23",
+      date: "2025-01-23",
       time: "11:00 AM"
     },
-    createdAt: "2024-01-15T16:45:00Z",
-    updatedAt: "2024-01-17T09:15:00Z"
+    createdAt: "2025-01-15T16:45:00Z",
+    updatedAt: "2025-01-17T09:15:00Z"
   },
   {
     id: "req_004",
     name: "David Wilson",
     email: "david.wilson@example.com",
     phone: "+1-555-0104",
-    date: "2024-01-19",
+    date: "2025-01-19",
     time: "3:00 PM",
     type: "group",
     notes: "Interested in joining a group session for stress management.",
     status: "cancelled",
-    cancelledAt: "2024-01-18T11:30:00Z",
+    cancelledAt: "2025-01-18T11:30:00Z",
     cancellationReason: "Client requested cancellation",
-    createdAt: "2024-01-15T11:15:00Z",
-    updatedAt: "2024-01-18T11:30:00Z"
+    createdAt: "2025-01-15T11:15:00Z",
+    updatedAt: "2025-01-18T11:30:00Z"
   },
   {
     id: "req_005",
     name: "Lisa Rodriguez",
     email: "lisa.rodriguez@example.com",
     phone: "+1-555-0105",
-    date: "2024-01-24",
+    date: "2025-01-24",
     time: "1:00 PM",
     type: "individual",
     notes: "Need help with career transition and decision-making.",
     status: "pending",
-    createdAt: "2024-01-16T08:20:00Z",
-    updatedAt: "2024-01-16T08:20:00Z"
+    createdAt: "2025-01-16T08:20:00Z",
+    updatedAt: "2025-01-16T08:20:00Z"
   }
 ];
 
@@ -161,7 +161,7 @@ export const mockScheduledSessions: ScheduledSession[] = [
     clientName: "Michael Chen",
     clientEmail: "michael.chen@example.com",
     clientPhone: "+1-555-0102",
-    date: "2024-01-21",
+    date: "2025-01-21",
     time: "2:00 PM",
     duration: 90,
     type: "couple",
@@ -170,8 +170,8 @@ export const mockScheduledSessions: ScheduledSession[] = [
     assignedTo: "3",
     assignedToName: "Aisha Patel",
     meetingLink: "https://meet.google.com/abc-defg-hij",
-    createdAt: "2024-01-16T14:00:00Z",
-    updatedAt: "2024-01-16T14:00:00Z"
+    createdAt: "2025-01-16T14:00:00Z",
+    updatedAt: "2025-01-16T14:00:00Z"
   },
   {
     id: "sess_002",
@@ -179,7 +179,7 @@ export const mockScheduledSessions: ScheduledSession[] = [
     clientName: "Emily Davis",
     clientEmail: "emily.davis@example.com",
     clientPhone: "+1-555-0103",
-    date: "2024-01-23",
+    date: "2025-01-23",
     time: "11:00 AM",
     duration: 45,
     type: "initial",
@@ -188,8 +188,8 @@ export const mockScheduledSessions: ScheduledSession[] = [
     assignedTo: "1",
     assignedToName: "Sarah Johnson",
     meetingLink: "https://meet.google.com/xyz-uvw-rst",
-    createdAt: "2024-01-17T09:15:00Z",
-    updatedAt: "2024-01-17T09:15:00Z"
+    createdAt: "2025-01-17T09:15:00Z",
+    updatedAt: "2025-01-17T09:15:00Z"
   },
   {
     id: "sess_003",
@@ -197,7 +197,7 @@ export const mockScheduledSessions: ScheduledSession[] = [
     clientName: "John Smith",
     clientEmail: "john.smith@example.com",
     clientPhone: "+1-555-0106",
-    date: "2024-01-20",
+    date: "2025-01-20",
     time: "9:00 AM",
     duration: 60,
     type: "individual",
@@ -207,10 +207,10 @@ export const mockScheduledSessions: ScheduledSession[] = [
     assignedToName: "Michael Chen",
     meetingLink: "https://meet.google.com/def-ghi-jkl",
     recordingUrl: "https://drive.google.com/recording123",
-    createdAt: "2024-01-14T10:00:00Z",
-    updatedAt: "2024-01-20T10:00:00Z",
-    startedAt: "2024-01-20T09:00:00Z",
-    completedAt: "2024-01-20T10:00:00Z"
+    createdAt: "2025-01-14T10:00:00Z",
+    updatedAt: "2025-01-20T10:00:00Z",
+    startedAt: "2025-01-20T09:00:00Z",
+    completedAt: "2025-01-20T10:00:00Z"
   }
 ];
 
@@ -225,8 +225,8 @@ export const mockTeamMemberAvailability: TeamMemberAvailability[] = [
     endTime: "17:00",
     isAvailable: true,
     maxSessionsPerDay: 6,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z"
+    createdAt: "2025-01-01T00:00:00Z",
+    updatedAt: "2025-01-01T00:00:00Z"
   },
   {
     id: "avail_002",
@@ -237,8 +237,8 @@ export const mockTeamMemberAvailability: TeamMemberAvailability[] = [
     endTime: "17:00",
     isAvailable: true,
     maxSessionsPerDay: 6,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z"
+    createdAt: "2025-01-01T00:00:00Z",
+    updatedAt: "2025-01-01T00:00:00Z"
   },
   {
     id: "avail_003",
@@ -249,8 +249,8 @@ export const mockTeamMemberAvailability: TeamMemberAvailability[] = [
     endTime: "17:00",
     isAvailable: true,
     maxSessionsPerDay: 6,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z"
+    createdAt: "2025-01-01T00:00:00Z",
+    updatedAt: "2025-01-01T00:00:00Z"
   },
   {
     id: "avail_004",
@@ -261,8 +261,8 @@ export const mockTeamMemberAvailability: TeamMemberAvailability[] = [
     endTime: "17:00",
     isAvailable: true,
     maxSessionsPerDay: 6,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z"
+    createdAt: "2025-01-01T00:00:00Z",
+    updatedAt: "2025-01-01T00:00:00Z"
   },
   {
     id: "avail_005",
@@ -273,8 +273,8 @@ export const mockTeamMemberAvailability: TeamMemberAvailability[] = [
     endTime: "17:00",
     isAvailable: true,
     maxSessionsPerDay: 6,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z"
+    createdAt: "2025-01-01T00:00:00Z",
+    updatedAt: "2025-01-01T00:00:00Z"
   },
   {
     id: "avail_006",
@@ -285,8 +285,8 @@ export const mockTeamMemberAvailability: TeamMemberAvailability[] = [
     endTime: "18:00",
     isAvailable: true,
     maxSessionsPerDay: 5,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z"
+    createdAt: "2025-01-01T00:00:00Z",
+    updatedAt: "2025-01-01T00:00:00Z"
   },
   {
     id: "avail_007",
@@ -297,8 +297,8 @@ export const mockTeamMemberAvailability: TeamMemberAvailability[] = [
     endTime: "18:00",
     isAvailable: true,
     maxSessionsPerDay: 5,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z"
+    createdAt: "2025-01-01T00:00:00Z",
+    updatedAt: "2025-01-01T00:00:00Z"
   },
   {
     id: "avail_008",
@@ -309,8 +309,8 @@ export const mockTeamMemberAvailability: TeamMemberAvailability[] = [
     endTime: "18:00",
     isAvailable: true,
     maxSessionsPerDay: 5,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z"
+    createdAt: "2025-01-01T00:00:00Z",
+    updatedAt: "2025-01-01T00:00:00Z"
   },
   {
     id: "avail_009",
@@ -321,8 +321,8 @@ export const mockTeamMemberAvailability: TeamMemberAvailability[] = [
     endTime: "18:00",
     isAvailable: true,
     maxSessionsPerDay: 5,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z"
+    createdAt: "2025-01-01T00:00:00Z",
+    updatedAt: "2025-01-01T00:00:00Z"
   },
   {
     id: "avail_010",
@@ -333,8 +333,8 @@ export const mockTeamMemberAvailability: TeamMemberAvailability[] = [
     endTime: "18:00",
     isAvailable: true,
     maxSessionsPerDay: 5,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z"
+    createdAt: "2025-01-01T00:00:00Z",
+    updatedAt: "2025-01-01T00:00:00Z"
   }
 ];
 
