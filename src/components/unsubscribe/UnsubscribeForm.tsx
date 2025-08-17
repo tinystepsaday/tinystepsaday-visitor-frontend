@@ -43,7 +43,7 @@ export function UnsubscribeForm({ initialEmail, initialType }: UnsubscribeFormPr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email.trim()) {
       setError("Please enter your email address");
       return;
@@ -95,20 +95,20 @@ export function UnsubscribeForm({ initialEmail, initialType }: UnsubscribeFormPr
           <CardTitle className="text-xl text-green-600">Successfully Unsubscribed</CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
-                      <p className="text-muted-foreground">
-              You have been successfully unsubscribed from our newsletter. We&apos;re sorry to see you go!
-            </p>
+          <p className="text-muted-foreground">
+            You have been successfully unsubscribed from our newsletter. We&apos;re sorry to see you go!
+          </p>
           <p className="text-sm text-muted-foreground">
             You will no longer receive emails from us. If you change your mind, you can always resubscribe at any time.
           </p>
           <div className="flex gap-2 justify-center">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => router.push("/")}
             >
               Return to Home
             </Button>
-            <Button 
+            <Button
               onClick={() => router.push("/subscribe")}
             >
               Resubscribe
@@ -155,7 +155,7 @@ export function UnsubscribeForm({ initialEmail, initialType }: UnsubscribeFormPr
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 hidden">
             <Label htmlFor="subscriptionType">Subscription Type</Label>
             <Select value={subscriptionType} onValueChange={setSubscriptionType}>
               <SelectTrigger>
@@ -174,7 +174,7 @@ export function UnsubscribeForm({ initialEmail, initialType }: UnsubscribeFormPr
           <div className="space-y-2">
             <Label htmlFor="unsubscribeReason">Reason for Unsubscribing</Label>
             <Select value={unsubscribeReason} onValueChange={setUnsubscribeReason}>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a reason" />
               </SelectTrigger>
               <SelectContent>
@@ -188,9 +188,9 @@ export function UnsubscribeForm({ initialEmail, initialType }: UnsubscribeFormPr
           </div>
 
           <div className="pt-4">
-            <Button 
-              type="submit" 
-              className="w-full" 
+            <Button
+              type="submit"
+              className="w-full"
               disabled={isLoading}
             >
               {isLoading ? "Unsubscribing..." : "Unsubscribe"}

@@ -24,7 +24,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const resultId = searchParams.get('resultId');
-  
+
   const [result, setResult] = useState<QuizResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +32,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
   useEffect(() => {
     const fetchResult = async () => {
       if (!resultId) return;
-      
+
       try {
         setIsLoading(true);
         const fetchedResult = await quizAPI.getQuizResultById(resultId);
@@ -50,21 +50,6 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
     fetchResult();
   }, [resultId]);
 
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case 'excellent':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'good':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'fair':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'needs-improvement':
-        return 'bg-red-100 text-red-800 border-red-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
-
   const getLevelIcon = (level: string) => {
     switch (level) {
       case 'excellent':
@@ -77,6 +62,21 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
         return <Target className="h-6 w-6 text-red-600" />;
       default:
         return <Star className="h-6 w-6 text-gray-600" />;
+    }
+  };
+
+  const getLevelColor = (level: string) => {
+    switch (level) {
+      case 'excellent':
+        return 'text-green-500';
+      case 'good':
+        return 'text-blue-500';
+      case 'fair':
+        return 'text-yellow-500';
+      case 'needs-improvement':
+        return 'text-red-500';
+      default:
+        return 'text-gray-500';
     }
   };
 
@@ -102,7 +102,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
           </CardHeader>
           <CardContent>
             <p className="text-red-600 mb-4">
-              {!resultId 
+              {!resultId
                 ? 'No quiz result ID provided. Please complete a quiz first to view your results.'
                 : (error || 'Unable to load quiz results')
               }
@@ -143,13 +143,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className={`text-lg px-4 py-2 ${getLevelColor(result.level)}`}>
-            <h2 className="text-2xl font-bold">{result.classification}</h2>
-            <p className="text-lg">
-              {result.feedback}
-            </p>
-          </div>
-          
+          <h2 className={`text-3xl font-bold ${getLevelColor(result.level)}`}>You are a {result.classification}</h2>
           <div className="grid grid-cols-2 gap-4 max-w-md mx-auto text-sm">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-muted-foreground" />
@@ -219,7 +213,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
                 </div>
               </div>
             )}
-            
+
             {result.proposedProducts && result.proposedProducts.length > 0 && (
               <div className="space-y-3">
                 <h4 className="font-semibold text-lg text-primary">Products</h4>
@@ -238,7 +232,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
                 </div>
               </div>
             )}
-            
+
             {result.proposedStreaks && result.proposedStreaks.length > 0 && (
               <div className="space-y-3">
                 <h4 className="font-semibold text-lg text-primary">Streaks</h4>
