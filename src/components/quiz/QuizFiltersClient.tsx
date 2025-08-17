@@ -59,10 +59,10 @@ export default function QuizFiltersClient({
               if (hiddenInput) hiddenInput.value = value;
             }}
           >
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="w-fit">
               <SelectItem value="all">All Categories</SelectItem>
               <SelectItem value="Art">Art</SelectItem>
               <SelectItem value="Books">Books</SelectItem>

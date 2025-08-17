@@ -13,7 +13,7 @@ export default function QuizSortControlsClient({
 }: QuizSortControlsClientProps) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm text-muted-foreground">Sort by:</span>
+      <span className="text-sm text-muted-foreground text-nowrap">Sort by:</span>
       <Select 
         value={currentSortBy} 
         onValueChange={(value) => {
@@ -21,7 +21,7 @@ export default function QuizSortControlsClient({
           if (hiddenInput) hiddenInput.value = value;
         }}
       >
-        <SelectTrigger className="w-32">
+        <SelectTrigger className="w-full">
           <SelectValue placeholder="Sort by" />
         </SelectTrigger>
         <SelectContent>
@@ -39,7 +39,7 @@ export default function QuizSortControlsClient({
           if (hiddenInput) hiddenInput.value = value;
         }}
       >
-        <SelectTrigger className="w-24">
+        <SelectTrigger className="w-full">
           <SelectValue placeholder="Order" />
         </SelectTrigger>
         <SelectContent>

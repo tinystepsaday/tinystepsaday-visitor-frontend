@@ -35,6 +35,9 @@ import {
 import { streaks } from "@/data/streaks";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
+import { Select } from "@/components/ui/select";
+import { SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SelectContent, SelectItem } from "@/components/ui/select";
 
 export default function StreaksManagementPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -156,7 +159,7 @@ export default function StreaksManagementPage() {
           <CardTitle>All Streaks</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex items-center gap-4 mb-4 flex-wrap">
             <div className="relative flex-1">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -166,15 +169,19 @@ export default function StreaksManagementPage() {
                 className="pl-8"
               />
             </div>
-            <select
+            <Select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="border rounded px-3 py-2 text-sm"
+              onValueChange={(value) => setStatusFilter(value)}
             >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="ended">Ended</option>
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="All Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="ended">Ended</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <Table>
