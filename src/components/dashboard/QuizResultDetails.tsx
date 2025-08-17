@@ -52,9 +52,9 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
         // Transform backend quiz data to frontend format
         const quiz = transformBackendQuiz(backendQuiz);
 
-        // Find matching grading criteria based on score
+        // Find matching grading criteria based on raw score, not percentage
         const matchingCriteria = quiz.gradingCriteria.find(criteria =>
-          quizResult.percentage >= criteria.minScore && quizResult.percentage <= criteria.maxScore
+          quizResult.score >= criteria.minScore && quizResult.score <= criteria.maxScore
         );
 
         setResult({
@@ -82,7 +82,11 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
     fetchQuizResult();
   }, [resultId]);
 
-  const getLevelBadgeColor = (level: string) => {
+  const getLevelBadgeColor = (level: string, color?: string) => {
+    if (color) {
+      return `bg-[${color}]/10 text-[${color}] border border-[${color}]/20`;
+    }
+    
     switch (level) {
       case 'excellent':
         return 'bg-green-100 text-green-800';
@@ -201,7 +205,7 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <div className={`${getLevelBadgeColor(result.level)} text-xl md:text-3xl font-bold text-center mb-4 p-4 rounded-lg`}>
+                <div className={`${getLevelBadgeColor(result.level, result.color)} text-xl md:text-3xl font-bold text-center mb-4 p-4 rounded-lg`}>
                   {result.matchingCriteria?.name || result.classification}
                 </div>
               </div>

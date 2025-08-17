@@ -151,6 +151,7 @@ interface BackendQuizResult {
   classification?: string;
   areasOfImprovement?: string[];
   supportNeeded?: string[];
+  color?: string;
   proposedCourses?: Array<{ id: string; name: string; slug: string }>;
   proposedProducts?: Array<{ id: string; name: string; slug: string }>;
   proposedStreaks?: Array<{ id: string; name: string; slug: string }>;
@@ -436,6 +437,7 @@ export function transformBackendQuizResult(backendResult: BackendQuizResult): Qu
     classification: backendResult.classification || 'Unknown',
     areasOfImprovement: backendResult.areasOfImprovement || [],
     supportNeeded: backendResult.supportNeeded || [],
+    color: backendResult.color,
     proposedCourses: backendResult.proposedCourses || [],
     proposedProducts: backendResult.proposedProducts || [],
     proposedStreaks: backendResult.proposedStreaks || [],

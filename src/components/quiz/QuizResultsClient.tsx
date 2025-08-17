@@ -37,6 +37,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
         setIsLoading(true);
         const fetchedResult = await quizAPI.getQuizResultById(resultId);
         const transformedResult = transformBackendQuizResult(fetchedResult);
+        console.log(fetchedResult);
         setResult(transformedResult);
       } catch (err: unknown) {
         console.error('Error fetching quiz result:', err);
@@ -50,7 +51,11 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
     fetchResult();
   }, [resultId]);
 
-  const getLevelIcon = (level: string) => {
+  const getLevelIcon = (level: string, color?: string) => {
+    if (color) {
+      return <Trophy className={`h-6 w-6`} style={{ color: color }} />;
+    }
+    
     switch (level) {
       case 'excellent':
         return <Trophy className="h-6 w-6 text-green-600" />;
@@ -65,7 +70,11 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
     }
   };
 
-  const getLevelColor = (level: string) => {
+  const getLevelColor = (level: string, color?: string) => {
+    if (color) {
+      return `text-[${color}]`;
+    }
+    
     switch (level) {
       case 'excellent':
         return 'text-green-500';
@@ -138,12 +147,12 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
         <CardHeader>
           <CardTitle>
             <div className="flex items-center justify-center gap-4">
-              {getLevelIcon(result.level)}
+              {getLevelIcon(result.level, result.color)}
             </div>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <h2 className={`text-3xl font-bold ${getLevelColor(result.level)}`}>You are a {result.classification}</h2>
+          <h2 className={`text-3xl font-bold ${getLevelColor(result.level, result.color)}`}>You are a {result.classification}</h2>
           <div className="grid grid-cols-2 gap-4 max-w-md mx-auto text-sm">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-muted-foreground" />

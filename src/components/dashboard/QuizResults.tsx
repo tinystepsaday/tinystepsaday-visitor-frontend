@@ -41,9 +41,9 @@ const QuizResults = () => {
             // Transform the backend quiz data to frontend format
             const transformedQuiz = transformBackendQuiz(quiz);
             
-            // Find matching grading criteria based on score
+            // Find matching grading criteria based on raw score, not percentage
             const matchingCriteria = transformedQuiz.gradingCriteria.find(criteria => 
-              result.percentage >= criteria.minScore && result.percentage <= criteria.maxScore
+              result.score >= criteria.minScore && result.score <= criteria.maxScore
             );
 
             resultsWithQuizData.push({
@@ -82,7 +82,11 @@ const QuizResults = () => {
   const totalQuizzes = quizResults.length;
   const totalTimeSpent = quizResults.reduce((sum, r) => sum + r.timeSpent, 0);
 
-  const getLevelColor = (level: string) => {
+  const getLevelColor = (level: string, color?: string) => {
+    if (color) {
+      return `bg-[${color}]`;
+    }
+    
     switch (level) {
       case 'excellent':
         return 'bg-green-500';
@@ -165,7 +169,7 @@ const QuizResults = () => {
         <div className="space-y-6">
           {quizResults.map((result) => (
             <Card key={result.id} className="overflow-hidden">
-              <div className={`h-2 ${getLevelColor(result.level)}`} />
+              <div className={`h-2 ${getLevelColor(result.level, result.color)}`} />
               <CardHeader>
                 <div className="flex justify-between items-start flex-col md:flex-row gap-4 md:gap-0">
                   <div>
