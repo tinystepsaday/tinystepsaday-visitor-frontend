@@ -99,7 +99,7 @@ export default function QuizDetailsClient({ quiz }: QuizDetailsClientProps) {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             <div className="flex-1 space-y-4">
               <div className="space-y-2">
-                <h2 className="text-xl md:text-2xl leading-tight font-semibold">Ready to discover your personalized path?</h2>
+                {/* <h2 className="text-xl md:text-2xl leading-tight font-semibold">Ready to discover your personalized path?</h2> */}
                 <p className="text-muted-foreground text-justify">
                   This {quiz.questions.length}-question assessment will help you {quiz.subtitle}&nbsp;and provide tailored recommendations for articles (Blog posts), streaks, courses, and resources that match your unique needs.
                 </p>
