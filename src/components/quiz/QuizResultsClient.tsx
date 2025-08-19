@@ -125,7 +125,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
 
       {/* Score Summary */}
       <div className="space-y-6 text-center bg-muted p-6 border border-primary/20 rounded-lg">
-        <h2 className={`text-3xl font-bold ${getLevelColor(result.level, result.color)}`}>You are {result.classification}</h2>
+        <h2 className={`text-3xl font-bold ${getLevelColor(result.level, result.color)}`}>{result.classification}</h2>
         <div className="grid grid-cols-2 gap-4 max-w-md mx-auto text-sm">
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-muted-foreground" />
