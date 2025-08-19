@@ -6,8 +6,8 @@ import CareerList from "@/components/careers/CareerList";
 import { getAllCareers } from "@/data/careers";
 
 export const metadata: Metadata = {
-  title: "Careers",
-  description: "Join our team of mindfulness coaches, content creators, and product designers to create transformative experiences that empower people to live with greater purpose, joy, and connection.",
+  title: "Careers at Tiny Steps A Day",
+  description: "Join our mission to help people transform their lives through actionable daily steps. Explore career opportunities in mindfulness, wellness, and personal development.",
   keywords: ["tiny steps a day", "tiny steps", "a day", "actionable steps", "improve your life", "personal growth", "self improvement", "daily habits", "tips", "strategies", "small changes", "big improvements", "start your journey to a better you today", "personal growth", "self improvement", "daily habits", "tips", "strategies", "meditation", "mindfulness", "mindfulness meditation", "mindfulness practice", "mindfulness exercises", "mindfulness techniques", "mindfulness tips", "mindfulness strategies", "spirituality", "career guidance", "career development", "career advice", "career tips", "career strategies", "career planning", "love", "the law of one", "the law of attraction", "the law of abundance", "the law of prosperity", "the law of success", "mental health", "life direction", "purpose", "mentorship"],
   icons: {
     icon: "/favicon.ico",

@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       title: `${product.name} | Tiny Steps A Day`,
       description: product.description,
       type: "website",
-      url: `https://tinystepsaday.com/shop/${product.slug}`,
+      url: `https://www.tinystepsaday.com/shop/${product.slug}`,
       images: [
         {
           url: product.images[0],
@@ -49,7 +49,19 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       title: `${product.name} | Tiny Steps A Day`,
       description: product.description,
       images: [product.images[0]]
-    }
+    },
+    alternates: {
+      canonical: `https://www.tinystepsaday.com/shop/${product.slug}`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+      },
+    },
+    metadataBase: new URL("https://www.tinystepsaday.com"),
   };
 }
 

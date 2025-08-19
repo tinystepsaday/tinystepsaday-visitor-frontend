@@ -10,6 +10,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export const metadata: Metadata = {
   title: "Courses",
   description: "Explore our transformative online courses on mindfulness, emotional intelligence, career growth, and more. Start your journey today.",
+  alternates: {
+    canonical: "https://www.tinystepsaday.com/courses",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+  metadataBase: new URL("https://www.tinystepsaday.com"),
 };
 
 export default async function CoursesPage() {

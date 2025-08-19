@@ -10,10 +10,10 @@ export const metadata: Metadata = {
     title: "Checkout - Tiny Steps A Day",
     description: "Complete your purchase securely. Choose from our range of mindfulness products, courses, and subscription plans.",
     type: "website",
-    url: "https://tinystepsaday.com/checkout",
+    url: "https://www.tinystepsaday.com/checkout",
     images: [
       {
-        url: "https://tinystepsaday.com/og-checkout.jpg",
+        url: "https://www.tinystepsaday.com/og-checkout.jpg",
         width: 1200,
         height: 630,
         alt: "TinyStepsADay Checkout"
@@ -24,8 +24,20 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Checkout - Tiny Steps A Day",
     description: "Complete your purchase securely. Choose from our range of mindfulness products, courses, and subscription plans.",
-    images: ["https://tinystepsaday.com/og-checkout.jpg"]
-  }
+    images: ["https://www.tinystepsaday.com/og-checkout.jpg"]
+  },
+  alternates: {
+    canonical: "https://www.tinystepsaday.com/checkout",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+  metadataBase: new URL("https://www.tinystepsaday.com"),
 };
 
 export default function CheckoutPage() {

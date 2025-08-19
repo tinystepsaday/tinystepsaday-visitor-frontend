@@ -7,39 +7,20 @@ import { getUpcomingEvents } from "@/data/events";
 import { sharedMetadata } from "../../shared-metadata";
 
 export const metadata: Metadata = {
-  title: "Upcoming Events",
-  description: "Discover our upcoming mindfulness workshops, meditation retreats, and wellness events. Join our community for transformative experiences led by expert practitioners.",
-  keywords: [
-    "upcoming events",
-    "mindfulness workshops",
-    "meditation retreats",
-    "wellness events",
-    "mindfulness events",
-    "meditation workshops",
-    "yoga classes",
-    "stress management",
-    "personal growth events",
-    "mental health workshops"
-  ],
-  openGraph: {
-    title: "Upcoming Events | Tiny Steps A Day",
-    description: "Discover our upcoming mindfulness workshops, meditation retreats, and wellness events. Join our community for transformative experiences.",
-    url: `${sharedMetadata.metadataBase}/events`,
-    images: [sharedMetadata.openGraph.images[0]],
-    siteName: sharedMetadata.openGraph.siteName,
-    locale: sharedMetadata.openGraph.locale,
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image" as const,
-    title: "Upcoming Events | Tiny Steps A Day",
-    description: "Discover our upcoming mindfulness workshops, meditation retreats, and wellness events. Join our community for transformative experiences.",
-    images: sharedMetadata.twitter.images,
-  },
+  title: "Events",
+  description: "Join our transformative events and workshops on mindfulness, personal growth, and well-being. Connect with like-minded individuals and experts.",
   alternates: {
-    canonical: `${sharedMetadata.metadataBase}/events`,
+    canonical: "https://www.tinystepsaday.com/events",
   },
-  robots: sharedMetadata.robots,
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+  metadataBase: new URL("https://www.tinystepsaday.com"),
 };
 
 export default function EventsPage() {

@@ -4,29 +4,20 @@ import { DetailPageLoader } from "@/components/ui/loaders";
 import { ShopClient } from "@/components/shop/ShopClient";
 
 export const metadata: Metadata = {
-  title: "Shop",
-  description: "Discover our curated collection of mindfulness tools, books, and resources to support your personal growth journey. From meditation cushions to essential oils, find everything you need for your practice.",
-  keywords: ["mindfulness tools", "meditation supplies", "self-improvement books", "essential oils", "yoga guides", "meditation timer"],
-  openGraph: {
-    title: "Shop | Tiny Steps A Day",
-    description: "Discover our curated collection of mindfulness tools, books, and resources to support your personal growth journey.",
-    type: "website",
-    url: "https://tinystepsaday.com/shop",
-    images: [
-      {
-        url: "https://tinystepsaday.com/og-shop.jpg",
-        width: 1200,
-        height: 630,
-        alt: "TinyStepsADay Shop"
-      }
-    ]
+  title: "Shop - Transformative Products for Your Journey",
+  description: "Discover carefully curated products to support your mindfulness, wellness, and personal growth journey. From meditation tools to wellness essentials.",
+  alternates: {
+    canonical: "https://www.tinystepsaday.com/shop",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Shop | Tiny Steps A Day",
-    description: "Discover our curated collection of mindfulness tools, books, and resources to support your personal growth journey.",
-    images: ["https://tinystepsaday.com/og-shop.jpg"]
-  }
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+  metadataBase: new URL("https://www.tinystepsaday.com"),
 };
 
 export default function ShopPage() {

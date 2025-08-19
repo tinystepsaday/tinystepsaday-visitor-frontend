@@ -90,5 +90,41 @@ export default function sitemap() {
             changeFrequency: "daily",
             priority: 0.8,
         },
+        {
+            url: "/programs",
+            lastModified: new Date(),
+            changeFrequency: "daily",
+            priority: 0.8,
+        },
+        {
+            url: "/onboarding",
+            lastModified: new Date(),
+            changeFrequency: "daily",
+            priority: 0.7,
+        },
+        {
+            url: "/gallery",
+            lastModified: new Date(),
+            changeFrequency: "weekly",
+            priority: 0.6,
+        },
+        {
+            url: "/checkout",
+            lastModified: new Date(),
+            changeFrequency: "daily",
+            priority: 0.7,
+        },
+        {
+            url: "/unsubscribe",
+            lastModified: new Date(),
+            changeFrequency: "monthly",
+            priority: 0.3,
+        },
+        {
+            url: "/cookie-policy",
+            lastModified: new Date(),
+            changeFrequency: "monthly",
+            priority: 0.5,
+        },
     ];
 }
