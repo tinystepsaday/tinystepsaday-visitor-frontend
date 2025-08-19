@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { BlogCommentForm } from "./BlogCommentForm"
 import { useAuth } from "@/hooks/useAuth"
-import { useDeleteBlogComment, useCreateBlogComment } from "@/lib/api/blog"
+import { useDeleteBlogComment, useCreateBlogComment } from "@/integration/blog"
 import { useToast } from "@/hooks/use-toast"
 import type { BlogComment } from "@/lib/types"
 

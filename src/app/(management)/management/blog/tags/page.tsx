@@ -3,7 +3,7 @@
 import { useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal, Plus, Edit, Trash2, Hash, Eye } from "lucide-react"
-import { useBlogTags, useCreateBlogTag, useUpdateBlogTag, useDeleteBlogTag } from "@/lib/api/blog"
+import { useBlogTags, useCreateBlogTag, useUpdateBlogTag, useDeleteBlogTag } from "@/integration/blog"
 import { useToast } from "@/hooks/use-toast"
 import type { BlogTag, BlogTagUpdate } from "@/lib/types"
 import { DataTable } from "@/components/data-table"

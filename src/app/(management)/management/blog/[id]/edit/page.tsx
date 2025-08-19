@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { BlogPostForm } from "@/components/blog/BlogPostForm"
-import { useBlogPost, useUpdateBlogPost } from "@/lib/api/blog"
+import { useBlogPost, useUpdateBlogPost } from "@/integration/blog"
 import { useToast } from "@/hooks/use-toast"
 
 type BlogPostFormData = {

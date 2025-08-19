@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, User, ArrowRight } from "lucide-react";
-import { usePublicBlogPosts } from "@/lib/api/blog";
+import { usePublicBlogPosts } from "@/integration/blog";
 import { SectionHeader } from "../ui/section-header";
 
 const LatestBlogPosts = () => {

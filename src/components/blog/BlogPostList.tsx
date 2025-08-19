@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useBlogPosts, useDeleteBlogPost } from "@/lib/api/blog"
+import { useBlogPosts, useDeleteBlogPost } from "@/integration/blog"
 import { useToast } from "@/hooks/use-toast"
 import type { BlogPostQuery, BlogPost } from "@/lib/types"
 
