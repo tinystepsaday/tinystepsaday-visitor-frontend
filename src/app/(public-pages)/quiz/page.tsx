@@ -49,50 +49,6 @@ import QuizFiltersClient from "@/components/quiz/QuizFiltersClient";
 import QuizSortControlsClient from "@/components/quiz/QuizSortControlsClient";
 import { quizCategoryColorMap, generateFallbackColors } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "Quizzes & Assessments",
-  description: "Take our comprehensive quizzes and assessments to discover your strengths, identify areas for growth, and get personalized recommendations for your personal development journey.",
-  keywords: [
-    "quizzes",
-    "assessments",
-    "personal development",
-    "self-assessment",
-    "personality tests",
-    "strength finder",
-    "growth areas",
-    "personal recommendations",
-    "mindfulness assessment",
-    "wellness quiz"
-  ],
-  openGraph: {
-    title: "Quizzes & Assessments | Tiny Steps A Day",
-    description: "Take our comprehensive quizzes and assessments to discover your strengths, identify areas for growth, and get personalized recommendations.",
-    url: "https://www.tinystepsaday.com/quiz",
-    siteName: "Tiny Steps A Day",
-    locale: "en_US",
-    type: "website",
-    images: ["https://www.tinystepsaday.com/cover-image.jpg"],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Quizzes & Assessments | Tiny Steps A Day",
-    description: "Take our comprehensive quizzes and assessments to discover your strengths, identify areas for growth, and get personalized recommendations.",
-    images: ["https://www.tinystepsaday.com/cover-image.jpg"],
-  },
-  alternates: {
-    canonical: "https://www.tinystepsaday.com/quiz",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-    },
-  },
-  metadataBase: new URL("https://www.tinystepsaday.com"),
-};
-
 export const dynamic = 'force-dynamic';
 
 const quizCategoryIconMap = {
