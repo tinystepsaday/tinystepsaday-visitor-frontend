@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { BlogPostForm } from "@/components/blog/BlogPostForm"
-import { useCreateBlogPost } from "@/lib/api/blog"
+import { useCreateBlogPost } from "@/integration/blog"
 import { useToast } from "@/hooks/use-toast"
 
 type BlogPostFormData = {

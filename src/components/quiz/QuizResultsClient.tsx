@@ -26,7 +26,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
   const resultId = searchParams.get('resultId');
 
   const [result, setResult] = useState<QuizResult | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
       if (!resultId) return;
 
       try {
-        setIsLoading(true);
+        // setIsLoading(true);
         const fetchedResult = await quizAPI.getQuizResultById(resultId);
         const transformedResult = transformBackendQuizResult(fetchedResult);
         console.log(fetchedResult);
@@ -44,7 +44,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load quiz result';
         setError(errorMessage);
       } finally {
-        setIsLoading(false);
+        // setIsLoading(false);
       }
     };
 
@@ -70,16 +70,16 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading your results...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="max-w-4xl mx-auto p-6">
+  //       <div className="text-center py-12">
+  //         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+  //         <p className="text-muted-foreground">Loading your results...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if (error || !result) {
     return (
@@ -125,7 +125,7 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
 
       {/* Score Summary */}
       <div className="space-y-6 text-center bg-muted p-6 border border-primary/20 rounded-lg">
-        <h2 className={`text-3xl font-bold ${getLevelColor(result.level, result.color)}`}>You are {result.classification}</h2>
+        <h2 className={`text-3xl font-bold ${getLevelColor(result.level, result.color)}`}>{result.classification}</h2>
         <div className="grid grid-cols-2 gap-4 max-w-md mx-auto text-sm">
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-muted-foreground" />

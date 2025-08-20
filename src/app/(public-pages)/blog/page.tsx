@@ -13,10 +13,12 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import apiClient from "@/integration/apiClient";
 import type { BlogCategory } from "@/lib/types";
 import type { BlogPost } from "@/lib/types";
 import type { BlogTag } from "@/lib/types";
+import BlogPageSkeleton from "@/components/blog/BlogPageSkeleton";
 
 interface BlogPageProps {
   searchParams: Promise<{
@@ -191,15 +193,16 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-16 w-full">
-      <SectionHeader
-        title="Tiny Steps A Day Blog"
-        subtitle="Insights and guidance for your personal growth journey"
-        centered
-      />
+    <Suspense fallback={<BlogPageSkeleton />}>
+      <div className="container mx-auto px-4 py-16 w-full">
+        <SectionHeader
+          title="Tiny Steps A Day Blog"
+          subtitle="Insights and guidance for your personal growth journey"
+          centered
+        />
 
-      {/* Search and Filter */}
-      <div className="flex flex-col gap-4 mb-12 mt-8 max-w-7xl mx-auto justify-between w-full items-center">
+        {/* Search and Filter */}
+        <div className="flex flex-col gap-4 mb-12 mt-8 max-w-7xl mx-auto justify-between w-full items-center">
         <div className="flex justify-between items-center w-full gap-4 flex-wrap md:flex-nowrap">
           <form className="relative flex-grow w-full" method="GET" action="/blog">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -437,6 +440,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </Suspense>
   );
 }

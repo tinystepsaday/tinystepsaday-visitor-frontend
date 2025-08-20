@@ -27,17 +27,7 @@ export const metadata: Metadata = {
     description: "Begin your personal growth journey with our personalized onboarding process. Take our assessment to get customized recommendations.",
     images: ["https://www.tinystepsaday.com/cover-image.jpg"],
   },
-  alternates: {
-    canonical: "https://www.tinystepsaday.com/onboarding",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-    },
-  },
+  robots: "noindex, nofollow",
   metadataBase: new URL("https://www.tinystepsaday.com"),
 };
 

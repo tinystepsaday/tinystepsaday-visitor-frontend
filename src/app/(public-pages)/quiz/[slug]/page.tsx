@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import QuizDetailsClient from "@/components/quiz/QuizDetailsClient";
+import QuizDetailsSkeleton from "@/components/quiz/QuizDetailsSkeleton";
 import { quizAPI, transformBackendQuiz } from "@/integration/quiz";
 import { sharedMetadata } from "../../../shared-metadata";
 
@@ -74,7 +76,11 @@ export default async function QuizPage({ params }: QuizPageProps) {
     const quiz = await quizAPI.getPublicQuizById(slug);
     const transformedQuiz = transformBackendQuiz(quiz);
     
-    return <QuizDetailsClient quiz={transformedQuiz} />;
+    return (
+      <Suspense fallback={<QuizDetailsSkeleton />}>
+        <QuizDetailsClient quiz={transformedQuiz} />
+      </Suspense>
+    );
   } catch (error) {
     console.error('Error fetching quiz:', error);
     notFound();

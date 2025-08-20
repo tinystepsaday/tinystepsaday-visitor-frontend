@@ -1,7 +1,9 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import apiClient from "@/integration/apiClient";
 import BlogPostContent from "@/components/blog/BlogPostContent";
+import BlogPostSkeleton from "@/components/blog/BlogPostSkeleton";
 import type { BlogPost } from "@/lib/types";
 
 interface BlogPostPageProps {
@@ -142,7 +144,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         />
         
         {/* Server-side rendered content for SEO */}
-        <BlogPostContent post={post} />
+        <Suspense fallback={<BlogPostSkeleton />}>
+          <BlogPostContent post={post} />
+        </Suspense>
       </>
     );
   } catch (error) {

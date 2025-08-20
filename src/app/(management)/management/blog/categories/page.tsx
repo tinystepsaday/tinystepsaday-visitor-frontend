@@ -3,7 +3,7 @@
 import { useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal, Plus, Edit, Trash2, Eye } from "lucide-react"
-import { useBlogCategories, useCreateBlogCategory, useUpdateBlogCategory, useDeleteBlogCategory } from "@/lib/api/blog"
+import { useBlogCategories, useCreateBlogCategory, useUpdateBlogCategory, useDeleteBlogCategory } from "@/integration/blog"
 import { useToast } from "@/hooks/use-toast"
 import type { BlogCategory, BlogCategoryUpdate } from "@/lib/types"
 import { DataTable } from "@/components/data-table"

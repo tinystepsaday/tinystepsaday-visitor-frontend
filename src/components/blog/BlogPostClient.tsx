@@ -22,7 +22,7 @@ import {
   useCreateBlogComment,
   useToggleBlogLike,
   useCheckBlogLike
-} from "@/lib/api/blog";
+} from "@/integration/blog";
 import { useAuth } from "@/hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
 import {

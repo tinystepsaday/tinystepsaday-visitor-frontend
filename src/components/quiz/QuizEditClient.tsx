@@ -17,7 +17,7 @@ import { CreateQuizData, quizAPI } from '@/integration/quiz'
 import { type Quiz, type GradingCriteria } from '@/data/quizzes'
 import { GradingCriteriaEditor } from './GradingCriteriaEditor'
 import { DetailPageLoader } from '../ui/loaders'
-import { usePublicBlogPosts } from '@/lib/api/blog'
+import { usePublicBlogPosts } from '@/integration/blog'
 
 interface QuizEditClientProps {
   quiz?: Quiz // Optional for creating new quizzes
