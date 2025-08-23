@@ -49,8 +49,6 @@ import QuizFiltersClient from "@/components/quiz/QuizFiltersClient";
 import QuizSortControlsClient from "@/components/quiz/QuizSortControlsClient";
 import { quizCategoryColorMap, generateFallbackColors } from "@/lib/utils";
 
-
-
 export const dynamic = 'force-dynamic';
 
 const quizCategoryIconMap = {
