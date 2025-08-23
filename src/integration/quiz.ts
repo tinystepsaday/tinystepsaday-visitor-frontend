@@ -11,7 +11,7 @@ export interface CreateQuizData {
   title: string;
   subtitle?: string;
   description: string;
-  quizType: 'DEFAULT' | 'ONBOARDING';
+  quizType: 'DEFAULT' | 'COMPLEX' | 'ONBOARDING';
   redirectAfterAnswer: 'HOME' | 'RESULTS';
   category: string;
   estimatedTime: string;
@@ -22,13 +22,14 @@ export interface CreateQuizData {
   questions: Array<{
     text: string;
     order: number;
+    dimensionId?: string;
     options: Array<{
       text: string;
       value: number;
       order: number;
     }>;
   }>;
-  gradingCriteria: Array<{
+  gradingCriteria?: Array<{
     name: string;
     minScore: number;
     maxScore: number;
@@ -40,6 +41,37 @@ export interface CreateQuizData {
     proposedStreaks: Array<{ id: string; name: string; slug: string }>;
     proposedBlogPosts: Array<{ id: string; title: string; slug: string }>;
     description?: string;
+  }>;
+  dimensions?: Array<{
+    name: string;
+    shortName: string;
+    order: number;
+    minScore: number;
+    maxScore: number;
+    threshold?: number;
+    lowLabel?: string;
+    highLabel?: string;
+  }>;
+  complexGradingCriteria?: Array<{
+    name: string;
+    label: string;
+    color: string;
+    recommendations: string[];
+    areasOfImprovement: string[];
+    supportNeeded: string[];
+    proposedCourses: Array<{ id: string; name: string; slug: string }>;
+    proposedProducts: Array<{ id: string; name: string; slug: string }>;
+    proposedStreaks: Array<{ id: string; name: string; slug: string }>;
+    proposedBlogPosts: Array<{ id: string; title: string; slug: string }>;
+    description?: string;
+    scoringLogic: {
+      type: 'threshold' | 'highest' | 'topN';
+      dimensions?: Array<{ name: string; value?: string; threshold?: number }>;
+      dimension?: string;
+      minScore?: number;
+      maxScore?: number;
+      n?: number;
+    };
   }>;
 }
 

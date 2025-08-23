@@ -7,6 +7,7 @@ export interface QuizOption {
 export interface QuizQuestion {
   id: string;
   text: string;
+  dimensionId?: string;
   options: QuizOption[];
 }
 
@@ -27,9 +28,44 @@ export interface GradingCriteria {
   description?: string;
 }
 
+export interface QuizDimension {
+  id: string;
+  name: string;
+  shortName: string;
+  order: number;
+  minScore: number;
+  maxScore: number;
+  threshold?: number;
+  lowLabel?: string;
+  highLabel?: string;
+}
+
+export interface ComplexGradingCriteria {
+  id: string;
+  name: string;
+  label: string;
+  color: string;
+  recommendations: string[];
+  areasOfImprovement: string[];
+  supportNeeded: string[];
+  proposedCourses: Array<{ id: string; name: string; slug: string }>;
+  proposedProducts: Array<{ id: string; name: string; slug: string }>;
+  proposedStreaks: Array<{ id: string; name: string; slug: string }>;
+  proposedBlogPosts: Array<{ id: string; title: string; slug: string }>;
+  description?: string;
+  scoringLogic: {
+    type: 'threshold' | 'highest' | 'topN';
+    dimensions?: Array<{ name: string; value?: string; threshold?: number }>;
+    dimension?: string;
+    minScore?: number;
+    maxScore?: number;
+    n?: number;
+  };
+}
+
 export interface Quiz {
   id: string;
-  quizType: 'DEFAULT' | 'ONBOARDING';
+  quizType: 'DEFAULT' | 'COMPLEX' | 'ONBOARDING';
   redirectAfterAnswer: 'HOME' | 'RESULTS';
   title: string;
   subtitle: string;
@@ -49,6 +85,8 @@ export interface Quiz {
   averageCompletionTime: number; // in minutes
   tags: string[];
   gradingCriteria: GradingCriteria[];
+  complexGradingCriteria?: ComplexGradingCriteria[];
+  dimensions?: QuizDimension[];
   createdBy: string;
   updatedBy: string;
   createdByUser: {
