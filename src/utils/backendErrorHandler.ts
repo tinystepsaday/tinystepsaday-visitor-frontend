@@ -79,9 +79,9 @@ export function isAuthError(err: unknown): boolean {
   }
 
   const errorData = err as BackendError
-  return errorData.error?.message?.toLowerCase().includes('auth') || 
-         errorData.message?.toLowerCase().includes('unauthorized') ||
-         errorData.message?.toLowerCase().includes('authentication')
+  return (errorData.error?.message?.toLowerCase().includes('auth') ?? false) || 
+         (errorData.message?.toLowerCase().includes('unauthorized') ?? false) ||
+         (errorData.message?.toLowerCase().includes('authentication') ?? false)
 }
 
 /**
@@ -95,7 +95,7 @@ export function isServerError(err: unknown): boolean {
   }
 
   const errorData = err as BackendError
-  return errorData.error?.message?.toLowerCase().includes('server') ||
-         errorData.message?.toLowerCase().includes('internal') ||
-         errorData.message?.toLowerCase().includes('server')
+  return (errorData.error?.message?.toLowerCase().includes('server') ?? false) ||
+         (errorData.message?.toLowerCase().includes('internal') ?? false) ||
+         (errorData.message?.toLowerCase().includes('server') ?? false)
 }
