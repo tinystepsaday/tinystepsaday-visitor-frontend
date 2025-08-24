@@ -186,153 +186,435 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {quiz.gradingCriteria.map((criteria) => (
-                  <Collapsible
-                    key={criteria.id}
-                    open={expandedCriteria === criteria.id}
-                    onOpenChange={(open) => setExpandedCriteria(open ? criteria.id : null)}
-                  >
-                    <div className="border rounded-lg">
-                      <CollapsibleTrigger asChild>
-                        <div className="flex items-center justify-between p-4 hover:bg-muted/50 cursor-pointer transition-colors">
-                          <div className="flex items-center gap-3">
-                            <div 
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: criteria.color }}
-                            />
-                            <div className="text-left">
-                              <p className="font-medium">{criteria.name}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {criteria.minScore}-{criteria.maxScore} points
-                              </p>
+                {quiz.quizType === 'COMPLEX' ? (
+                  // Complex Quiz Grading Criteria
+                  quiz.complexGradingCriteria?.map((criteria) => (
+                    <Collapsible
+                      key={criteria.id}
+                      open={expandedCriteria === criteria.id}
+                      onOpenChange={(open) => setExpandedCriteria(open ? criteria.id : null)}
+                    >
+                      <div className="border rounded-lg">
+                        <CollapsibleTrigger asChild>
+                          <div className="flex items-center justify-between p-4 hover:bg-muted/50 cursor-pointer transition-colors">
+                            <div className="flex items-center gap-3">
+                              <div 
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: criteria.color }}
+                              />
+                              <div className="text-left">
+                                <p className="font-medium">{criteria.name}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {criteria.label}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge 
+                                style={{ 
+                                  backgroundColor: criteria.color,
+                                  color: 'white'
+                                }}
+                              >
+                                {criteria.name}
+                              </Badge>
+                              {expandedCriteria === criteria.id ? (
+                                <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                              )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Badge 
-                              style={{ 
-                                backgroundColor: criteria.color,
-                                color: 'white'
-                              }}
-                            >
-                              {criteria.label}
-                            </Badge>
-                            {expandedCriteria === criteria.id ? (
-                              <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        </CollapsibleTrigger>
+                        
+                        <CollapsibleContent>
+                          <div className="px-4 pb-4 space-y-4">
+                            <Separator />
+                            
+                            {/* Description */}
+                            {criteria.description && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Lightbulb className="h-4 w-4" />
+                                  Description
+                                </h4>
+                                <p className="text-sm text-muted-foreground">{criteria.description}</p>
+                              </div>
+                            )}
+
+                            {/* Scoring Logic */}
+                            {criteria.scoringLogic && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Target className="h-4 w-4" />
+                                  Scoring Logic: {criteria.scoringLogic.type}
+                                </h4>
+                                <div className="space-y-2">
+                                  {criteria.scoringLogic.dimensions?.map((dim) => (
+                                    <div key={`${criteria.id}-${dim.name}`} className="flex items-center gap-2 text-sm">
+                                      <Badge variant="outline" className="text-xs">
+                                        {dim.name}: {dim.value} (threshold: {dim.threshold})
+                                      </Badge>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Recommendations */}
+                            {criteria.recommendations.length > 0 && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Lightbulb className="h-4 w-4" />
+                                  Recommendations ({criteria.recommendations.length})
+                                </h4>
+                                <ul className="space-y-1">
+                                  {criteria.recommendations.map((recommendation, index) => (
+                                    <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                                      {recommendation}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+
+                            {/* Areas of Improvement */}
+                            {criteria.areasOfImprovement.length > 0 && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Target className="h-4 w-4" />
+                                  Areas of Improvement ({criteria.areasOfImprovement.length})
+                                </h4>
+                                <ul className="space-y-1">
+                                  {criteria.areasOfImprovement.map((area, index) => (
+                                    <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-2 flex-shrink-0" />
+                                      {area}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+
+                            {/* Support Needed */}
+                            {criteria.supportNeeded.length > 0 && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Target className="h-4 w-4" />
+                                  Support Needed ({criteria.supportNeeded.length})
+                                </h4>
+                                <ul className="space-y-1">
+                                  {criteria.supportNeeded.map((support, index) => (
+                                    <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
+                                      {support}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+
+                            {/* Proposed Courses */}
+                            {criteria.proposedCourses.length > 0 && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Book className="h-4 w-4" />
+                                  Recommended Courses ({criteria.proposedCourses.length})
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {criteria.proposedCourses.map((course) => (
+                                    <Badge key={course.id} variant="outline" className="text-xs">
+                                      {course.name}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Proposed Products */}
+                            {criteria.proposedProducts.length > 0 && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Package className="h-4 w-4" />
+                                  Recommended Products ({criteria.proposedProducts.length})
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {criteria.proposedProducts.map((product) => (
+                                    <Badge key={product.id} variant="outline" className="text-xs">
+                                      {product.name}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Proposed Streaks */}
+                            {criteria.proposedStreaks.length > 0 && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Target className="h-4 w-4" />
+                                  Recommended Streaks ({criteria.proposedStreaks.length})
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {criteria.proposedStreaks.map((streak) => (
+                                    <Badge key={streak.id} variant="outline" className="text-xs">
+                                      {streak.name}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Proposed Blog Posts */}
+                            {criteria.proposedBlogPosts.length > 0 && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Book className="h-4 w-4" />
+                                  Recommended Blog Posts ({criteria.proposedBlogPosts.length})
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {criteria.proposedBlogPosts.map((blogPost) => (
+                                    <Badge key={blogPost.id} variant="outline" className="text-xs">
+                                      {blogPost.title}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
                             )}
                           </div>
-                        </div>
-                      </CollapsibleTrigger>
-                      
-                      <CollapsibleContent>
-                        <div className="px-4 pb-4 space-y-4">
-                          <Separator />
-                          
-                          {/* Description */}
-                          {criteria.description && (
-                            <div>
-                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                <Lightbulb className="h-4 w-4" />
-                                Description
-                              </h4>
-                              <p className="text-sm text-muted-foreground">{criteria.description}</p>
-                            </div>
-                          )}
-
-                          {/* Recommendations */}
-                          {criteria.recommendations.length > 0 && (
-                            <div>
-                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                <Lightbulb className="h-4 w-4" />
-                                Recommendations ({criteria.recommendations.length})
-                              </h4>
-                              <ul className="space-y-1">
-                                {criteria.recommendations.map((recommendation, index) => (
-                                  <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
-                                    {recommendation}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-
-                          {/* Proposed Courses */}
-                          {criteria.proposedCourses.length > 0 && (
-                            <div>
-                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                <Book className="h-4 w-4" />
-                                Recommended Courses ({criteria.proposedCourses.length})
-                              </h4>
-                              <div className="flex flex-wrap gap-2">
-                                {criteria.proposedCourses.map((course) => (
-                                  <Badge key={course.id} variant="outline" className="text-xs">
-                                    {course.name}
-                                  </Badge>
-                                ))}
+                        </CollapsibleContent>
+                      </div>
+                    </Collapsible>
+                  ))
+                ) : (
+                  // Default Quiz Grading Criteria
+                  quiz.gradingCriteria?.map((criteria) => (
+                    <Collapsible
+                      key={criteria.id}
+                      open={expandedCriteria === criteria.id}
+                      onOpenChange={(open) => setExpandedCriteria(open ? criteria.id : null)}
+                    >
+                      <div className="border rounded-lg">
+                        <CollapsibleTrigger asChild>
+                          <div className="flex items-center justify-between p-4 hover:bg-muted/50 cursor-pointer transition-colors">
+                            <div className="flex items-center gap-3">
+                              <div 
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: criteria.color }}
+                              />
+                              <div className="text-left">
+                                <p className="font-medium">{criteria.name}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {criteria.minScore}-{criteria.maxScore} points
+                                </p>
                               </div>
                             </div>
-                          )}
-
-                          {/* Proposed Products */}
-                          {criteria.proposedProducts.length > 0 && (
-                            <div>
-                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                <Package className="h-4 w-4" />
-                                Recommended Products ({criteria.proposedProducts.length})
-                              </h4>
-                              <div className="flex flex-wrap gap-2">
-                                {criteria.proposedProducts.map((product) => (
-                                  <Badge key={product.id} variant="outline" className="text-xs">
-                                    {product.name}
-                                  </Badge>
-                                ))}
-                              </div>
+                            <div className="flex items-center gap-2">
+                              <Badge 
+                                style={{ 
+                                  backgroundColor: criteria.color,
+                                  color: 'white'
+                                }}
+                              >
+                                {criteria.label}
+                              </Badge>
+                              {expandedCriteria === criteria.id ? (
+                                <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                              )}
                             </div>
-                          )}
-
-                          {/* Proposed Streaks */}
-                          {criteria.proposedStreaks.length > 0 && (
-                            <div>
-                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                <Target className="h-4 w-4" />
-                                Recommended Streaks ({criteria.proposedStreaks.length})
-                              </h4>
-                              <div className="flex flex-wrap gap-2">
-                                {criteria.proposedStreaks.map((streak) => (
-                                  <Badge key={streak.id} variant="outline" className="text-xs">
-                                    {streak.name}
-                                  </Badge>
-                                ))}
+                          </div>
+                        </CollapsibleTrigger>
+                        
+                        <CollapsibleContent>
+                          <div className="px-4 pb-4 space-y-4">
+                            <Separator />
+                            
+                            {/* Description */}
+                            {criteria.description && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Lightbulb className="h-4 w-4" />
+                                  Description
+                                </h4>
+                                <p className="text-sm text-muted-foreground">{criteria.description}</p>
                               </div>
-                            </div>
-                          )}
+                            )}
 
-                          {/* Proposed Blog Posts */}
-                          {criteria.proposedBlogPosts.length > 0 && (
-                            <div>
-                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                <Book className="h-4 w-4" />
-                                Recommended Blog Posts ({criteria.proposedBlogPosts.length})
-                              </h4>
-                              <div className="flex flex-wrap gap-2">
-                                {criteria.proposedBlogPosts.map((blogPost) => (
-                                  <Badge key={blogPost.id} variant="outline" className="text-xs">
-                                    {blogPost.title}
-                                  </Badge>
-                                ))}
+                            {/* Recommendations */}
+                            {criteria.recommendations.length > 0 && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Lightbulb className="h-4 w-4" />
+                                  Recommendations ({criteria.recommendations.length})
+                                </h4>
+                                <ul className="space-y-1">
+                                  {criteria.recommendations.map((recommendation, index) => (
+                                    <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                                      {recommendation}
+                                    </li>
+                                  ))}
+                                </ul>
                               </div>
-                            </div>
-                          )}
-                        </div>
-                      </CollapsibleContent>
-                    </div>
-                  </Collapsible>
-                ))}
+                            )}
+
+                            {/* Areas of Improvement */}
+                            {criteria.areasOfImprovement && criteria.areasOfImprovement.length > 0 && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Target className="h-4 w-4" />
+                                  Areas of Improvement ({criteria.areasOfImprovement.length})
+                                </h4>
+                                <ul className="space-y-1">
+                                  {criteria.areasOfImprovement.map((area, index) => (
+                                    <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-2 flex-shrink-0" />
+                                      {area}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+
+                            {/* Support Needed */}
+                            {criteria.supportNeeded && criteria.supportNeeded.length > 0 && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Target className="h-4 w-4" />
+                                  Support Needed ({criteria.supportNeeded.length})
+                                </h4>
+                                <ul className="space-y-1">
+                                  {criteria.supportNeeded.map((support, index) => (
+                                    <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
+                                      {support}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+
+                            {/* Proposed Courses */}
+                            {criteria.proposedCourses.length > 0 && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Book className="h-4 w-4" />
+                                  Recommended Courses ({criteria.proposedCourses.length})
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {criteria.proposedCourses.map((course) => (
+                                    <Badge key={course.id} variant="outline" className="text-xs">
+                                      {course.name}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Proposed Products */}
+                            {criteria.proposedProducts.length > 0 && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Package className="h-4 w-4" />
+                                  Recommended Products ({criteria.proposedProducts.length})
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {criteria.proposedProducts.map((product) => (
+                                    <Badge key={product.id} variant="outline" className="text-xs">
+                                      {product.name}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Proposed Streaks */}
+                            {criteria.proposedStreaks.length > 0 && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Target className="h-4 w-4" />
+                                  Recommended Streaks ({criteria.proposedStreaks.length})
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {criteria.proposedStreaks.map((streak) => (
+                                    <Badge key={streak.id} variant="outline" className="text-xs">
+                                      {streak.name}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Proposed Blog Posts */}
+                            {criteria.proposedBlogPosts.length > 0 && (
+                              <div>
+                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                  <Book className="h-4 w-4" />
+                                  Recommended Blog Posts ({criteria.proposedBlogPosts.length})
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {criteria.proposedBlogPosts.map((blogPost) => (
+                                    <Badge key={blogPost.id} variant="outline" className="text-xs">
+                                      {blogPost.title}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </CollapsibleContent>
+                      </div>
+                    </Collapsible>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
+
+          {/* Dimensions for Complex Quizzes */}
+          {quiz.quizType === 'COMPLEX' && quiz.dimensions && quiz.dimensions.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Quiz Dimensions</CardTitle>
+                <CardDescription>
+                  The dimensions used to calculate personality types for this complex quiz
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {quiz.dimensions.map((dimension) => (
+                    <div key={dimension.id} className="p-4 border rounded-lg">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-medium">{dimension.name}</h4>
+                        <Badge variant="outline">{dimension.shortName}</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <span className="font-medium text-muted-foreground">Range:</span>
+                          <p>{dimension.minScore} - {dimension.maxScore}</p>
+                        </div>
+                        <div>
+                          <span className="font-medium text-muted-foreground">Threshold:</span>
+                          <p>{dimension.threshold}</p>
+                        </div>
+                        <div>
+                          <span className="font-medium text-muted-foreground">Low Label:</span>
+                          <p className="text-blue-600">{dimension.lowLabel}</p>
+                        </div>
+                        <div>
+                          <span className="font-medium text-muted-foreground">High Label:</span>
+                          <p className="text-green-600">{dimension.highLabel}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Questions */}
           <Card>
@@ -352,6 +634,13 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
                       </div>
                       <div className="flex-1">
                         <p className="font-medium">{question.text}</p>
+                        {quiz.quizType === 'COMPLEX' && question.dimensionId && (
+                          <div className="mt-2">
+                            <Badge variant="secondary" className="text-xs">
+                              Dimension: {quiz.dimensions?.find(d => d.id === question.dimensionId)?.shortName || question.dimensionId}
+                            </Badge>
+                          </div>
+                        )}
                         <div className="mt-3 space-y-2">
                           {question.options.map((option) => (
                             <div key={option.id} className="flex items-center gap-3 p-2 border rounded">
@@ -419,13 +708,16 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
               <div className="text-sm">
                 <span className="font-medium">Max Score:</span>
                 <p className="text-muted-foreground">
-                  {quiz.questions.length * 4} points
+                  {quiz.quizType === 'COMPLEX' 
+                    ? `${quiz.dimensions?.reduce((sum, dim) => sum + dim.maxScore, 0) || 0} points (across ${quiz.dimensions?.length || 0} dimensions)`
+                    : `${quiz.questions.length * 4} points`
+                  }
                 </p>
               </div>
               <div className="text-sm">
-                <span className="font-medium">Passing Score:</span>
+                <span className="font-medium">Quiz Type:</span>
                 <p className="text-muted-foreground">
-                  {quiz.gradingCriteria.find(c => c.name.toLowerCase().includes('good'))?.minScore || 60} points (Good level)
+                  {quiz.quizType === 'COMPLEX' ? 'Complex (MBTI-style)' : quiz.quizType === 'ONBOARDING' ? 'Onboarding' : 'Standard'}
                 </p>
               </div>
             </CardContent>

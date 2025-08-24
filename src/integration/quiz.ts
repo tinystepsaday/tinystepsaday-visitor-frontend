@@ -140,6 +140,7 @@ interface BackendQuiz {
   questions?: Array<{
     id: string;
     text: string;
+    dimensionId?: string;
     options?: Array<{
       id: string;
       text: string;
@@ -154,11 +155,46 @@ interface BackendQuiz {
     label: string;
     color: string;
     recommendations?: string[];
+    areasOfImprovement?: string[];
+    supportNeeded?: string[];
     proposedCourses?: Array<{ id: string; name: string; slug: string }>;
     proposedProducts?: Array<{ id: string; name: string; slug: string }>;
     proposedStreaks?: Array<{ id: string; name: string; slug: string }>;
     proposedBlogPosts?: Array<{ id: string; title: string; slug: string }>;
     description?: string;
+  }>;
+  complexGradingCriteria?: Array<{
+    id: string;
+    name: string;
+    label: string;
+    color: string;
+    recommendations: string[];
+    areasOfImprovement: string[];
+    supportNeeded: string[];
+    proposedCourses: Array<{ id: string; name: string; slug: string }>;
+    proposedProducts: Array<{ id: string; name: string; slug: string }>;
+    proposedStreaks: Array<{ id: string; name: string; slug: string }>;
+    proposedBlogPosts: Array<{ id: string; title: string; slug: string }>;
+    description?: string;
+    scoringLogic: {
+      type: 'threshold' | 'highest' | 'topN';
+      dimensions?: Array<{ name: string; value?: string; threshold?: number }>;
+      dimension?: string;
+      minScore?: number;
+      maxScore?: number;
+      n?: number;
+    };
+  }>;
+  dimensions?: Array<{
+    id: string;
+    name: string;
+    shortName: string;
+    order: number;
+    minScore: number;
+    maxScore: number;
+    threshold?: number;
+    lowLabel?: string;
+    highLabel?: string;
   }>;
 }
 
@@ -397,7 +433,7 @@ export const quizAPI = QuizAPI.getInstance();
 export function transformBackendQuiz(backendQuiz: BackendQuiz): Quiz {
   return {
     id: backendQuiz.id,
-    quizType: (backendQuiz.quizType?.toUpperCase() as 'DEFAULT' | 'ONBOARDING') || 'DEFAULT',
+    quizType: (backendQuiz.quizType?.toUpperCase() as 'DEFAULT' | 'COMPLEX' | 'ONBOARDING') || 'DEFAULT',
     redirectAfterAnswer: (backendQuiz.redirectAfterAnswer?.toUpperCase() as 'HOME' | 'RESULTS') || 'HOME',
     title: backendQuiz.title,
     subtitle: backendQuiz.subtitle || '',
@@ -425,6 +461,7 @@ export function transformBackendQuiz(backendQuiz: BackendQuiz): Quiz {
     questions: backendQuiz.questions?.map((q) => ({
       id: q.id,
       text: q.text,
+      dimensionId: q.dimensionId || undefined,
       options: q.options?.map((opt) => ({
         id: opt.id,
         text: opt.text,
@@ -439,12 +476,16 @@ export function transformBackendQuiz(backendQuiz: BackendQuiz): Quiz {
       label: gc.label,
       color: gc.color,
       recommendations: gc.recommendations || [],
+      areasOfImprovement: gc.areasOfImprovement || [],
+      supportNeeded: gc.supportNeeded || [],
       proposedCourses: gc.proposedCourses || [],
       proposedProducts: gc.proposedProducts || [],
       proposedStreaks: gc.proposedStreaks || [],
       proposedBlogPosts: gc.proposedBlogPosts || [],
       description: gc.description
-    })) || []
+    })) || [],
+    complexGradingCriteria: backendQuiz.complexGradingCriteria || [],
+    dimensions: backendQuiz.dimensions || []
   };
 }
 

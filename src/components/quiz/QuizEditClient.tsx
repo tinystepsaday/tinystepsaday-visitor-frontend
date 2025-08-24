@@ -169,8 +169,17 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
             redirectAfterAnswer: quiz.redirectAfterAnswer.toUpperCase() as 'HOME' | 'RESULTS'
           })
           setTags(quiz.tags)
-          setQuestions(quiz.questions)
-          setGradingCriteria(quiz.gradingCriteria)
+          setQuestions(quiz.questions.map(q => ({
+            id: q.id,
+            text: q.text,
+            dimensionId: q.dimensionId || undefined,
+            options: q.options.map(opt => ({
+              id: opt.id,
+              text: opt.text,
+              value: opt.value
+            }))
+          })))
+          setGradingCriteria(quiz.gradingCriteria || [])
           setComplexGradingCriteria(quiz.complexGradingCriteria || [])
           setDimensions(quiz.dimensions || [])
         } else if (!quiz && !isInitialized) {
@@ -266,7 +275,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
     }))
   }
 
-  const updateQuestion = (questionId: string, field: string, value: string) => {
+  const updateQuestion = (questionId: string, field: string, value: string | null) => {
     setQuestions(prev => prev.map(q =>
       q.id === questionId ? { ...q, [field]: value } : q
     ))
@@ -294,36 +303,77 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
     if (newQuizType === 'COMPLEX') {
       setGradingCriteria([])
       if (dimensions.length === 0) {
-        // Add a default dimension for complex quizzes
-        setDimensions([{
-          id: 'dim-1',
-          name: 'Personality Dimension',
-          shortName: 'PD',
-          order: 1,
-          minScore: 0,
-          maxScore: 20,
-          threshold: 10,
-          lowLabel: 'Type A',
-          highLabel: 'Type B'
-        }])
+        // Add default MBTI dimensions for complex quizzes
+        setDimensions([
+          {
+            id: 'dim-1',
+            name: 'Extraversion/Introversion',
+            shortName: 'E/I',
+            order: 1,
+            minScore: 4,
+            maxScore: 16,
+            threshold: 10,
+            lowLabel: 'I',
+            highLabel: 'E'
+          },
+          {
+            id: 'dim-2',
+            name: 'Sensing/Intuition',
+            shortName: 'S/N',
+            order: 2,
+            minScore: 4,
+            maxScore: 16,
+            threshold: 10,
+            lowLabel: 'N',
+            highLabel: 'S'
+          },
+          {
+            id: 'dim-3',
+            name: 'Thinking/Feeling',
+            shortName: 'T/F',
+            order: 3,
+            minScore: 4,
+            maxScore: 16,
+            threshold: 10,
+            lowLabel: 'F',
+            highLabel: 'T'
+          },
+          {
+            id: 'dim-4',
+            name: 'Judging/Perceiving',
+            shortName: 'J/P',
+            order: 4,
+            minScore: 4,
+            maxScore: 16,
+            threshold: 10,
+            lowLabel: 'P',
+            highLabel: 'J'
+          }
+        ])
       }
       if (complexGradingCriteria.length === 0) {
         // Add a default complex grading criteria
         setComplexGradingCriteria([{
           id: 'cgc-1',
-          name: 'Type A',
-          label: 'Type A Personality',
+          name: 'INTJ',
+          label: 'The Architect',
           color: '#3B82F6',
-          recommendations: ['Focus on patience and mindfulness'],
-          areasOfImprovement: ['Stress management'],
-          supportNeeded: ['Meditation practices'],
+          recommendations: ['Focus on strategic planning', 'Develop social skills'],
+          areasOfImprovement: ['Social interactions', 'Flexibility'],
+          supportNeeded: ['Networking tools', 'Mentorship'],
           proposedCourses: [],
           proposedProducts: [],
           proposedStreaks: [],
           proposedBlogPosts: [],
+          description: 'Strategic, innovative, and independent thinkers.',
           scoringLogic: {
             type: 'threshold',
-            dimensions: [{ name: 'PD', threshold: 10 }]
+            dimensions: [
+              { name: 'E/I', value: 'low', threshold: 10 },
+              { name: 'S/N', value: 'low', threshold: 10 },
+              { name: 'T/F', value: 'high', threshold: 10 },
+              { name: 'J/P', value: 'high', threshold: 10 }
+            ]
           }
         }])
       }
@@ -1028,13 +1078,13 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
                     <Label>Dimension</Label>
                     <Select 
                       value={question.dimensionId || ''} 
-                      onValueChange={(value) => updateQuestion(question.id, 'dimensionId', value)}
+                      onValueChange={(value) => updateQuestion(question.id, 'dimensionId', value === 'NONE' ? null : value)}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select dimension (optional)" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No dimension</SelectItem>
+                        <SelectItem value="NONE">No dimension</SelectItem>
                         {dimensions.map((dim) => (
                           <SelectItem key={dim.id} value={dim.id}>
                             {dim.name} ({dim.shortName})
