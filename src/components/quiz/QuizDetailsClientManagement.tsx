@@ -390,76 +390,76 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
                 ) : (
                   // Default Quiz Grading Criteria
                   quiz.gradingCriteria?.map((criteria) => (
-                    <Collapsible
-                      key={criteria.id}
-                      open={expandedCriteria === criteria.id}
-                      onOpenChange={(open) => setExpandedCriteria(open ? criteria.id : null)}
-                    >
-                      <div className="border rounded-lg">
-                        <CollapsibleTrigger asChild>
-                          <div className="flex items-center justify-between p-4 hover:bg-muted/50 cursor-pointer transition-colors">
-                            <div className="flex items-center gap-3">
-                              <div 
-                                className="w-3 h-3 rounded-full"
-                                style={{ backgroundColor: criteria.color }}
-                              />
-                              <div className="text-left">
-                                <p className="font-medium">{criteria.name}</p>
-                                <p className="text-sm text-muted-foreground">
-                                  {criteria.minScore}-{criteria.maxScore} points
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Badge 
-                                style={{ 
-                                  backgroundColor: criteria.color,
-                                  color: 'white'
-                                }}
-                              >
-                                {criteria.label}
-                              </Badge>
-                              {expandedCriteria === criteria.id ? (
-                                <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                              )}
+                  <Collapsible
+                    key={criteria.id}
+                    open={expandedCriteria === criteria.id}
+                    onOpenChange={(open) => setExpandedCriteria(open ? criteria.id : null)}
+                  >
+                    <div className="border rounded-lg">
+                      <CollapsibleTrigger asChild>
+                        <div className="flex items-center justify-between p-4 hover:bg-muted/50 cursor-pointer transition-colors">
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className="w-3 h-3 rounded-full"
+                              style={{ backgroundColor: criteria.color }}
+                            />
+                            <div className="text-left">
+                              <p className="font-medium">{criteria.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {criteria.minScore}-{criteria.maxScore} points
+                              </p>
                             </div>
                           </div>
-                        </CollapsibleTrigger>
-                        
-                        <CollapsibleContent>
-                          <div className="px-4 pb-4 space-y-4">
-                            <Separator />
-                            
-                            {/* Description */}
-                            {criteria.description && (
-                              <div>
-                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                  <Lightbulb className="h-4 w-4" />
-                                  Description
-                                </h4>
-                                <p className="text-sm text-muted-foreground">{criteria.description}</p>
-                              </div>
+                          <div className="flex items-center gap-2">
+                            <Badge 
+                              style={{ 
+                                backgroundColor: criteria.color,
+                                color: 'white'
+                              }}
+                            >
+                              {criteria.label}
+                            </Badge>
+                            {expandedCriteria === criteria.id ? (
+                              <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <ChevronDown className="h-4 w-4 text-muted-foreground" />
                             )}
+                          </div>
+                        </div>
+                      </CollapsibleTrigger>
+                      
+                      <CollapsibleContent>
+                        <div className="px-4 pb-4 space-y-4">
+                          <Separator />
+                          
+                          {/* Description */}
+                          {criteria.description && (
+                            <div>
+                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                <Lightbulb className="h-4 w-4" />
+                                Description
+                              </h4>
+                              <p className="text-sm text-muted-foreground">{criteria.description}</p>
+                            </div>
+                          )}
 
-                            {/* Recommendations */}
-                            {criteria.recommendations.length > 0 && (
-                              <div>
-                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                  <Lightbulb className="h-4 w-4" />
-                                  Recommendations ({criteria.recommendations.length})
-                                </h4>
-                                <ul className="space-y-1">
-                                  {criteria.recommendations.map((recommendation, index) => (
-                                    <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                                      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
-                                      {recommendation}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
+                          {/* Recommendations */}
+                          {criteria.recommendations.length > 0 && (
+                            <div>
+                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                <Lightbulb className="h-4 w-4" />
+                                Recommendations ({criteria.recommendations.length})
+                              </h4>
+                              <ul className="space-y-1">
+                                {criteria.recommendations.map((recommendation, index) => (
+                                  <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                                    {recommendation}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
 
                             {/* Areas of Improvement */}
                             {criteria.areasOfImprovement && criteria.areasOfImprovement.length > 0 && (
@@ -497,77 +497,77 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
                               </div>
                             )}
 
-                            {/* Proposed Courses */}
-                            {criteria.proposedCourses.length > 0 && (
-                              <div>
-                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                  <Book className="h-4 w-4" />
-                                  Recommended Courses ({criteria.proposedCourses.length})
-                                </h4>
-                                <div className="flex flex-wrap gap-2">
-                                  {criteria.proposedCourses.map((course) => (
-                                    <Badge key={course.id} variant="outline" className="text-xs">
-                                      {course.name}
-                                    </Badge>
-                                  ))}
-                                </div>
+                          {/* Proposed Courses */}
+                          {criteria.proposedCourses.length > 0 && (
+                            <div>
+                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                <Book className="h-4 w-4" />
+                                Recommended Courses ({criteria.proposedCourses.length})
+                              </h4>
+                              <div className="flex flex-wrap gap-2">
+                                {criteria.proposedCourses.map((course) => (
+                                  <Badge key={course.id} variant="outline" className="text-xs">
+                                    {course.name}
+                                  </Badge>
+                                ))}
                               </div>
-                            )}
+                            </div>
+                          )}
 
-                            {/* Proposed Products */}
-                            {criteria.proposedProducts.length > 0 && (
-                              <div>
-                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                  <Package className="h-4 w-4" />
-                                  Recommended Products ({criteria.proposedProducts.length})
-                                </h4>
-                                <div className="flex flex-wrap gap-2">
-                                  {criteria.proposedProducts.map((product) => (
-                                    <Badge key={product.id} variant="outline" className="text-xs">
-                                      {product.name}
-                                    </Badge>
-                                  ))}
-                                </div>
+                          {/* Proposed Products */}
+                          {criteria.proposedProducts.length > 0 && (
+                            <div>
+                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                <Package className="h-4 w-4" />
+                                Recommended Products ({criteria.proposedProducts.length})
+                              </h4>
+                              <div className="flex flex-wrap gap-2">
+                                {criteria.proposedProducts.map((product) => (
+                                  <Badge key={product.id} variant="outline" className="text-xs">
+                                    {product.name}
+                                  </Badge>
+                                ))}
                               </div>
-                            )}
+                            </div>
+                          )}
 
-                            {/* Proposed Streaks */}
-                            {criteria.proposedStreaks.length > 0 && (
-                              <div>
-                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                  <Target className="h-4 w-4" />
-                                  Recommended Streaks ({criteria.proposedStreaks.length})
-                                </h4>
-                                <div className="flex flex-wrap gap-2">
-                                  {criteria.proposedStreaks.map((streak) => (
-                                    <Badge key={streak.id} variant="outline" className="text-xs">
-                                      {streak.name}
-                                    </Badge>
-                                  ))}
-                                </div>
+                          {/* Proposed Streaks */}
+                          {criteria.proposedStreaks.length > 0 && (
+                            <div>
+                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                <Target className="h-4 w-4" />
+                                Recommended Streaks ({criteria.proposedStreaks.length})
+                              </h4>
+                              <div className="flex flex-wrap gap-2">
+                                {criteria.proposedStreaks.map((streak) => (
+                                  <Badge key={streak.id} variant="outline" className="text-xs">
+                                    {streak.name}
+                                  </Badge>
+                                ))}
                               </div>
-                            )}
+                            </div>
+                          )}
 
-                            {/* Proposed Blog Posts */}
-                            {criteria.proposedBlogPosts.length > 0 && (
-                              <div>
-                                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                  <Book className="h-4 w-4" />
-                                  Recommended Blog Posts ({criteria.proposedBlogPosts.length})
-                                </h4>
-                                <div className="flex flex-wrap gap-2">
-                                  {criteria.proposedBlogPosts.map((blogPost) => (
-                                    <Badge key={blogPost.id} variant="outline" className="text-xs">
-                                      {blogPost.title}
-                                    </Badge>
-                                  ))}
-                                </div>
+                          {/* Proposed Blog Posts */}
+                          {criteria.proposedBlogPosts.length > 0 && (
+                            <div>
+                              <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                                <Book className="h-4 w-4" />
+                                Recommended Blog Posts ({criteria.proposedBlogPosts.length})
+                              </h4>
+                              <div className="flex flex-wrap gap-2">
+                                {criteria.proposedBlogPosts.map((blogPost) => (
+                                  <Badge key={blogPost.id} variant="outline" className="text-xs">
+                                    {blogPost.title}
+                                  </Badge>
+                                ))}
                               </div>
-                            )}
-                          </div>
-                        </CollapsibleContent>
-                      </div>
-                    </Collapsible>
+                            </div>
+                          )}
+                        </div>
+                      </CollapsibleContent>
+                    </div>
+                  </Collapsible>
                   ))
                 )}
               </div>

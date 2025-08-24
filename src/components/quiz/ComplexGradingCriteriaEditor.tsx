@@ -1,15 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { useState } from 'react'
-import { Plus, Trash2, Edit3 } from 'lucide-react'
+import { Plus, Trash2, Edit3, X, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { GradingCriteriaEditor } from './GradingCriteriaEditor'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export interface ComplexGradingCriteria {
   id: string
@@ -37,24 +35,24 @@ export interface ComplexGradingCriteria {
 interface ComplexGradingCriteriaEditorProps {
   criteria: ComplexGradingCriteria[]
   onChange: (criteria: ComplexGradingCriteria[]) => void
+  dimensions: Array<{ id: string; name: string; shortName: string; threshold?: number }>
   availableCourses: Array<{ id: string; name: string; slug: string }>
   availableProducts: Array<{ id: string; name: string; slug: string }>
   availableStreaks: Array<{ id: string; name: string; slug: string }>
   availableBlogPosts: Array<{ id: string; title: string; slug: string }>
-  isLoadingBlogPosts: boolean
 }
 
-export function ComplexGradingCriteriaEditor({ 
-  criteria, 
-  onChange, 
-  availableCourses, 
-  availableProducts, 
-  availableStreaks, 
-  availableBlogPosts, 
-  isLoadingBlogPosts 
+export function ComplexGradingCriteriaEditor({
+  criteria,
+  onChange,
+  dimensions,
+  availableCourses,
+  availableProducts,
+  availableStreaks,
+  availableBlogPosts
 }: ComplexGradingCriteriaEditorProps) {
-  const [editingId, setEditingId] = useState<string | null>(null)
   const [editingCriteria, setEditingCriteria] = useState<Partial<ComplexGradingCriteria>>({})
+  const [isEditing, setIsEditing] = useState(false)
 
   const addCriteria = () => {
     const newCriteria: ComplexGradingCriteria = {
@@ -62,7 +60,7 @@ export function ComplexGradingCriteriaEditor({
       name: '',
       label: '',
       color: '#3B82F6',
-      recommendations: [],
+      recommendations: [''],
       areasOfImprovement: [],
       supportNeeded: [],
       proposedCourses: [],
@@ -72,16 +70,33 @@ export function ComplexGradingCriteriaEditor({
       description: '',
       scoringLogic: {
         type: 'threshold',
-        dimensions: []
+        dimensions: [],
+        minScore: 0,
+        maxScore: 0,
+        n: 1
       }
     }
     onChange([...criteria, newCriteria])
   }
 
-  const updateCriteria = (id: string, field: keyof ComplexGradingCriteria, value: any) => {
-    onChange(criteria.map(c =>
+  const updateCriteria = (id: string, field: keyof ComplexGradingCriteria, value: string | string[] | Array<{ id: string; name: string; slug: string }> | Array<{ id: string; title: string; slug: string }> | undefined) => {
+    const updatedCriteria = criteria.map(c =>
       c.id === id ? { ...c, [field]: value } : c
-    ))
+    )
+    onChange(updatedCriteria)
+  }
+
+  const updateScoringLogic = (id: string, field: string, value: string | number | Array<{ name: string; value?: string; threshold?: number }>) => {
+    const updatedCriteria = criteria.map(c => {
+      if (c.id === id) {
+        return {
+          ...c,
+          scoringLogic: { ...c.scoringLogic, [field]: value }
+        }
+      }
+      return c
+    })
+    onChange(updatedCriteria)
   }
 
   const removeCriteria = (id: string) => {
@@ -89,239 +104,696 @@ export function ComplexGradingCriteriaEditor({
   }
 
   const startEditing = (criterion: ComplexGradingCriteria) => {
-    setEditingId(criterion.id)
     setEditingCriteria(criterion)
+    setIsEditing(true)
   }
 
   const saveEditing = () => {
-    if (editingId && editingCriteria.name && editingCriteria.label) {
-      onChange(criteria.map(c =>
-        c.id === editingId ? { ...c, ...editingCriteria } : c
-      ))
-      setEditingId(null)
-      setEditingCriteria({})
+    if (editingCriteria.id) {
+      const updatedCriteria = criteria.map(c =>
+        c.id === editingCriteria.id ? { ...c, ...editingCriteria } : c
+      )
+      onChange(updatedCriteria)
     }
-  }
-
-  const cancelEditing = () => {
-    setEditingId(null)
+    setIsEditing(false)
     setEditingCriteria({})
   }
 
-  const addRecommendation = (id: string) => {
-    const criterion = criteria.find(c => c.id === id)
-    if (criterion) {
-      const newRecommendation = prompt('Enter recommendation:')
-      if (newRecommendation) {
-        updateCriteria(id, 'recommendations', [...criterion.recommendations, newRecommendation])
-      }
-    }
+  const cancelEditing = () => {
+    setIsEditing(false)
+    setEditingCriteria({})
   }
 
-  const removeRecommendation = (id: string, index: number) => {
-    const criterion = criteria.find(c => c.id === id)
-    if (criterion) {
-      const newRecommendations = criterion.recommendations.filter((_, i) => i !== index)
-      updateCriteria(id, 'recommendations', newRecommendations)
-    }
+  const addRecommendation = (criteriaId: string) => {
+    const updatedCriteria = criteria.map(c => {
+      if (c.id === criteriaId) {
+        return { ...c, recommendations: [...c.recommendations, ''] }
+      }
+      return c
+    })
+    onChange(updatedCriteria)
+  }
+
+  const updateRecommendation = (criteriaId: string, index: number, value: string) => {
+    const updatedCriteria = criteria.map(c => {
+      if (c.id === criteriaId) {
+        const newRecommendations = [...c.recommendations]
+        newRecommendations[index] = value
+        return { ...c, recommendations: newRecommendations }
+      }
+      return c
+    })
+    onChange(updatedCriteria)
+  }
+
+  const removeRecommendation = (criteriaId: string, index: number) => {
+    const updatedCriteria = criteria.map(c => {
+      if (c.id === criteriaId) {
+        const newRecommendations = c.recommendations.filter((_, i) => i !== index)
+        return { ...c, recommendations: newRecommendations }
+      }
+      return c
+    })
+    onChange(updatedCriteria)
+  }
+
+  const addArrayItem = (criteriaId: string, field: keyof ComplexGradingCriteria, item: { id: string; name: string; slug: string } | { id: string; title: string; slug: string }) => {
+    const updatedCriteria = criteria.map(c => {
+      if (c.id === criteriaId) {
+        const currentArray = c[field] as Array<{ id: string; name: string; slug: string }> | Array<{ id: string; title: string; slug: string }> || []
+        return { ...c, [field]: [...currentArray, item] }
+      }
+      return c
+    })
+    onChange(updatedCriteria)
+  }
+
+  const removeArrayItem = (criteriaId: string, field: keyof ComplexGradingCriteria, itemId: string) => {
+    const updatedCriteria = criteria.map(c => {
+      if (c.id === criteriaId) {
+        const currentArray = c[field] as Array<{ id: string; name: string; slug: string }> | Array<{ id: string; title: string; slug: string }> || []
+        const filteredArray = currentArray.filter((item: { id: string; name: string; slug: string } | { id: string; title: string; slug: string }) => item.id !== itemId)
+        return { ...c, [field]: filteredArray }
+      }
+      return c
+    })
+    onChange(updatedCriteria)
+  }
+
+  const addStringArrayItem = (criteriaId: string, field: keyof ComplexGradingCriteria) => {
+    const updatedCriteria = criteria.map(c => {
+      if (c.id === criteriaId) {
+        const currentArray = c[field] as string[] || []
+        return { ...c, [field]: [...currentArray, ''] }
+      }
+      return c
+    })
+    onChange(updatedCriteria)
+  }
+
+  const updateStringArrayItem = (criteriaId: string, field: keyof ComplexGradingCriteria, index: number, value: string) => {
+    const updatedCriteria = criteria.map(c => {
+      if (c.id === criteriaId) {
+        const currentArray = [...(c[field] as string[] || [])]
+        currentArray[index] = value
+        return { ...c, [field]: currentArray }
+      }
+      return c
+    })
+    onChange(updatedCriteria)
+  }
+
+  const removeStringArrayItem = (criteriaId: string, field: keyof ComplexGradingCriteria, index: number) => {
+    const updatedCriteria = criteria.map(c => {
+      if (c.id === criteriaId) {
+        const currentArray = c[field] as string[] || []
+        const filteredArray = currentArray.filter((_, i) => i !== index)
+        return { ...c, [field]: filteredArray }
+      }
+      return c
+    })
+    onChange(updatedCriteria)
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Complex Grading Criteria</CardTitle>
-            <CardDescription>Define the scoring logic and outcomes for complex quizzes</CardDescription>
-          </div>
-          <Button type="button" onClick={addCriteria} variant="outline" size="sm">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Criteria
-          </Button>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-medium">Complex Grading Criteria</h3>
+          <p className="text-sm text-muted-foreground">
+            Define scoring logic and outcomes for complex quizzes
+          </p>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {criteria.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            No complex grading criteria added yet. Click &quot;Add Criteria&quot; to get started.
-          </div>
-        ) : (
-          criteria.map((criterion, index) => (
-            <div key={criterion.id} className="p-4 border rounded-lg space-y-4">
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium">{criterion.name || `Criteria ${index + 1}`}</h4>
-                <div className="flex space-x-2">
-                  {editingId === criterion.id ? (
-                    <>
-                      <Button type="button" onClick={saveEditing} size="sm">Save</Button>
-                      <Button type="button" onClick={cancelEditing} variant="ghost" size="sm">Cancel</Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button type="button" onClick={() => startEditing(criterion)} variant="ghost" size="sm">
-                        <Edit3 className="h-4 w-4" />
-                      </Button>
-                      <Button type="button" onClick={() => removeCriteria(criterion.id)} variant="ghost" size="sm" className="text-destructive">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
+        <Button onClick={addCriteria} size="sm">
+          <Plus className="h-4 w-4 mr-2" />
+          Add Criteria
+        </Button>
+      </div>
 
-              {editingId === criterion.id ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Name</Label>
-                    <Input
-                      value={editingCriteria.name || ''}
-                      onChange={(e) => setEditingCriteria(prev => ({ ...prev, name: e.target.value }))}
-                      placeholder="e.g., INTJ, Type 4"
+      {criteria.length === 0 ? (
+        <Card className="border-dashed">
+          <CardContent className="pt-6">
+            <div className="text-center py-8">
+              <p className="text-muted-foreground mb-4">No grading criteria defined yet</p>
+              <Button onClick={addCriteria} variant="outline">
+                <Plus className="h-4 w-4 mr-2" />
+                Add First Criteria
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {criteria.map((criterion) => (
+            <Card key={criterion.id}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-4 h-4 rounded-full"
+                      style={{ backgroundColor: criterion.color }}
                     />
+                    <CardTitle className="text-lg">
+                      {criterion.name || 'Unnamed Criteria'}
+                    </CardTitle>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Label</Label>
-                    <Input
-                      value={editingCriteria.label || ''}
-                      onChange={(e) => setEditingCriteria(prev => ({ ...prev, label: e.target.value }))}
-                      placeholder="e.g., The Architect"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Color</Label>
-                    <Input
-                      type="color"
-                      value={editingCriteria.color || '#3B82F6'}
-                      onChange={(e) => setEditingCriteria(prev => ({ ...prev, color: e.target.value }))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Scoring Logic Type</Label>
-                    <Select 
-                      value={editingCriteria.scoringLogic?.type || 'threshold'} 
-                      onValueChange={(value) => setEditingCriteria(prev => ({ 
-                        ...prev, 
-                        scoringLogic: { 
-                          ...prev.scoringLogic, 
-                          type: value as 'threshold' | 'highest' | 'topN' 
-                        } 
-                      }))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="threshold">Threshold</SelectItem>
-                        <SelectItem value="highest">Highest Score</SelectItem>
-                        <SelectItem value="topN">Top N</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2 col-span-2">
-                    <Label>Description</Label>
-                    <Textarea
-                      value={editingCriteria.description || ''}
-                      onChange={(e) => setEditingCriteria(prev => ({ ...prev, description: e.target.value }))}
-                      placeholder="Describe this personality type or outcome"
-                      rows={3}
-                    />
+                  <div className="flex items-center gap-2">
+                    {isEditing && editingCriteria.id === criterion.id ? (
+                      <>
+                        <Button onClick={saveEditing} size="sm" variant="outline">
+                          <Check className="h-4 w-4 mr-1" />
+                          Save
+                        </Button>
+                        <Button onClick={cancelEditing} size="sm" variant="ghost">
+                          <X className="h-4 w-4 mr-1" />
+                          Cancel
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button onClick={() => startEditing(criterion)} size="sm" variant="outline">
+                          <Edit3 className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
+                        <Button onClick={() => removeCriteria(criterion.id)} size="sm" variant="ghost" className="text-destructive">
+                          <Trash2 className="h-4 w-4 mr-1" />
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
-              ) : (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div>
-                    <Label className="text-sm font-medium">Name</Label>
-                    <p className="text-sm text-muted-foreground">{criterion.name}</p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium">Label</Label>
-                    <p className="text-sm text-muted-foreground">{criterion.label}</p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium">Color</Label>
-                    <div className="flex items-center space-x-2">
-                      <div 
-                        className="w-4 h-4 rounded border" 
-                        style={{ backgroundColor: criterion.color }}
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Basic Information */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Name *</Label>
+                      <Input
+                        value={criterion.name}
+                        onChange={(e) => updateCriteria(criterion.id, 'name', e.target.value)}
+                        placeholder="e.g., INTJ, Type 4"
+                        disabled={!isEditing || editingCriteria.id !== criterion.id}
                       />
-                      <span className="text-sm text-muted-foreground">{criterion.color}</span>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Label *</Label>
+                      <Input
+                        value={criterion.label}
+                        onChange={(e) => updateCriteria(criterion.id, 'label', e.target.value)}
+                        placeholder="e.g., The Architect"
+                        disabled={!isEditing || editingCriteria.id !== criterion.id}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Color</Label>
+                      <Input
+                        type="color"
+                        value={criterion.color}
+                        onChange={(e) => updateCriteria(criterion.id, 'color', e.target.value)}
+                        disabled={!isEditing || editingCriteria.id !== criterion.id}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Description</Label>
+                      <Textarea
+                        value={criterion.description}
+                        onChange={(e) => updateCriteria(criterion.id, 'description', e.target.value)}
+                        placeholder="e.g., The Architect is a type of personality that is characterized by their strong sense of logic and rationality."
+                        disabled={!isEditing || editingCriteria.id !== criterion.id}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Scoring Logic Type *</Label>
+                      <Select
+                        value={criterion.scoringLogic.type}
+                        onValueChange={(value) => updateScoringLogic(criterion.id, 'type', value)}
+                        disabled={!isEditing || editingCriteria.id !== criterion.id}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="threshold">Threshold</SelectItem>
+                          <SelectItem value="highest">Highest Score</SelectItem>
+                          <SelectItem value="topN">Top N</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Min Score</Label>
+                      <Input
+                        type="number"
+                        value={criterion.scoringLogic.minScore}
+                        onChange={(e) => updateScoringLogic(criterion.id, 'minScore', parseInt(e.target.value) || 0)}
+                        disabled={!isEditing || editingCriteria.id !== criterion.id}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Max Score</Label>
+                      <Input
+                        type="number"
+                        value={criterion.scoringLogic.maxScore}
+                        onChange={(e) => updateScoringLogic(criterion.id, 'maxScore', parseInt(e.target.value) || 0)}
+                        disabled={!isEditing || editingCriteria.id !== criterion.id}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>N</Label>
+                      <Input
+                        type="number"
+                        value={criterion.scoringLogic.n}
+                        onChange={(e) => updateScoringLogic(criterion.id, 'n', parseInt(e.target.value) || 0)}
+                        disabled={!isEditing || editingCriteria.id !== criterion.id}
+                      />
                     </div>
                   </div>
-                  <div>
-                    <Label className="text-sm font-medium">Logic Type</Label>
-                    <p className="text-sm text-muted-foreground">{criterion.scoringLogic.type}</p>
-                  </div>
-                </div>
-              )}
 
-              {/* Recommendations Section */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label>Recommendations</Label>
-                  <Button type="button" onClick={() => addRecommendation(criterion.id)} variant="outline" size="sm">
-                    <Plus className="h-3 w-3 mr-1" />
-                    Add
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  {criterion.recommendations.map((rec, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
-                      <span className="text-sm">{rec}</span>
+                  {/* Scoring Logic Configuration */}
+                  <div className="space-y-4">
+                    <h4 className="font-medium">Scoring Logic Configuration</h4>
+
+                    {criterion.scoringLogic.type === 'threshold' && (
+                      <div className="space-y-2">
+                        <Label>Dimension Thresholds</Label>
+                        <div className="space-y-2">
+                          {dimensions.map((dim) => (
+                            <div key={dim.id} className="flex items-center gap-2">
+                              <span className="text-sm font-medium w-24">{dim.shortName}:</span>
+                              <Select
+                                value={criterion.scoringLogic.dimensions?.find(d => d.name === dim.shortName)?.value || ''}
+                                onValueChange={(value) => {
+                                  const currentDimensions = criterion.scoringLogic.dimensions || []
+                                  const existingIndex = currentDimensions.findIndex(d => d.name === dim.shortName)
+
+                                  if (existingIndex >= 0) {
+                                    const updated = [...currentDimensions]
+                                    updated[existingIndex] = { ...updated[existingIndex], value }
+                                    updateScoringLogic(criterion.id, 'dimensions', updated)
+                                  } else {
+                                    updateScoringLogic(criterion.id, 'dimensions', [
+                                      ...currentDimensions,
+                                      { name: dim.shortName, value, threshold: dim.threshold }
+                                    ])
+                                  }
+                                }}
+                                disabled={!isEditing || editingCriteria.id !== criterion.id}
+                              >
+                                <SelectTrigger className="w-32">
+                                  <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="low">Low</SelectItem>
+                                  <SelectItem value="high">High</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <span className="text-sm text-muted-foreground">
+                                (threshold: {dim.threshold})
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {criterion.scoringLogic.type === 'highest' && (
+                      <div className="space-y-2">
+                        <Label>Target Dimension</Label>
+                        <Select
+                          value={criterion.scoringLogic.dimension || ''}
+                          onValueChange={(value) => updateScoringLogic(criterion.id, 'dimension', value)}
+                          disabled={!isEditing || editingCriteria.id !== criterion.id}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select dimension" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {dimensions.map((dim) => (
+                              <SelectItem key={dim.id} value={dim.shortName}>
+                                {dim.name} ({dim.shortName})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    {criterion.scoringLogic.type === 'topN' && (
+                      <div className="space-y-2">
+                        <Label>Top N Value</Label>
+                        <Input
+                          type="number"
+                          value={criterion.scoringLogic.n || 1}
+                          onChange={(e) => updateScoringLogic(criterion.id, 'n', parseInt(e.target.value) || 1)}
+                          min="1"
+                          max="10"
+                          disabled={!isEditing || editingCriteria.id !== criterion.id}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Recommendations */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label>Recommendations *</Label>
                       <Button
                         type="button"
-                        onClick={() => removeRecommendation(criterion.id, index)}
-                        variant="ghost"
+                        onClick={() => addRecommendation(criterion.id)}
                         size="sm"
-                        className="text-destructive h-6 w-6 p-0"
+                        variant="outline"
+                        disabled={!isEditing || editingCriteria.id !== criterion.id}
                       >
-                        <Trash2 className="h-3 w-3" />
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
                       </Button>
                     </div>
-                  ))}
-                </div>
-              </div>
 
-              {/* Recommendations and other fields using the existing GradingCriteriaEditor */}
-              <GradingCriteriaEditor
-                criteria={[{
-                  id: criterion.id,
-                  name: criterion.name,
-                  minScore: 0,
-                  maxScore: 100,
-                  label: criterion.label,
-                  color: criterion.color,
-                  recommendations: criterion.recommendations,
-                  areasOfImprovement: criterion.areasOfImprovement,
-                  supportNeeded: criterion.supportNeeded,
-                  proposedCourses: criterion.proposedCourses,
-                  proposedProducts: criterion.proposedProducts,
-                  proposedStreaks: criterion.proposedStreaks,
-                  proposedBlogPosts: criterion.proposedBlogPosts,
-                  description: criterion.description
-                }]}
-                onChange={(updatedCriteria) => {
-                  if (updatedCriteria.length > 0) {
-                    const updated = updatedCriteria[0]
-                    updateCriteria(criterion.id, 'recommendations', updated.recommendations)
-                    updateCriteria(criterion.id, 'areasOfImprovement', updated.areasOfImprovement)
-                    updateCriteria(criterion.id, 'supportNeeded', updated.supportNeeded)
-                    updateCriteria(criterion.id, 'proposedCourses', updated.proposedCourses)
-                    updateCriteria(criterion.id, 'proposedProducts', updated.proposedProducts)
-                    updateCriteria(criterion.id, 'proposedStreaks', updated.proposedStreaks)
-                    updateCriteria(criterion.id, 'proposedBlogPosts', updated.proposedBlogPosts)
-                    updateCriteria(criterion.id, 'description', updated.description)
-                  }
-                }}
-                availableCourses={availableCourses}
-                availableProducts={availableProducts}
-                availableStreaks={availableStreaks}
-                availableBlogPosts={availableBlogPosts}
-                isLoadingBlogPosts={isLoadingBlogPosts}
-              />
-            </div>
-          ))
-        )}
-      </CardContent>
-    </Card>
+                    <div className="space-y-2">
+                      {criterion.recommendations.map((rec, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <Input
+                            value={rec}
+                            onChange={(e) => updateRecommendation(criterion.id, index, e.target.value)}
+                            placeholder={`Recommendation ${index + 1}`}
+                            disabled={!isEditing || editingCriteria.id !== criterion.id}
+                          />
+                          {criterion.recommendations.length > 1 && (
+                            <Button
+                              type="button"
+                              onClick={() => removeRecommendation(criterion.id, index)}
+                              size="sm"
+                              variant="ghost"
+                              className="text-destructive"
+                              disabled={!isEditing || editingCriteria.id !== criterion.id}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Areas of Improvement */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label>Areas of Improvement</Label>
+                      <Button
+                        type="button"
+                        onClick={() => addStringArrayItem(criterion.id, 'areasOfImprovement')}
+                        size="sm"
+                        variant="outline"
+                        disabled={!isEditing || editingCriteria.id !== criterion.id}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
+                      </Button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {criterion.areasOfImprovement.map((item, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <Input
+                            value={item}
+                            onChange={(e) => updateStringArrayItem(criterion.id, 'areasOfImprovement', index, e.target.value)}
+                            placeholder={`Area ${index + 1}`}
+                            disabled={!isEditing || editingCriteria.id !== criterion.id}
+                          />
+                          {criterion.areasOfImprovement.length > 1 && (
+                            <Button
+                              type="button"
+                              onClick={() => removeStringArrayItem(criterion.id, 'areasOfImprovement', index)}
+                              size="sm"
+                              variant="ghost"
+                              className="text-destructive"
+                              disabled={!isEditing || editingCriteria.id !== criterion.id}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Support Needed */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label>Support Needed</Label>
+                      <Button
+                        type="button"
+                        onClick={() => addStringArrayItem(criterion.id, 'supportNeeded')}
+                        size="sm"
+                        variant="outline"
+                        disabled={!isEditing || editingCriteria.id !== criterion.id}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
+                      </Button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {criterion.supportNeeded.map((item, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <Input
+                            value={item}
+                            onChange={(e) => updateStringArrayItem(criterion.id, 'supportNeeded', index, e.target.value)}
+                            placeholder={`Support ${index + 1}`}
+                            disabled={!isEditing || editingCriteria.id !== criterion.id}
+                          />
+                          {criterion.supportNeeded.length > 1 && (
+                            <Button
+                              type="button"
+                              onClick={() => removeStringArrayItem(criterion.id, 'supportNeeded', index)}
+                              size="sm"
+                              variant="ghost"
+                              className="text-destructive"
+                              disabled={!isEditing || editingCriteria.id !== criterion.id}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Proposed Courses */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label>Proposed Courses</Label>
+                      <Button
+                        type="button"
+                        onClick={() => addArrayItem(criterion.id, 'proposedCourses', { id: '', name: '', slug: '' })}
+                        size="sm"
+                        variant="outline"
+                        disabled={!isEditing || editingCriteria.id !== criterion.id}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
+                      </Button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {criterion.proposedCourses.map((course, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <Select
+                            value={course.id}
+                            onValueChange={(value) => {
+                              const selectedCourse = availableCourses.find(c => c.id === value)
+                              if (selectedCourse) {
+                                const updatedCourses = [...criterion.proposedCourses]
+                                updatedCourses[index] = selectedCourse
+                                updateCriteria(criterion.id, 'proposedCourses', updatedCourses)
+                              }
+                            }}
+                            disabled={!isEditing || editingCriteria.id !== criterion.id}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select course" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableCourses.map((c) => (
+                                <SelectItem key={c.id} value={c.id}>
+                                  {c.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {criterion.proposedCourses.length > 1 && (
+                            <Button
+                              type="button"
+                              onClick={() => removeArrayItem(criterion.id, 'proposedCourses', course.id)}
+                              size="sm"
+                              variant="ghost"
+                              className="text-destructive"
+                              disabled={!isEditing || editingCriteria.id !== criterion.id}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Proposed Blog Posts */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label>Proposed Blog Posts</Label>
+                    </div>
+                    <div className="space-y-2">
+                      {criterion.proposedBlogPosts.map((post, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <Select
+                            value={post.id}
+                            onValueChange={(value) => {
+                              const selectedPost = availableBlogPosts.find(bp => bp.id === value)
+                              if (selectedPost) {
+                                const updatedPosts = [...criterion.proposedBlogPosts]
+                                updatedPosts[index] = selectedPost
+                                updateCriteria(criterion.id, 'proposedBlogPosts', updatedPosts)
+                              }
+                            }}
+                            disabled={!isEditing || editingCriteria.id !== criterion.id}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select blog post" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableBlogPosts.map((bp) => (
+                                <SelectItem key={bp.id} value={bp.id}>
+                                  {bp.title}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {criterion.proposedBlogPosts.length > 1 && (
+                            <Button
+                              type="button"
+                              onClick={() => removeArrayItem(criterion.id, 'proposedBlogPosts', post.slug)}
+                              size="sm"
+                              variant="ghost"
+                              className="text-destructive"
+                              disabled={!isEditing || editingCriteria.id !== criterion.id}
+                            >
+                              <Trash2 className='h-4 w-4' />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Proposed Products */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label>Proposed Products</Label>
+                    </div>
+                    <div className="space-y-2">
+                      {criterion.proposedProducts.map((product, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <Select
+                            value={product.id}
+                            onValueChange={(value) => {
+                              const selectedProduct = availableProducts.find(p => p.id === value)
+                              if (selectedProduct) {
+                                const updatedProducts = [...criterion.proposedProducts]
+                                updatedProducts[index] = selectedProduct
+                                updateCriteria(criterion.id, 'proposedProducts', updatedProducts)
+                              }
+                            }}
+                            disabled={!isEditing || editingCriteria.id !== criterion.id}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select product" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableProducts.map((p) => (
+                                <SelectItem key={p.id} value={p.id}>
+                                  {p.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {criterion.proposedProducts.length > 1 && (
+                            <Button
+                              type="button"
+                              onClick={() => removeArrayItem(criterion.id, 'proposedProducts', product.id)}
+                              size="sm"
+                              variant="ghost"
+                              className="text-destructive"
+                              disabled={!isEditing || editingCriteria.id !== criterion.id}
+                            >
+                              <Trash2 className='h-4 w-4' />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Proposed Streaks */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label>Proposed Streaks</Label>
+                    </div>
+                    <div className="space-y-2">
+                      {criterion.proposedStreaks.map((streak, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <Select
+                            value={streak.id}
+                            onValueChange={(value) => {
+                              const selectedStreak = availableStreaks.find(s => s.id === value)
+                              if (selectedStreak) {
+                                const updatedStreaks = [...criterion.proposedStreaks]
+                                updatedStreaks[index] = selectedStreak
+                                updateCriteria(criterion.id, 'proposedStreaks', updatedStreaks)
+                              }
+                            }}
+                            disabled={!isEditing || editingCriteria.id !== criterion.id}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select streak" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableStreaks.map((s) => (
+                                <SelectItem key={s.id} value={s.id}>
+                                  {s.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {criterion.proposedStreaks.length > 1 && (
+                            <Button
+                              type="button"
+                              onClick={() => removeArrayItem(criterion.id, 'proposedStreaks', streak.id)}
+                              size="sm"
+                              variant="ghost"
+                              className="text-destructive"
+                              disabled={!isEditing || editingCriteria.id !== criterion.id}
+                            >
+                              <Trash2 className='h-4 w-4' />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }

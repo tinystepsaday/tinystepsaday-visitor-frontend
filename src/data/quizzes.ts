@@ -2,12 +2,14 @@ export interface QuizOption {
   id: string;
   text: string;
   value: number;
+  order?: number;
 }
 
 export interface QuizQuestion {
   id: string;
   text: string;
   dimensionId?: string;
+  order?: number;
   options: QuizOption[];
 }
 
