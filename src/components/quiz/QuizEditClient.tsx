@@ -297,6 +297,8 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
       })
     } catch (err) {
       console.error('Error saving progress:', err)
+      console.log('Error type:', typeof err)
+      console.log('Error structure:', JSON.stringify(err, null, 2))
       
       // Extract error message from backend response
       const errorMessage = extractBackendErrorMessage(err, 'Failed to save progress. Please try again.')
@@ -420,6 +422,10 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
       // Redirect to quiz management page
       router.push('/management/quizzes')
     } catch (err: unknown) {
+      console.error('Error in final save:', err)
+      console.log('Error type:', typeof err)
+      console.log('Error structure:', JSON.stringify(err, null, 2))
+      
       // Extract error message from backend response
       const errorMessage = extractBackendErrorMessage(err, 'Failed to save quiz. Please try again.')
       

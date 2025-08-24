@@ -11,9 +11,13 @@ export interface BackendErrorResponse {
 }
 
 export interface BackendError {
+  success?: boolean
+  error?: string
   message?: string
-  error?: { message?: string }
-  details?: Array<{ field: string; message: string }>
+  statusCode?: number
+  timestamp?: string
+  path?: string
+  details?: Record<string, string> | Array<{ field: string; message: string }>
 }
 
 /**
@@ -32,22 +36,31 @@ export function extractBackendErrorMessage(
 
   const errorData = err as BackendError
 
-  // Check for direct message
+  // Check for direct message (most common case)
   if (errorData.message) {
     return errorData.message
   }
 
-  // Check for nested error message
-  if (errorData.error?.message) {
-    return errorData.error.message
+  // Check for error field (backend format)
+  if (errorData.error) {
+    return errorData.error
   }
 
   // Check for validation error details
-  if (errorData.details && Array.isArray(errorData.details)) {
-    const detailMessages = errorData.details
-      .map(detail => `${detail.field}: ${detail.message}`)
-      .join(', ')
-    return `Validation Error: ${detailMessages}`
+  if (errorData.details) {
+    if (Array.isArray(errorData.details)) {
+      // Array format: [{ field: string, message: string }]
+      const detailMessages = errorData.details
+        .map(detail => `${detail.field}: ${detail.message}`)
+        .join(', ')
+      return `Validation Error: ${detailMessages}`
+    } else if (typeof errorData.details === 'object') {
+      // Object format: Record<string, string>
+      const detailMessages = Object.entries(errorData.details)
+        .map(([field, message]) => `${field}: ${message}`)
+        .join(', ')
+      return `Validation Error: ${detailMessages}`
+    }
   }
 
   // Fallback to default message
@@ -79,7 +92,7 @@ export function isAuthError(err: unknown): boolean {
   }
 
   const errorData = err as BackendError
-  return (errorData.error?.message?.toLowerCase().includes('auth') ?? false) || 
+  return (errorData.error?.toLowerCase().includes('auth') ?? false) || 
          (errorData.message?.toLowerCase().includes('unauthorized') ?? false) ||
          (errorData.message?.toLowerCase().includes('authentication') ?? false)
 }
@@ -95,7 +108,7 @@ export function isServerError(err: unknown): boolean {
   }
 
   const errorData = err as BackendError
-  return (errorData.error?.message?.toLowerCase().includes('server') ?? false) ||
+  return (errorData.error?.toLowerCase().includes('server') ?? false) ||
          (errorData.message?.toLowerCase().includes('internal') ?? false) ||
          (errorData.message?.toLowerCase().includes('server') ?? false)
 }
