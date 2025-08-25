@@ -50,8 +50,8 @@ const teamMembers = [
     image: "https://firebasestorage.googleapis.com/v0/b/tiny-steps-a-day-44449.firebasestorage.app/o/files%2F1754735338875_8yh48ntz1dl.JPG?alt=media&token=f7b0cb86-d319-4784-bc72-2ad68018686e",
     social: {
       linkedin: "https://www.linkedin.com/in/jean-eric-hirwa/",
-      instagram: "https://www.instagram.com/hirwa_jean_eric/",
-      github: "https://github.com/hirwajeaneric",
+      // instagram: "https://www.instagram.com/hirwa_jean_eric/",
+      // github: "https://github.com/hirwajeaneric",
       website: "https://www.erichirwa.com"
     }
   },

@@ -17,7 +17,6 @@ import { Suspense } from "react";
 import apiClient from "@/integration/apiClient";
 import type { BlogCategory } from "@/lib/types";
 import type { BlogPost } from "@/lib/types";
-import type { BlogTag } from "@/lib/types";
 import BlogPageSkeleton from "@/components/blog/BlogPageSkeleton";
 
 interface BlogPageProps {
@@ -132,16 +131,6 @@ async function getCategories() {
   }
 }
 
-async function getTags() {
-  try {
-    const response = await apiClient.get("/api/blog/tags");
-    return response as BlogTag[] || [];
-  } catch (error) {
-    console.error("Error fetching tags:", error);
-    return [];
-  }
-}
-
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   const { search, category, tag, page } = await searchParams;
   const currentPage = Math.max(1, parseInt(page || "1", 10)) || 1;
@@ -150,10 +139,9 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const searchQuery = search || "";
 
   // Fetch blog posts, categories, and tags
-  const [blogData, categories, tags] = await Promise.all([
+  const [blogData, categories] = await Promise.all([
     getBlogData(searchQuery, selectedCategory, selectedTag, currentPage),
     getCategories(),
-    getTags()
   ]);
 
   const { posts: filteredPosts = [], pagination = { total: 0, page: 1, limit: POSTS_PER_PAGE, totalPages: 0 } } = blogData;
@@ -187,10 +175,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     ...categories.map((cat: BlogCategory) => ({ name: cat.name, slug: cat.slug }))
   ];
 
-  const displayTags = [
-    { name: "All Tags", slug: "all" },
-    ...tags.map((tag: BlogTag) => ({ name: tag.name, slug: tag.slug }))
-  ];
+  // const displayTags = [
+  //   { name: "All Tags", slug: "all" },
+  //   ...tags.map((tag: BlogTag) => ({ name: tag.name, slug: tag.slug }))
+  // ];
 
   return (
     <Suspense fallback={<BlogPageSkeleton />}>
@@ -239,7 +227,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         </div>
 
         {/* Tags Filter */}
-        <div className="flex gap-2 overflow-x-scroll pb-2 md:pb-0 max-w-7xl mx-auto justify-center w-full pl-10">
+        {/* <div className="flex gap-2 overflow-x-scroll pb-2 md:pb-0 max-w-7xl mx-auto justify-center w-full pl-10">
           {displayTags.map((tag) => (
             <button
               key={tag.slug}
@@ -250,7 +238,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               </Link>
             </button>
           ))}
-        </div>
+        </div> */}
       </div>
 
 
