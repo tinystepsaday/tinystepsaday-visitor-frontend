@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, BarChart3, Clock } from "lucide-react";
+import { ArrowRight, BarChart3, Clock, ImageIcon } from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
+import Image from "next/image";
 import DashboardPageHeader from "./DashboardPageHeader";
 import { quizAPI, transformBackendQuiz } from "@/integration/quiz";
 import { type Quiz, type QuizResult } from "@/data/quizzes";
@@ -174,6 +175,32 @@ const QuizResults = () => {
                   </div>
                 </div>
               </CardHeader>
+              
+              {/* Cover Image */}
+              {result.quiz.coverImage ? (
+                <div className="relative w-full h-32 overflow-hidden">
+                  <Image
+                    src={result.quiz.coverImage}
+                    alt={result.quiz.title}
+                    className="w-full h-full object-cover"
+                    width={400}
+                    height={128}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+                </div>
+              ) : (
+                <div className="relative w-full h-32 overflow-hidden bg-gradient-to-r from-primary/10 to-primary/20 dark:from-primary/20 dark:to-primary/30 border-t border-primary/20">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <div className="text-center">
+                      <ImageIcon className="h-8 w-8 text-primary/60 dark:text-primary/60 mx-auto mb-2" />
+                      <div className="bg-primary/20 px-2 py-1 rounded-full border border-primary/30">
+                        <span className="text-xs font-medium text-primary">Quiz</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <CardContent className="space-y-4">
                 {/* Analysis */}
                 {result.matchingCriteria?.description && (

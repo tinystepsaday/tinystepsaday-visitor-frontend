@@ -109,15 +109,6 @@ export default function QuizDetailsClient({ quiz }: QuizDetailsClientProps) {
       ) : (
         <div className="relative w-full h-64 md:h-80 lg:h-96 overflow-hidden rounded-xl shadow-2xl bg-gradient-to-br from-primary/10 to-primary/20 dark:from-primary/20 dark:to-primary/30 border-2 border-dashed border-primary/30">
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="p-6 rounded-xl bg-primary/20 dark:bg-primary/30 shadow-lg mb-4">
-              <Image
-                src="/cross-roads-decision-making-chooice-career-pexels-googledeepmind-17485632.jpg"
-                alt="Target"
-                className="h-16 w-16 text-primary dark:text-primary/80"
-                width={1000}
-                height={1000}
-              />
-            </div>
             <div className="text-center">
               <h3 className="text-lg font-semibold text-primary dark:text-primary/80 mb-2">
                 {quiz.title}

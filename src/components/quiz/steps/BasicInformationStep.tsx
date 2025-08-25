@@ -157,19 +157,10 @@ export function BasicInformationStep({ data, onUpdate, onNext }: BasicInformatio
         <div className="space-y-2">
           <Label htmlFor="coverImage">Cover Image</Label>
           <div className="space-y-3">
-            {data.coverImage ? (
+            {data.coverImage && (
               <div className="space-y-3">
                 {/* Preview Section */}
                 <div className="relative">
-                  <div className="w-full h-32 rounded-lg overflow-hidden border bg-muted/50">
-                    <Image
-                      src={data.coverImage}
-                      alt="Cover preview"
-                      width={500}
-                      height={500}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
                   <div className="absolute top-2 right-2">
                     <Button
                       variant="destructive"
@@ -195,14 +186,6 @@ export function BasicInformationStep({ data, onUpdate, onNext }: BasicInformatio
                     <p className="text-sm font-medium">Cover image selected</p>
                     <p className="text-xs text-muted-foreground truncate">{data.coverImage}</p>
                   </div>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center p-8 border-2 border-dashed border-muted-foreground/25 rounded-lg bg-muted/25">
-                <div className="text-center">
-                  <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-sm font-medium text-muted-foreground mb-1">No cover image selected</p>
-                  <p className="text-xs text-muted-foreground">Select an image to enhance your quiz appearance</p>
                 </div>
               </div>
             )}

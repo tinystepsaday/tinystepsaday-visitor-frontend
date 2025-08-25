@@ -1,11 +1,12 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { ArrowLeft, Book, Target, Package } from "lucide-react";
+import { ArrowLeft, Book, Target, Package, ImageIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
+import Image from "next/image";
 import { quizAPI, transformBackendQuiz } from "@/integration/quiz";
 // import { downloadQuizResultPDF } from "@/utils/pdfGenerator";
 import type { QuizResult, Quiz } from "@/data/quizzes";
@@ -191,6 +192,41 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
           </Button> */}
         </div>
       </div>
+
+      {/* Cover Image Section */}
+      {result.quiz.coverImage ? (
+        <div className="relative w-full h-48 md:h-64 overflow-hidden rounded-xl shadow-lg">
+          <Image
+            src={result.quiz.coverImage}
+            alt={result.quiz.title}
+            className="w-full h-full object-cover"
+            width={800}
+            height={400}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <div className="flex items-center gap-3 text-white">
+              <div className="bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/30">
+                <span className="text-sm font-medium">Results</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="relative w-full h-48 md:h-64 overflow-hidden rounded-xl shadow-lg bg-gradient-to-br from-primary/10 to-primary/20 dark:from-primary/20 dark:to-primary/30 border-2 border-dashed border-primary/30">
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="text-center">
+              <ImageIcon className="h-16 w-16 text-primary/60 dark:text-primary/60 mx-auto mb-3" />
+              <h3 className="text-lg font-semibold text-primary dark:text-primary/80 mb-2">
+                {result.quiz.title}
+              </h3>
+              <div className="bg-primary/20 px-3 py-1.5 rounded-full border border-primary/30">
+                <span className="text-sm font-medium text-primary">Results</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Content */}
