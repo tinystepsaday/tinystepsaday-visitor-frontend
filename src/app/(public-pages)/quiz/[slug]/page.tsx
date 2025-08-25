@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: QuizPageProps): Promise<Metad
         description: seoOptimizedDescription,
         type: "website",
         url: `${sharedMetadata.metadataBase}/quiz/${transformedQuiz.id}`,
-        images: [sharedMetadata.openGraph.images[0]],
+        images: transformedQuiz.coverImage ? [transformedQuiz.coverImage] : [sharedMetadata.openGraph.images[0]],
         siteName: sharedMetadata.openGraph.siteName,
         locale: sharedMetadata.openGraph.locale,
       },
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: QuizPageProps): Promise<Metad
         card: "summary_large_image" as const,
         title: `${transformedQuiz.title} | Tiny Steps A Day`,
         description: seoOptimizedDescription,
-        images: [sharedMetadata.twitter.images[0]],
+        images: transformedQuiz.coverImage ? [transformedQuiz.coverImage] : [sharedMetadata.twitter.images[0]],
       },
       alternates: {
         canonical: `${sharedMetadata.metadataBase}/quiz/${transformedQuiz.id}`,
