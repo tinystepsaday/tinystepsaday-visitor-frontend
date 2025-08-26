@@ -126,7 +126,7 @@ const DashboardOverview = () => {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Welcome back {user?.username}</h1>
+        <h1 className="text-3xl font-bold mb-2">Welcome back {user?.firstName}!</h1>
         <p className="text-muted-foreground">
           Here&apos;s an overview of your journey so far.
         </p>
