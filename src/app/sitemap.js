@@ -1,19 +1,19 @@
 export default function sitemap() {
     return [
         {
-            url: "/",
+            url: "https://www.tinystepsaday.com",
             lastModified: new Date(),
             changeFrequency: "daily",
             priority: 1,
         },
         {
-            url: "/quiz",
+            url: "https://www.tinystepsaday.com/quiz",
             lastModified: new Date(),
             changeFrequency: "daily",
             priority: 0.8,
         },
         {
-            url: "/pricing",
+            url: "https://www.tinystepsaday.com/pricing",
             lastModified: new Date(),
             changeFrequency: "daily",
             priority: 0.8,
@@ -113,18 +113,6 @@ export default function sitemap() {
             lastModified: new Date(),
             changeFrequency: "daily",
             priority: 0.7,
-        },
-        {
-            url: "/unsubscribe",
-            lastModified: new Date(),
-            changeFrequency: "monthly",
-            priority: 0.3,
-        },
-        {
-            url: "/cookie-policy",
-            lastModified: new Date(),
-            changeFrequency: "monthly",
-            priority: 0.5,
-        },
+        }
     ];
 }
