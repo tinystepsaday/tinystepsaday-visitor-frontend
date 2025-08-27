@@ -4,11 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, Clock, Star, Calendar, Download, FileText, Share2 } from 'lucide-react';
+import { TrendingUp, Clock, Star, Calendar, Download, FileText, Share2, ImageIcon } from 'lucide-react';
 import { quizAPI, transformBackendQuizResult } from '@/integration/quiz';
 import { downloadQuizResultPDF, downloadQuizResultPDFWithOptions } from '@/utils/pdfGenerator';
 import type { Quiz, QuizResult } from '@/data/quizzes';
 import { SectionHeader } from '../ui/section-header';
+import Image from 'next/image';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -122,6 +123,41 @@ export default function QuizResultsClient({ quiz }: QuizResultsClientProps) {
     <div className="max-w-4xl mx-auto p-6 space-y-8 w-full mb-16">
       {/* Header */}
       <SectionHeader title={`Your Assessment Results`} subtitle={`${quiz.title} - ${quiz.subtitle}`} />
+
+      {/* Cover Image Section */}
+      {quiz.coverImage ? (
+        <div className="relative w-full h-48 md:h-64 overflow-hidden rounded-xl shadow-lg">
+          <Image
+            src={quiz.coverImage}
+            alt={quiz.title}
+            className="w-full h-full object-cover"
+            width={800}
+            height={400}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <div className="flex items-center gap-3 text-white">
+              <div className="bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/30">
+                <span className="text-sm font-medium">Results</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="relative w-full h-48 md:h-64 overflow-hidden rounded-xl shadow-lg bg-gradient-to-br from-primary/10 to-primary/20 dark:from-primary/20 dark:to-primary/30 border-2 border-dashed border-primary/30">
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="text-center">
+              <ImageIcon className="h-12 w-12 text-primary/60 dark:text-primary/60 mx-auto mb-3" />
+              <h3 className="text-lg font-semibold text-primary dark:text-primary/80 mb-2">
+                {quiz.title}
+              </h3>
+              <div className="bg-primary/20 px-3 py-1.5 rounded-full border border-primary/30">
+                <span className="text-sm font-medium text-primary">Results</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Score Summary */}
       <div className="space-y-6 text-center bg-muted p-6 border border-primary/20 rounded-lg">

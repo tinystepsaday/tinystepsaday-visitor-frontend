@@ -55,6 +55,7 @@ export default function QuizzesManagementPage() {
         title: `${quiz.title} (Copy)`,
         subtitle: quiz.subtitle,
         description: quiz.description,
+        coverImage: quiz.coverImage,
         category: quiz.category,
         estimatedTime: quiz.estimatedTime,
         difficulty: quiz.difficulty,

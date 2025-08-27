@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,7 +9,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
+import { MediaSelector } from '@/components/media-selector'
 import { type QuizFormData } from '../QuizEditClient'
+import Image from 'next/image'
 
 interface BasicInformationStepProps {
   data: QuizFormData
@@ -150,6 +152,66 @@ export function BasicInformationStep({ data, onUpdate, onNext }: BasicInformatio
             placeholder="Enter detailed quiz description"
             rows={3}
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="coverImage">Cover Image</Label>
+          <div className="space-y-3">
+            {data.coverImage && (
+              <div className="space-y-3">
+                {/* Preview Section */}
+                <div className="relative">
+                  <div className="absolute top-2 right-2">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleInputChange('coverImage', '')}
+                      className="h-8 w-8 p-0 rounded-full shadow-lg"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* Image Info */}
+                <div className="flex items-center gap-3 p-3 border rounded-lg bg-muted/50">
+                  <Image
+                    src={data.coverImage}
+                    alt="Cover thumbnail"
+                    className="w-12 h-12 object-cover rounded-md"
+                    width={100}
+                    height={100}
+                  />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Cover image selected</p>
+                    <p className="text-xs text-muted-foreground truncate">{data.coverImage}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <MediaSelector
+              onSelect={(media) => handleInputChange('coverImage', media.url)}
+              trigger={
+                <Button variant="outline" className="w-full">
+                  <ImageIcon className="mr-2 h-4 w-4" />
+                  {data.coverImage ? 'Change Cover Image' : 'Select Cover Image'}
+                </Button>
+              }
+              multiple={false}
+              maxFiles={1}
+              acceptedTypes={['image/*']}
+            />
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">
+              Select a cover image from your media library or upload a new one. This image will be displayed on quiz cards and detail pages.
+            </p>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <ImageIcon className="h-3 w-3" />
+              <span>Recommended: 1200x800 pixels or similar aspect ratio for best display</span>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

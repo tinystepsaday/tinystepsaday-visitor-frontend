@@ -11,6 +11,7 @@ export interface CreateQuizData {
   title: string;
   subtitle?: string;
   description: string;
+  coverImage?: string;
   quizType: 'DEFAULT' | 'COMPLEX' | 'ONBOARDING';
   redirectAfterAnswer: 'HOME' | 'RESULTS';
   category: string;
@@ -113,6 +114,7 @@ export interface QuizSubmission {
 interface BackendQuiz {
   id: string;
   quizType?: string;
+  coverImage?: string;
   redirectAfterAnswer?: string;
   title: string;
   subtitle?: string;
@@ -438,6 +440,7 @@ export function transformBackendQuiz(backendQuiz: BackendQuiz): Quiz {
     title: backendQuiz.title,
     subtitle: backendQuiz.subtitle || '',
     description: backendQuiz.description,
+    coverImage: backendQuiz.coverImage || undefined,
     category: backendQuiz.category,
     estimatedTime: backendQuiz.estimatedTime,
     difficulty: (backendQuiz.difficulty?.toUpperCase() as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED') || 'BEGINNER',

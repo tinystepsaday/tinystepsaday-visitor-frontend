@@ -649,6 +649,16 @@ export function ComplexGradingCriteriaEditor({
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <Label>Proposed Blog Posts</Label>
+                      <Button
+                        type="button"
+                        onClick={() => addArrayItem(criterion.id, 'proposedBlogPosts', { id: '', title: '', slug: '' })}
+                        size="sm"
+                        variant="outline"
+                        disabled={!isEditing || editingCriteria.id !== criterion.id}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
+                      </Button>
                     </div>
                     <div className="space-y-2">
                       {criterion.proposedBlogPosts.map((post, index) => (
@@ -697,6 +707,16 @@ export function ComplexGradingCriteriaEditor({
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <Label>Proposed Products</Label>
+                      <Button
+                        type="button"
+                        onClick={() => addArrayItem(criterion.id, 'proposedProducts', { id: '', name: '', slug: '' })}
+                        size="sm"
+                        variant="outline"
+                        disabled={!isEditing || editingCriteria.id !== criterion.id}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
+                      </Button>
                     </div>
                     <div className="space-y-2">
                       {criterion.proposedProducts.map((product, index) => (
@@ -745,6 +765,16 @@ export function ComplexGradingCriteriaEditor({
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <Label>Proposed Streaks</Label>
+                      <Button
+                        type="button"
+                        onClick={() => addArrayItem(criterion.id, 'proposedStreaks', { id: '', name: '', slug: '' })}
+                        size="sm"
+                        variant="outline"
+                        disabled={!isEditing || editingCriteria.id !== criterion.id}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
+                      </Button>
                     </div>
                     <div className="space-y-2">
                       {criterion.proposedStreaks.map((streak, index) => (

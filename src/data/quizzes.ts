@@ -72,6 +72,7 @@ export interface Quiz {
   title: string;
   subtitle: string;
   description: string;
+  coverImage?: string;
   questions: QuizQuestion[];
   category: string;
   estimatedTime: string;

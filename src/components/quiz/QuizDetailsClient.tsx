@@ -10,6 +10,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { type Quiz } from '@/data/quizzes'
 import AuthPrompt from './AuthPrompt'
+import Image from 'next/image'
 
 interface QuizDetailsClientProps {
   quiz: Quiz
@@ -66,7 +67,7 @@ export default function QuizDetailsClient({ quiz }: QuizDetailsClientProps) {
     <div className="container max-w-7xl mx-auto px-4 py-12 space-y-8 mt-16">
       {/* Header */}
       <div className="flex items-center justify-between w-full">
-        <div className="flex items-center flex-col gap-4 w-full">
+        <div className="flex items-center flex-col gap-8 w-full">
           <div className="flex items-start justify-between w-full gap-2">
             <Link href="/quiz">
               <Button variant="outline" size="sm">
@@ -82,19 +83,52 @@ export default function QuizDetailsClient({ quiz }: QuizDetailsClientProps) {
         </div>
       </div>
 
-      {/* Hero Section with CTA */}
-      <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
-        <CardHeader className="px-4 md:px-8">
-          <div className="flex items-center flex-wrap gap-4">
-            <Badge variant="secondary" className="text-sm">
-              {quiz.category}
-            </Badge>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Clock className="h-4 w-4" />
-              <span>{quiz.estimatedTime}</span>
+      {/* Cover Image Section */}
+      {quiz.coverImage ? (
+        <div className="relative w-full h-64 md:h-80 lg:h-96 overflow-hidden rounded-xl shadow-2xl">
+          <Image
+            src={quiz.coverImage}
+            alt={quiz.title}
+            className="w-full h-full object-cover"
+            width={1000}
+            height={1000}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-6">
+            <div className="flex items-center gap-4 text-white">
+              <Badge variant="secondary" className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                {quiz.category}
+              </Badge>
+              <div className="flex items-center gap-2 text-sm bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/30">
+                <Clock className="h-4 w-4" />
+                <span>{quiz.estimatedTime}</span>
+              </div>
             </div>
           </div>
-        </CardHeader>
+        </div>
+      ) : (
+        <div className="relative w-full h-64 md:h-80 lg:h-96 overflow-hidden rounded-xl shadow-2xl bg-gradient-to-br from-primary/10 to-primary/20 dark:from-primary/20 dark:to-primary/30 border-2 border-dashed border-primary/30">
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-primary dark:text-primary/80 mb-2">
+                {quiz.title}
+              </h3>
+              <div className="flex items-center gap-4">
+                <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30">
+                  {quiz.category}
+                </Badge>
+                <div className="flex items-center gap-2 text-sm text-primary/70 dark:text-primary/70">
+                  <Clock className="h-4 w-4" />
+                  <span>{quiz.estimatedTime}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Hero Section with CTA */}
+      <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
         <CardContent className="px-4 md:px-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             <div className="flex-1 space-y-4">

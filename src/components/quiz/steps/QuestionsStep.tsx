@@ -16,11 +16,21 @@ interface QuestionsStepProps {
 }
 
 export function QuestionsStep({ data, onUpdate, onNext, onPrev }: QuestionsStepProps) {
+  // Debug: Log dimension data to verify backend response
+  console.log('QuestionsStep - Quiz data:', {
+    quizType: data.quizType,
+    dimensions: data.dimensions,
+    questions: data.questions.map(q => ({
+      id: q.id,
+      text: q.text.substring(0, 50) + '...',
+      dimensionId: q.dimensionId
+    }))
+  })
   const addQuestion = () => {
     const newQuestion = {
       id: `q_${Date.now()}`,
       text: '',
-      dimensionId: undefined,
+      dimensionId: undefined, // Explicitly undefined for new questions
       order: data.questions.length,
       options: [
         { id: `opt_${Date.now()}_1`, text: '', value: 1, order: 0 },
@@ -159,9 +169,16 @@ export function QuestionsStep({ data, onUpdate, onNext, onPrev }: QuestionsStepP
                 {/* Dimension binding for complex quizzes */}
                 {data.quizType === 'COMPLEX' && data.dimensions.length > 0 && (
                   <div className="space-y-2">
-                    <Label>Dimension (Optional)</Label>
+                    <div className="flex items-center justify-between">
+                      <Label>Dimension (Optional)</Label>
+                      {question.dimensionId && (
+                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                          ✓ {data.dimensions.find(d => d.id === question.dimensionId)?.name}
+                        </span>
+                      )}
+                    </div>
                     <Select 
-                      value={question.dimensionId || ''} 
+                      value={question.dimensionId || 'NONE'} 
                       onValueChange={(value) => updateQuestion(question.id, 'dimensionId', value === 'NONE' ? undefined : value)}
                     >
                       <SelectTrigger>
@@ -178,7 +195,7 @@ export function QuestionsStep({ data, onUpdate, onNext, onPrev }: QuestionsStepP
                     </Select>
                     {question.dimensionId && (
                       <p className="text-sm text-muted-foreground">
-                                                 This question will contribute to the &quot;{data.dimensions.find(d => d.id === question.dimensionId)?.name}&quot; dimension score.
+                        This question will contribute to the &quot;{data.dimensions.find(d => d.id === question.dimensionId)?.name}&quot; dimension score.
                       </p>
                     )}
                   </div>
@@ -239,8 +256,13 @@ export function QuestionsStep({ data, onUpdate, onNext, onPrev }: QuestionsStepP
                 <div className="text-sm text-muted-foreground bg-muted p-2 rounded">
                   <p>Question {index + 1}: {question.text || 'No text yet'}</p>
                   <p>Options: {question.options.length} | Values: {question.options.map(opt => opt.value).join(', ')}</p>
-                  {data.quizType === 'COMPLEX' && question.dimensionId && (
-                    <p>Dimension: {data.dimensions.find(d => d.id === question.dimensionId)?.name}</p>
+                  {data.quizType === 'COMPLEX' && (
+                    <p>
+                      Dimension: {question.dimensionId ? 
+                        data.dimensions.find(d => d.id === question.dimensionId)?.name || 'Unknown' : 
+                        'None selected'
+                      }
+                    </p>
                   )}
                 </div>
               </div>

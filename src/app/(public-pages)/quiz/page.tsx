@@ -48,6 +48,7 @@ import QuizPageSkeleton from "@/components/QuizPageSkeleton";
 import QuizFiltersClient from "@/components/quiz/QuizFiltersClient";
 import QuizSortControlsClient from "@/components/quiz/QuizSortControlsClient";
 import { quizCategoryColorMap, generateFallbackColors } from "@/lib/utils";
+import Image from "next/image";
 
 export const dynamic = 'force-dynamic';
 
@@ -276,29 +277,43 @@ const QuizPageContent = async ({ searchParams }: QuizPageProps) => {
                     animationFillMode: 'both'
                   }}
                 >
-                  <div className={`${colors.bg} py-6 ${colors.text} relative overflow-hidden p-4`}>
-                    {/* Decorative background pattern */}
-                    <div className="absolute inset-0 opacity-10">
-                      <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-current transform translate-x-8 -translate-y-8"></div>
-                      <div className="absolute bottom-0 left-0 w-16 h-16 rounded-full bg-current transform -translate-x-6 translate-y-6"></div>
-                    </div>
-
-                    {/* Gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/5 dark:to-white/5"></div>
-
-                    <div className="relative z-10">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className={`p-3 rounded-xl ${colors.accent} ${colors.text} shadow-sm group-hover:scale-110 transition-transform duration-200`}>
+                  {/* Cover Image */}
+                  <div className="relative h-48 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
+                    {quiz.coverImage ? (
+                      <Image
+                        src={quiz.coverImage}
+                        alt={quiz.title}
+                        width={1000}
+                        height={1000}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20 dark:from-primary/20 dark:to-primary/30">
+                        <div className={`p-4 rounded-xl ${colors.accent} ${colors.text} shadow-lg mb-3`}>
                           {icon}
                         </div>
-                        <div className="flex items-center gap-2 text-sm bg-white/30 dark:bg-black/30 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/20 dark:border-black/20">
+                        <div className="text-center">
+                          <div className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
+                            {quiz.category}
+                          </div>
+                          <div className="text-xs text-muted-foreground/70 dark:text-muted-foreground/70 mt-1">
+                            No cover image
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {/* Overlay with quiz info */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2 text-sm bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/30">
                           <Timer className="h-4 w-4" />
                           <span className="font-medium">{quiz.estimatedTime}</span>
                           <span className="mx-1">•</span>
                           <span className="font-medium">{quiz.questions.length} questions</span>
                         </div>
                       </div>
-                      <div className="text-xl font-bold leading-tight">{quiz.title}</div>
+                      <h3 className="text-xl font-bold leading-tight">{quiz.title}</h3>
                     </div>
                   </div>
 

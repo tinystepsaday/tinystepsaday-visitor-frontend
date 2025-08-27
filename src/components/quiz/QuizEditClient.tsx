@@ -26,6 +26,7 @@ export interface QuizFormData {
   title: string
   subtitle: string
   description: string
+  coverImage?: string
   category: string
   estimatedTime: string
   difficulty: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED'
@@ -132,6 +133,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
     title: '',
     subtitle: '',
     description: '',
+    coverImage: '',
     category: '',
     estimatedTime: '',
     difficulty: 'INTERMEDIATE',
@@ -156,6 +158,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
             title: quiz.title,
             subtitle: quiz.subtitle,
             description: quiz.description,
+            coverImage: quiz.coverImage,
             category: quiz.category,
             estimatedTime: quiz.estimatedTime,
             difficulty: quiz.difficulty.toUpperCase() as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED',
