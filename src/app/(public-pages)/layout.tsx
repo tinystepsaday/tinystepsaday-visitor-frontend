@@ -45,7 +45,7 @@ export default function PublicPagesLayout({
         style={{ background: '#fff', color: 'black' }}
         buttonStyle={{ background: '#8984fb', color: '#fff' }}
       >
-        This website uses cookies to enhance your experience and track usage via Google Analytics.
+        This website uses cookies to enhance your experience. Click on the &apos;Accept cookies&apos; button or ignore it to manage our preferences.
       </CookieConsent>
       <ConditionalNavbar />
       {children}

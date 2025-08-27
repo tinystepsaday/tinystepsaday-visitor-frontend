@@ -15,7 +15,7 @@ export default function Logo() {
                 className="z-10 animate-spin-slow drop-shadow-xl"
                 priority
             />
-            <span className="text-xl md:text-2xl font-bold text-primary">tinystepsaday</span>
+            <span className="text-xl md:text-2xl font-bold text-primary">Tiny Steps A Day</span>
         </Link>
     )
 }

@@ -178,16 +178,16 @@ const Footer = () => {
             <Button variant="ghost" size="icon" className="rounded-full" onClick={() => window.open("mailto:hello@tinystepsaday.com", "_blank")}>
               <Mail className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => window.open("https://www.instagram.com/tinystepsaday", "_blank")}>
+            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => window.open("https://www.instagram.com/tiny_step_s_aday", "_blank")}>
               <Instagram className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => window.open("https://www.facebook.com/tinystepsaday", "_blank")}>
+            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => window.open("https://www.facebook.com/profile.php?id=61579780265297", "_blank")}>
               <Facebook className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="icon" className="rounded-full" onClick={() => window.open("https://x.com/tiny_steps_aday", "_blank")}>
               <XIcon className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => window.open("https://www.linkedin.com/company/tinystepsaday", "_blank")}>
+            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => window.open("https://www.linkedin.com/company/tiny-steps-a-day", "_blank")}>
               <Linkedin className="h-4 w-4" />
             </Button>
           </div>
