@@ -42,8 +42,8 @@ export default function PublicPagesLayout({
         buttonText="Accept Cookies"
         cookieName="tinyStepsCookieConsent"
         onAccept={() => setConsentGiven(true)}
-        style={{ background: '#fff' }}
-        buttonStyle={{ color: '#8984fb', background: '#fff' }}
+        style={{ background: '#fff', color: 'black' }}
+        buttonStyle={{ background: '#8984fb', color: '#fff' }}
       >
         This website uses cookies to enhance your experience and track usage via Google Analytics.
       </CookieConsent>
