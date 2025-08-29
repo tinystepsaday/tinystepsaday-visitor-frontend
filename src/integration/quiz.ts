@@ -7,7 +7,7 @@ import type {
 } from '@/data/quizzes';
 
 // API types that are not exported from quizzes data
-export interface CreateQuizData {
+export interface CreateQuizBasicData {
   title: string;
   subtitle?: string;
   description: string;
@@ -20,6 +20,9 @@ export interface CreateQuizData {
   status: 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
   isPublic: boolean;
   tags: string[];
+}
+
+export interface CreateQuizData extends CreateQuizBasicData {
   questions: Array<{
     text: string;
     order: number;
@@ -374,6 +377,68 @@ export class QuizAPI {
     } catch (error: any) {
       throw error.response.data;
     }
+  }
+
+  // Progressive Quiz Creation Methods
+  async createQuizBasic(data: CreateQuizBasicData): Promise<Quiz> {
+    const response = await apiClient.post('/quizzes/basic', data);
+    return (response as any).data.data;
+  }
+
+  async addQuizDimensions(quizId: string, dimensions: any[]): Promise<Quiz> {
+    const response = await apiClient.put(`/quizzes/${quizId}/dimensions`, { dimensions });
+    return (response as any).data.data;
+  }
+
+  async addQuizQuestions(quizId: string, questions: any[]): Promise<Quiz> {
+    const response = await apiClient.put(`/quizzes/${quizId}/questions`, { questions });
+    return (response as any).data.data;
+  }
+
+  async addQuizGradingCriteria(quizId: string, gradingData: any): Promise<Quiz> {
+    const response = await apiClient.put(`/quizzes/${quizId}/grading`, gradingData);
+    return (response as any).data.data;
+  }
+
+  // Progressive Quiz Creation - Complete Flow
+  async createQuizProgressive(data: CreateQuizData): Promise<Quiz> {
+    // Step 1: Create basic quiz
+    const basicData: CreateQuizBasicData = {
+      title: data.title,
+      subtitle: data.subtitle,
+      description: data.description,
+      coverImage: data.coverImage,
+      quizType: data.quizType,
+      redirectAfterAnswer: data.redirectAfterAnswer,
+      category: data.category,
+      estimatedTime: data.estimatedTime,
+      difficulty: data.difficulty,
+      status: 'DRAFT' as const,
+      isPublic: data.isPublic,
+      tags: data.tags
+    };
+
+    const quiz = await this.createQuizBasic(basicData);
+
+    // Step 2: Add dimensions if complex quiz
+    if (data.quizType === 'COMPLEX' && data.dimensions && data.dimensions.length > 0) {
+      await this.addQuizDimensions(quiz.id, data.dimensions);
+    }
+
+    // Step 3: Add questions
+    if (data.questions && data.questions.length > 0) {
+      await this.addQuizQuestions(quiz.id, data.questions);
+    }
+
+    // Step 4: Add grading criteria
+    if (data.quizType === 'COMPLEX' && data.complexGradingCriteria && data.complexGradingCriteria.length > 0) {
+      await this.addQuizGradingCriteria(quiz.id, { complexGradingCriteria: data.complexGradingCriteria });
+    } else if (data.gradingCriteria && data.gradingCriteria.length > 0) {
+      await this.addQuizGradingCriteria(quiz.id, { gradingCriteria: data.gradingCriteria });
+    }
+
+    // Return the complete quiz
+    return this.getQuizById(quiz.id);
   }
 
   // Quiz Results

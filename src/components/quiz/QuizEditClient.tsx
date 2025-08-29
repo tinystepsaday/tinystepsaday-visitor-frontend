@@ -10,6 +10,7 @@ import { Progress } from '@/components/ui/progress'
 import { useToast } from '@/hooks/use-toast'
 import { quizAPI } from '@/integration/quiz'
 import { type Quiz } from '@/data/quizzes'
+import { type CreateQuizBasicData } from '@/integration/quiz'
 import { DetailPageLoader } from '../ui/loaders'
 import { extractBackendErrorMessage } from '@/utils/backendErrorHandler'
 
@@ -35,6 +36,7 @@ export interface QuizFormData {
   quizType: 'DEFAULT' | 'COMPLEX' | 'ONBOARDING'
   redirectAfterAnswer: 'HOME' | 'RESULTS'
   tags: string[]
+  id?: string // Added for progressive saving
 
   // Step 2: Dimensions (for complex quizzes)
   dimensions: Array<{
@@ -209,101 +211,24 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
     }
   }, [quiz, isInitialized, toast])
 
-  // Save progress to backend (draft mode) - only when explicitly called
-  const saveProgress = async (stepData?: Partial<QuizFormData>) => {
+  // Progressive save - save each step as we go
+  const saveStepProgress = async (stepNumber: number, updatedData: Partial<QuizFormData>): Promise<boolean> => {
+    setIsSaving(true)
+    
     try {
-      setIsSaving(true)
-      const dataToSave = stepData ? { ...formData, ...stepData } : formData
-      
-      // Prepare data for backend - ensure all required fields are present
-      const backendData = {
-        ...dataToSave,
-        // Ensure questions have proper structure
-        questions: dataToSave.questions.map((q, index) => ({
-          text: q.text,
-          order: q.order || index,
-          dimensionId: q.dimensionId,
-          options: q.options.map((opt, optIndex) => ({
-            text: opt.text,
-            value: opt.value,
-            order: opt.order || optIndex
-          }))
-        })),
-        // Ensure dimensions have proper structure for complex quizzes
-        ...(dataToSave.quizType === 'COMPLEX' && {
-          dimensions: dataToSave.dimensions.map((dim, index) => ({
-            name: dim.name,
-            shortName: dim.shortName,
-            order: dim.order || index,
-            minScore: dim.minScore,
-            maxScore: dim.maxScore,
-            threshold: dim.threshold,
-            lowLabel: dim.lowLabel,
-            highLabel: dim.highLabel
-          }))
-        }),
-        // Ensure grading criteria have proper structure
-        ...(dataToSave.quizType === 'COMPLEX' ? {
-          complexGradingCriteria: dataToSave.complexGradingCriteria.map((criteria) => ({
-            name: criteria.name,
-            label: criteria.label,
-            color: criteria.color,
-            recommendations: criteria.recommendations,
-            areasOfImprovement: criteria.areasOfImprovement,
-            supportNeeded: criteria.supportNeeded,
-            proposedCourses: criteria.proposedCourses,
-            proposedProducts: criteria.proposedProducts,
-            proposedStreaks: criteria.proposedStreaks,
-            proposedBlogPosts: criteria.proposedBlogPosts,
-            description: criteria.description,
-            scoringLogic: criteria.scoringLogic
-          }))
-        } : {
-          gradingCriteria: dataToSave.gradingCriteria.map((criteria) => ({
-            name: criteria.name,
-            minScore: criteria.minScore,
-            maxScore: criteria.maxScore,
-            label: criteria.label,
-            color: criteria.color,
-            recommendations: criteria.recommendations,
-            areasOfImprovement: criteria.areasOfImprovement || [],
-            supportNeeded: criteria.supportNeeded || [],
-            proposedCourses: criteria.proposedCourses,
-            proposedProducts: criteria.proposedProducts,
-            proposedStreaks: criteria.proposedStreaks,
-            proposedBlogPosts: criteria.proposedBlogPosts,
-            description: criteria.description
-          }))
-        })
-      }
-      
-      if (isEditing && quiz) {
-        // Update existing quiz
-        await quizAPI.updateQuiz(quiz.id, backendData)
+      if (stepNumber === 1 && !formData.id) {
+        // Create new quiz with basic information
+        await createNewQuiz(updatedData);
       } else {
-        // Create new quiz as draft
-        const result = await quizAPI.createQuiz({
-          ...backendData,
-          status: 'DRAFT' // Always save as draft during configuration
-        })
-        
-        // Redirect to edit mode with the new quiz ID
-        if (result.id) {
-          router.push(`/management/quizzes/${result.id}/edit`)
-        }
+        // Progressive step updates
+        await updateExistingQuiz(stepNumber, updatedData);
       }
       
       setHasUnsavedChanges(false)
-      toast({
-        title: "Progress Saved",
-        description: "Your quiz configuration has been saved.",
-      })
-    } catch (err) {
-      console.error('Error saving progress:', err)
-      console.log('Error type:', typeof err)
-      console.log('Error structure:', JSON.stringify(err, null, 2))
+      return true
       
-      // Extract error message from backend response
+    } catch (err) {
+      console.error('Error saving step progress:', err)
       const errorMessage = extractBackendErrorMessage(err, 'Failed to save progress. Please try again.')
       
       toast({
@@ -311,18 +236,244 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
         description: errorMessage,
         variant: "destructive"
       })
+      return false
     } finally {
       setIsSaving(false)
     }
   }
 
-  // Handle step data updates - NO automatic backend calls
-  const updateStepData = (stepData: Partial<QuizFormData>) => {
+  // Separate function for creating new quiz
+  const createNewQuiz = async (updatedData: Partial<QuizFormData>): Promise<void> => {
+    if (!updatedData.title || !updatedData.description || !updatedData.category || !updatedData.quizType) {
+      throw new Error('Missing required fields: title, description, category, and quizType are required');
+    }
+    
+    const basicData: CreateQuizBasicData = {
+      title: updatedData.title,
+      subtitle: updatedData.subtitle || '',
+      description: updatedData.description,
+      coverImage: updatedData.coverImage || '',
+      quizType: updatedData.quizType,
+      redirectAfterAnswer: updatedData.redirectAfterAnswer || 'HOME',
+      category: updatedData.category,
+      estimatedTime: updatedData.estimatedTime || '0',
+      difficulty: updatedData.difficulty || 'BEGINNER',
+      status: 'DRAFT',
+      isPublic: updatedData.isPublic || false,
+      tags: updatedData.tags || []
+    }
+    
+    const result = await quizAPI.createQuizBasic(basicData);
+    
+    // Update form data with the new quiz ID
+    if (result && result.id) {
+      setFormData(prev => ({ ...prev, id: result.id }));
+    } else {
+      throw new Error('Failed to create quiz: No ID returned');
+    }
+    
+    toast({
+      title: "Quiz Created",
+      description: "Basic quiz information saved. Continue to next step.",
+    })
+  }
+
+  // Separate function for updating existing quiz
+  const updateExistingQuiz = async (stepNumber: number, updatedData: Partial<QuizFormData>): Promise<void> => {
+    if (!formData.id) {
+      throw new Error('Quiz ID is required for progressive updates');
+    }
+    
+    switch (stepNumber) {
+      case 2: // Dimensions
+        if (updatedData.quizType === 'COMPLEX' && updatedData.dimensions) {
+          await quizAPI.addQuizDimensions(formData.id, updatedData.dimensions)
+          toast({
+            title: "Progress Saved",
+            description: "Dimensions added successfully.",
+          })
+        }
+        break
+        
+      case 3: // Questions
+        if (updatedData.questions) {
+          await quizAPI.addQuizQuestions(formData.id, updatedData.questions)
+          toast({
+            title: "Progress Saved",
+            description: "Questions added successfully.",
+          })
+        }
+        break
+        
+      case 4: // Grading Criteria
+        if (updatedData.quizType === 'COMPLEX' && updatedData.complexGradingCriteria) {
+          await quizAPI.addQuizGradingCriteria(formData.id, { 
+            complexGradingCriteria: updatedData.complexGradingCriteria 
+          })
+        } else if (updatedData.gradingCriteria) {
+          await quizAPI.addQuizGradingCriteria(formData.id, { 
+            gradingCriteria: updatedData.gradingCriteria 
+          })
+        }
+        toast({
+          title: "Progress Saved",
+          description: "Grading criteria added successfully.",
+        })
+        break
+        
+      default:
+        // Fallback to regular update
+        await quizAPI.updateQuiz(formData.id, updatedData)
+        toast({
+          title: "Progress Saved",
+          description: "Step completed and saved successfully.",
+        })
+    }
+  }
+
+  // Validate only the current step's data
+  const validateStepData = (data: QuizFormData, stepNumber: number): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = []
+    
+    switch (stepNumber) {
+      case 1: // Basic Information
+        if (!data.title?.trim()) errors.push('Quiz title is required')
+        if (!data.description?.trim()) errors.push('Quiz description is required')
+        if (!data.category?.trim()) errors.push('Quiz category is required')
+        break
+        
+      case 2: // Dimensions
+        if (data.quizType === 'COMPLEX') {
+          if (!data.dimensions || data.dimensions.length === 0) {
+            errors.push('At least one dimension is required for complex quizzes')
+          } else {
+            data.dimensions.forEach((dim, index) => {
+              if (!dim.name?.trim()) errors.push(`Dimension ${index + 1} name is required`)
+              if (!dim.shortName?.trim()) errors.push(`Dimension ${index + 1} short name is required`)
+              if (dim.minScore === undefined || dim.maxScore === undefined) {
+                errors.push(`Dimension ${index + 1} must have score range defined`)
+              }
+              if (dim.threshold === undefined) {
+                errors.push(`Dimension ${index + 1} must have threshold defined`)
+              }
+            })
+          }
+        }
+        break
+        
+      case 3: // Questions
+        if (!data.questions || data.questions.length === 0) {
+          errors.push('At least one question is required')
+        } else {
+          data.questions.forEach((q, index) => {
+            if (!q.text?.trim()) errors.push(`Question ${index + 1} text is required`)
+            if (!q.options || q.options.length < 2) {
+              errors.push(`Question ${index + 1} must have at least 2 options`)
+            }
+            
+            // For complex quizzes, validate dimension assignment
+            if (data.quizType === 'COMPLEX') {
+              if (!q.dimensionId) {
+                errors.push(`Question ${index + 1} must be assigned to a dimension`)
+              } else {
+                const dimensionExists = data.dimensions.some(d => d.id === q.dimensionId)
+                if (!dimensionExists) {
+                  errors.push(`Question ${index + 1} references invalid dimension ID`)
+                }
+              }
+            }
+          })
+        }
+        break
+        
+      case 4: // Grading Criteria
+        if (data.quizType === 'COMPLEX') {
+          if (!data.complexGradingCriteria || data.complexGradingCriteria.length === 0) {
+            errors.push('At least one grading criteria is required for complex quizzes')
+          } else {
+            data.complexGradingCriteria.forEach((criteria, index) => {
+              if (!criteria.name?.trim()) errors.push(`Criteria ${index + 1} name is required`)
+              if (!criteria.label?.trim()) errors.push(`Criteria ${index + 1} label is required`)
+              if (!criteria.scoringLogic) {
+                errors.push(`Criteria ${index + 1} must have scoring logic defined`)
+              }
+            })
+          }
+        } else {
+          if (!data.gradingCriteria || data.gradingCriteria.length === 0) {
+            errors.push('At least one grading criteria is required')
+          } else {
+            data.gradingCriteria.forEach((criteria, index) => {
+              if (!criteria.name?.trim()) errors.push(`Criteria ${index + 1} name is required`)
+              if (criteria.minScore === undefined || criteria.maxScore === undefined) {
+                errors.push(`Criteria ${index + 1} must have score range defined`)
+              }
+            })
+          }
+        }
+        break
+        
+      case 5: // Review
+        // No validation needed for review step
+        break
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors
+    }
+  }
+
+  // Handle step data updates with progressive saving
+  const updateStepData = async (stepData: Partial<QuizFormData>, stepNumber: number) => {
+    // Update local form data
     const newFormData = { ...formData, ...stepData }
     setFormData(newFormData)
     setHasUnsavedChanges(true)
     
-    // NO auto-save - only mark as having unsaved changes
+    // For complex quizzes, handle dimension assignment in questions step
+    if (stepNumber === 3 && newFormData.quizType === 'COMPLEX' && stepData.questions) {
+      const updatedQuestions = stepData.questions.map((question, index) => {
+        // If no dimensionId is set, assign based on question order and available dimensions
+        if (!question.dimensionId && newFormData.dimensions.length > 0) {
+          const dimensionIndex = Math.floor(index / Math.ceil((stepData.questions?.length || 0) / newFormData.dimensions.length))
+          const assignedDimension = newFormData.dimensions[dimensionIndex]
+          if (assignedDimension) {
+            return {
+              ...question,
+              dimensionId: assignedDimension.id,
+              order: question.order || index
+            }
+          }
+        }
+        return {
+          ...question,
+          order: question.order || index
+        }
+      })
+      
+      // Update form data with properly assigned dimensions
+      setFormData(prev => ({
+        ...prev,
+        questions: updatedQuestions
+      }))
+    }
+  }
+
+  // Wrapper functions for step components that expect the old interface
+  const updateStepDataWrapper = (stepData: Partial<QuizFormData>) => {
+    updateStepData(stepData, currentStep)
+  }
+
+  // Enhanced save progress with progressive saving
+  const saveProgress = async (stepData?: Partial<QuizFormData>) => {
+    const dataToSave = stepData ? { ...formData, ...stepData } : formData
+    
+    // Save current step progress
+    const success = await saveStepProgress(currentStep, dataToSave)
+    if (success) {
+      setHasUnsavedChanges(false)
+    }
   }
 
   // Navigation functions
@@ -347,6 +498,17 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
   // Final save and publish
   const handleFinalSave = async () => {
     try {
+      // Validate data before final save
+      const validation = validateStepData(formData, currentStep) // Changed to validateStepData
+      if (!validation.isValid) {
+        toast({
+          title: "Validation Error",
+          description: `Please fix the following issues:\n${validation.errors.join('\n')}`,
+          variant: "destructive"
+        })
+        return
+      }
+      
       setIsLoading(true)
       
       // Prepare final data for backend
@@ -355,7 +517,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
         questions: formData.questions.map((q, index) => ({
           text: q.text,
           order: q.order || index,
-          dimensionId: q.dimensionId,
+          dimensionId: q.dimensionId, // This should now be valid
           options: q.options.map((opt, optIndex) => ({
             text: opt.text,
             value: opt.value,
@@ -448,14 +610,36 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
       case 1: // Basic Information
         return !!(formData.title && formData.description && formData.category)
       case 2: // Dimensions
-        return formData.quizType !== 'COMPLEX' || formData.dimensions.length > 0
+        if (formData.quizType !== 'COMPLEX') return true
+        return formData.dimensions.length > 0 && 
+               formData.dimensions.every(d => 
+                 d.name && d.shortName && 
+                 d.minScore !== undefined && d.maxScore !== undefined && 
+                 d.threshold !== undefined
+               )
       case 3: // Questions
-        return formData.questions.length > 0 && formData.questions.every(q => q.text && q.options.length >= 2)
+        if (formData.questions.length === 0) return false
+        if (!formData.questions.every(q => q.text && q.options.length >= 2)) return false
+        
+        // For complex quizzes, ensure all questions are assigned to valid dimensions
+        if (formData.quizType === 'COMPLEX') {
+          const validDimensionIds = formData.dimensions.map(d => d.id)
+          return formData.questions.every(q => 
+            q.dimensionId && validDimensionIds.includes(q.dimensionId)
+          )
+        }
+        return true
       case 4: // Grading Criteria
         if (formData.quizType === 'COMPLEX') {
-          return formData.complexGradingCriteria.length > 0
+          return formData.complexGradingCriteria.length > 0 &&
+                 formData.complexGradingCriteria.every(c => 
+                   c.name && c.label && c.scoringLogic
+                 )
         } else {
-          return formData.gradingCriteria.length > 0
+          return formData.gradingCriteria.length > 0 &&
+                 formData.gradingCriteria.every(c => 
+                   c.name && c.minScore !== undefined && c.maxScore !== undefined
+                 )
         }
       case 5: // Review
         return true
@@ -467,6 +651,11 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
   // Check if step is accessible
   const isStepAccessible = (step: number): boolean => {
     if (step === 1) return true
+    
+    // For progressive creation, allow access to next step if current step is completed
+    if (step === currentStep + 1) {
+      return isStepCompleted(currentStep)
+    }
     
     // Check if previous steps are completed
     for (let i = 1; i < step; i++) {
@@ -595,7 +784,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
           {currentStep === 1 && (
             <BasicInformationStep
               data={formData}
-              onUpdate={updateStepData}
+              onUpdate={updateStepDataWrapper}
               onNext={nextStep}
             />
           )}
@@ -603,7 +792,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
           {currentStep === 2 && (
             <DimensionsStep
               data={formData}
-              onUpdate={updateStepData}
+              onUpdate={updateStepDataWrapper}
               onNext={nextStep}
               onPrev={prevStep}
             />
@@ -612,7 +801,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
           {currentStep === 3 && (
             <QuestionsStep
               data={formData}
-              onUpdate={updateStepData}
+              onUpdate={updateStepDataWrapper}
               onNext={nextStep}
               onPrev={prevStep}
             />
@@ -621,7 +810,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
           {currentStep === 4 && (
             <GradingCriteriaStep
               data={formData}
-              onUpdate={updateStepData}
+              onUpdate={updateStepDataWrapper}
               onNext={nextStep}
               onPrev={prevStep}
             />
@@ -630,7 +819,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
           {currentStep === 5 && (
             <ReviewStep
               data={formData}
-              onUpdate={updateStepData}
+              onUpdate={updateStepDataWrapper}
               onPrev={prevStep}
               onFinalSave={handleFinalSave}
               isLoading={isLoading}
