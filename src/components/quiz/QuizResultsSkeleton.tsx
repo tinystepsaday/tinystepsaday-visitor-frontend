@@ -2,7 +2,7 @@ import React from 'react';
 
 const QuizResultsSkeleton = () => {
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8 w-full mb-16">
+    <div className="max-w-4xl mx-auto p-6 space-y-8 w-full mt-16 mb-16">
       {/* Header */}
       <div className="text-center space-y-4">
         <div className="h-10 w-80 bg-gray-200 dark:bg-gray-700 rounded mx-auto animate-pulse"></div>

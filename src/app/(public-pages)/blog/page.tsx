@@ -91,7 +91,7 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
   };
 }
 
-const POSTS_PER_PAGE = 6;
+const POSTS_PER_PAGE = 10;
 
 async function getBlogData(search?: string, category?: string, tag?: string, page: number = 1) {
   try {
