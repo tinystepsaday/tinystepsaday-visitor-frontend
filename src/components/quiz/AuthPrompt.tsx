@@ -83,20 +83,6 @@ export default function AuthPrompt({ quiz, onAuthenticated }: AuthPromptProps) {
 
       {/* Quiz Info Card */}
       <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
-        <CardHeader>
-          <div className="flex items-center gap-4 flex-wrap">
-            <Badge variant="secondary" className="text-sm">
-              {quiz.category}
-            </Badge>
-            <Badge variant="outline" className="text-sm">
-              {quiz.difficulty} level
-            </Badge>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Clock className="h-4 w-4" />
-              <span>{quiz.estimatedTime}</span>
-            </div>
-          </div>
-        </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div>
@@ -222,7 +208,7 @@ export default function AuthPrompt({ quiz, onAuthenticated }: AuthPromptProps) {
       {/* Why Authentication */}
       <Card>
         <CardHeader>
-          <CardTitle>Why do we require authentication?</CardTitle>
+          <CardTitle>Why authenticate?</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">

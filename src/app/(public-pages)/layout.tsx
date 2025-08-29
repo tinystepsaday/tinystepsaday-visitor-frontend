@@ -40,12 +40,15 @@ export default function PublicPagesLayout({
       <CookieConsent
         location="bottom"
         buttonText="Accept Cookies"
+        declineButtonText="Decline Cookies"
+        declineButtonStyle={{ background: 'white', color: '#8984fb', border: '1px solid #8984fb' }}
         cookieName="tinyStepsCookieConsent"
         onAccept={() => setConsentGiven(true)}
         style={{ background: '#fff', color: 'black' }}
         buttonStyle={{ background: '#8984fb', color: '#fff' }}
       >
-        This website uses cookies to enhance your experience. Click on the &apos;Accept cookies&apos; button or ignore it to manage our preferences.
+        This website uses cookies to enhance your experience. 
+        {/* Click on the &apos;Accept cookies&apos; button or ignore it to manage our preferences. */}
       </CookieConsent>
       <ConditionalNavbar />
       {children}
