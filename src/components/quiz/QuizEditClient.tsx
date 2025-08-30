@@ -57,6 +57,17 @@ export interface QuizFormData {
     text: string
     dimensionId?: string
     order: number
+    dimension?: {
+      id: string
+      name: string
+      shortName: string
+      order: number
+      minScore: number
+      maxScore: number
+      threshold?: number
+      lowLabel?: string
+      highLabel?: string
+    }
     options: Array<{
       id: string
       text: string
@@ -219,9 +230,11 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
       if (stepNumber === 1 && !formData.id) {
         // Create new quiz with basic information
         await createNewQuiz(updatedData);
-      } else {
-        // Progressive step updates
+      } else if (formData.id) {
+        // Progressive step updates for existing quiz
         await updateExistingQuiz(stepNumber, updatedData);
+      } else {
+        throw new Error('Cannot save progress: Quiz not created yet');
       }
       
       setHasUnsavedChanges(false)
@@ -297,7 +310,26 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
         
       case 3: // Questions
         if (updatedData.questions) {
-          await quizAPI.addQuizQuestions(formData.id, updatedData.questions)
+          // Ensure questions have proper dimension assignment with both dimensionId and dimension object
+          const questionsWithDimensions = updatedData.questions.map(question => {
+            const dimension = formData.dimensions.find(d => d.id === question.dimensionId);
+            return {
+              ...question,
+              dimension: dimension ? {
+                id: dimension.id,
+                name: dimension.name,
+                shortName: dimension.shortName,
+                order: dimension.order,
+                minScore: dimension.minScore,
+                maxScore: dimension.maxScore,
+                threshold: dimension.threshold,
+                lowLabel: dimension.lowLabel,
+                highLabel: dimension.highLabel
+              } : undefined
+            };
+          });
+          
+          await quizAPI.addQuizQuestions(formData.id, questionsWithDimensions)
           toast({
             title: "Progress Saved",
             description: "Questions added successfully.",
@@ -442,10 +474,44 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
             return {
               ...question,
               dimensionId: assignedDimension.id,
+              dimension: {
+                id: assignedDimension.id,
+                name: assignedDimension.name,
+                shortName: assignedDimension.shortName,
+                order: assignedDimension.order,
+                minScore: assignedDimension.minScore,
+                maxScore: assignedDimension.maxScore,
+                threshold: assignedDimension.threshold,
+                lowLabel: assignedDimension.lowLabel,
+                highLabel: assignedDimension.highLabel
+              },
               order: question.order || index
             }
           }
         }
+        
+        // If dimensionId exists, ensure dimension object is also set
+        if (question.dimensionId) {
+          const dimension = newFormData.dimensions.find(d => d.id === question.dimensionId);
+          if (dimension) {
+            return {
+              ...question,
+              dimension: {
+                id: dimension.id,
+                name: dimension.name,
+                shortName: dimension.shortName,
+                order: dimension.order,
+                minScore: dimension.minScore,
+                maxScore: dimension.maxScore,
+                threshold: dimension.threshold,
+                lowLabel: dimension.lowLabel,
+                highLabel: dimension.highLabel
+              },
+              order: question.order || index
+            }
+          }
+        }
+        
         return {
           ...question,
           order: question.order || index
@@ -514,16 +580,22 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
       // Prepare final data for backend
       const finalData = {
         ...formData,
-        questions: formData.questions.map((q, index) => ({
-          text: q.text,
-          order: q.order || index,
-          dimensionId: q.dimensionId, // This should now be valid
-          options: q.options.map((opt, optIndex) => ({
-            text: opt.text,
-            value: opt.value,
-            order: opt.order || optIndex
-          }))
-        })),
+        questions: formData.questions.map((q, index) => {
+          // Ensure each question has both dimensionId and dimension object
+          const questionData = {
+            text: q.text,
+            order: q.order || index,
+            dimensionId: q.dimensionId,
+            options: q.options.map((opt, optIndex) => ({
+              text: opt.text,
+              value: opt.value,
+              order: opt.order || optIndex
+            })),
+            ...(q.dimension && { dimension: q.dimension })
+          };
+          
+          return questionData;
+        }),
         ...(formData.quizType === 'COMPLEX' && {
           dimensions: formData.dimensions.map((dim, index) => ({
             name: dim.name,
