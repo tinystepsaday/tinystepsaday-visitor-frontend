@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { ArrowLeft, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -133,10 +132,8 @@ const STEPS = [
 ]
 
 export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClientProps) {
-  const router = useRouter()
   const { toast } = useToast()
   const [currentStep, setCurrentStep] = useState(1)
-  const [isLoading, setIsLoading] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -363,99 +360,6 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
     }
   }
 
-  // Validate only the current step's data
-  const validateStepData = (data: QuizFormData, stepNumber: number): { isValid: boolean; errors: string[] } => {
-    const errors: string[] = []
-    
-    switch (stepNumber) {
-      case 1: // Basic Information
-        if (!data.title?.trim()) errors.push('Quiz title is required')
-        if (!data.description?.trim()) errors.push('Quiz description is required')
-        if (!data.category?.trim()) errors.push('Quiz category is required')
-        break
-        
-      case 2: // Dimensions
-        if (data.quizType === 'COMPLEX') {
-          if (!data.dimensions || data.dimensions.length === 0) {
-            errors.push('At least one dimension is required for complex quizzes')
-          } else {
-            data.dimensions.forEach((dim, index) => {
-              if (!dim.name?.trim()) errors.push(`Dimension ${index + 1} name is required`)
-              if (!dim.shortName?.trim()) errors.push(`Dimension ${index + 1} short name is required`)
-              if (dim.minScore === undefined || dim.maxScore === undefined) {
-                errors.push(`Dimension ${index + 1} must have score range defined`)
-              }
-              if (dim.threshold === undefined) {
-                errors.push(`Dimension ${index + 1} must have threshold defined`)
-              }
-            })
-          }
-        }
-        break
-        
-      case 3: // Questions
-        if (!data.questions || data.questions.length === 0) {
-          errors.push('At least one question is required')
-        } else {
-          data.questions.forEach((q, index) => {
-            if (!q.text?.trim()) errors.push(`Question ${index + 1} text is required`)
-            if (!q.options || q.options.length < 2) {
-              errors.push(`Question ${index + 1} must have at least 2 options`)
-            }
-            
-            // For complex quizzes, validate dimension assignment
-            if (data.quizType === 'COMPLEX') {
-              if (!q.dimensionId) {
-                errors.push(`Question ${index + 1} must be assigned to a dimension`)
-              } else {
-                const dimensionExists = data.dimensions.some(d => d.id === q.dimensionId)
-                if (!dimensionExists) {
-                  errors.push(`Question ${index + 1} references invalid dimension ID`)
-                }
-              }
-            }
-          })
-        }
-        break
-        
-      case 4: // Grading Criteria
-        if (data.quizType === 'COMPLEX') {
-          if (!data.complexGradingCriteria || data.complexGradingCriteria.length === 0) {
-            errors.push('At least one grading criteria is required for complex quizzes')
-          } else {
-            data.complexGradingCriteria.forEach((criteria, index) => {
-              if (!criteria.name?.trim()) errors.push(`Criteria ${index + 1} name is required`)
-              if (!criteria.label?.trim()) errors.push(`Criteria ${index + 1} label is required`)
-              if (!criteria.scoringLogic) {
-                errors.push(`Criteria ${index + 1} must have scoring logic defined`)
-              }
-            })
-          }
-        } else {
-          if (!data.gradingCriteria || data.gradingCriteria.length === 0) {
-            errors.push('At least one grading criteria is required')
-          } else {
-            data.gradingCriteria.forEach((criteria, index) => {
-              if (!criteria.name?.trim()) errors.push(`Criteria ${index + 1} name is required`)
-              if (criteria.minScore === undefined || criteria.maxScore === undefined) {
-                errors.push(`Criteria ${index + 1} must have score range defined`)
-              }
-            })
-          }
-        }
-        break
-        
-      case 5: // Review
-        // No validation needed for review step
-        break
-    }
-    
-    return {
-      isValid: errors.length === 0,
-      errors
-    }
-  }
-
   // Handle step data updates with progressive saving
   const updateStepData = async (stepData: Partial<QuizFormData>, stepNumber: number) => {
     // Update local form data
@@ -531,14 +435,18 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
     updateStepData(stepData, currentStep)
   }
 
-  // Enhanced save progress with progressive saving
+  // Enhanced save progress with progressive saving - only save current step
   const saveProgress = async (stepData?: Partial<QuizFormData>) => {
     const dataToSave = stepData ? { ...formData, ...stepData } : formData
     
-    // Save current step progress
+    // Save current step progress only
     const success = await saveStepProgress(currentStep, dataToSave)
     if (success) {
       setHasUnsavedChanges(false)
+      toast({
+        title: "Progress Saved",
+        description: `Step ${currentStep} (${STEPS[currentStep - 1].title}) saved successfully.`,
+      })
     }
   }
 
@@ -561,120 +469,8 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
     }
   }
 
-  // Final save and publish
-  const handleFinalSave = async () => {
-    try {
-      // Validate data before final save
-      const validation = validateStepData(formData, currentStep) // Changed to validateStepData
-      if (!validation.isValid) {
-        toast({
-          title: "Validation Error",
-          description: `Please fix the following issues:\n${validation.errors.join('\n')}`,
-          variant: "destructive"
-        })
-        return
-      }
-      
-      setIsLoading(true)
-      
-      // Prepare final data for backend
-      const finalData = {
-        ...formData,
-        questions: formData.questions.map((q, index) => {
-          // Ensure each question has both dimensionId and dimension object
-          const questionData = {
-            text: q.text,
-            order: q.order || index,
-            dimensionId: q.dimensionId,
-            options: q.options.map((opt, optIndex) => ({
-              text: opt.text,
-              value: opt.value,
-              order: opt.order || optIndex
-            })),
-            ...(q.dimension && { dimension: q.dimension })
-          };
-          
-          return questionData;
-        }),
-        ...(formData.quizType === 'COMPLEX' && {
-          dimensions: formData.dimensions.map((dim, index) => ({
-            name: dim.name,
-            shortName: dim.shortName,
-            order: dim.order || index,
-            minScore: dim.minScore,
-            maxScore: dim.maxScore,
-            threshold: dim.threshold,
-            lowLabel: dim.lowLabel,
-            highLabel: dim.highLabel
-          }))
-        }),
-        ...(formData.quizType === 'COMPLEX' ? {
-          complexGradingCriteria: formData.complexGradingCriteria.map((criteria) => ({
-            name: criteria.name,
-            label: criteria.label,
-            color: criteria.color,
-            recommendations: criteria.recommendations,
-            areasOfImprovement: criteria.areasOfImprovement,
-            supportNeeded: criteria.supportNeeded,
-            proposedCourses: criteria.proposedCourses,
-            proposedProducts: criteria.proposedProducts,
-            proposedStreaks: criteria.proposedStreaks,
-            proposedBlogPosts: criteria.proposedBlogPosts,
-            description: criteria.description,
-            scoringLogic: criteria.scoringLogic
-          }))
-        } : {
-          gradingCriteria: formData.gradingCriteria.map((criteria) => ({
-            name: criteria.name,
-            minScore: criteria.minScore,
-            maxScore: criteria.maxScore,
-            label: criteria.label,
-            color: criteria.color,
-            recommendations: criteria.recommendations,
-            areasOfImprovement: criteria.areasOfImprovement,
-            supportNeeded: criteria.supportNeeded,
-            proposedCourses: criteria.proposedCourses,
-            proposedProducts: criteria.proposedProducts,
-            proposedStreaks: criteria.proposedStreaks,
-            proposedBlogPosts: criteria.proposedBlogPosts,
-            description: criteria.description
-          }))
-        })
-      }
-      
-      if (isEditing && quiz) {
-        await quizAPI.updateQuiz(quiz.id, finalData)
-        toast({
-          title: "Success",
-          description: "Quiz updated successfully!",
-        })
-      } else {
-        await quizAPI.createQuiz(finalData)
-        toast({
-          title: "Success",
-          description: "Quiz created successfully!",
-        })
-      }
-
-      // Redirect to quiz management page
-      router.push('/management/quizzes')
-    } catch (err: unknown) {
-      console.error('Error in final save:', err)
-      console.log('Error type:', typeof err)
-      console.log('Error structure:', JSON.stringify(err, null, 2))
-      
-      // Extract error message from backend response
-      const errorMessage = extractBackendErrorMessage(err, 'Failed to save quiz. Please try again.')
-      
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive"
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  // Final save and publish - no longer needed with progressive saving
+  // const handleFinalSave = async () => { ... }
 
   // Check if step is completed
   const isStepCompleted = (step: number): boolean => {
@@ -759,17 +555,8 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
                 disabled={isSaving || !hasUnsavedChanges}
                 variant="outline"
               >
-                {isSaving ? 'Saving...' : 'Save Progress'}
+                {isSaving ? 'Saving...' : `Save Progress - Step ${currentStep}`}
               </Button>
-              {currentStep === STEPS.length && (
-                <Button 
-                  type="button" 
-                  onClick={handleFinalSave} 
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Saving...' : (isEditing ? 'Update Quiz' : 'Create Quiz')}
-                </Button>
-              )}
             </div>
           </div>
           <div>
@@ -781,7 +568,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
             </p>
             {hasUnsavedChanges && (
               <p className="text-sm text-amber-600 mt-2">
-                ⚠ You have unsaved changes. Click &quot;Save Progress&quot; to save your work.
+                ⚠ You have unsaved changes in Step {currentStep} ({STEPS[currentStep - 1].title}). Click &quot;Save Progress&quot; to save your work.
               </p>
             )}
           </div>
@@ -893,8 +680,6 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
               data={formData}
               onUpdate={updateStepDataWrapper}
               onPrev={prevStep}
-              onFinalSave={handleFinalSave}
-              isLoading={isLoading}
             />
           )}
         </CardContent>

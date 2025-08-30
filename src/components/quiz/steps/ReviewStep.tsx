@@ -10,11 +10,9 @@ interface ReviewStepProps {
   data: QuizFormData
   onUpdate: (data: Partial<QuizFormData>) => void
   onPrev: () => void
-  onFinalSave: () => void
-  isLoading: boolean
 }
 
-export function ReviewStep({ data, onPrev, onFinalSave, isLoading }: ReviewStepProps) {
+export function ReviewStep({ data, onPrev }: ReviewStepProps) {
   const getValidationStatus = () => {
     const errors: string[] = []
     const warnings: string[] = []
@@ -168,13 +166,14 @@ export function ReviewStep({ data, onPrev, onFinalSave, isLoading }: ReviewStepP
           <ArrowLeft className="h-4 w-4 mr-2" />
           Previous
         </Button>
-        <Button 
-          onClick={onFinalSave} 
-          disabled={!isValid || isLoading}
-          className="min-w-[140px]"
-        >
-          {isLoading ? 'Publishing...' : 'Publish Quiz'}
-        </Button>
+        <div className="text-center">
+          <p className="text-sm text-muted-foreground">
+            ✓ Quiz configuration is complete and saved!
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            All steps have been saved progressively.
+          </p>
+        </div>
       </div>
     </div>
   )

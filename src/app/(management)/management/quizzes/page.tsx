@@ -238,18 +238,18 @@ export default function QuizzesManagementPage() {
     ),
   },
   {
-    accessorKey: "difficulty",
-    header: "Difficulty",
+    accessorKey:"quizType",
+    header: "Quiz Type",
     cell: ({ row }: { row: { original: any } }) => {
-      const difficulty = row.original.difficulty
+      const quizType = row.original.quizType
       const colors = {
-        beginner: "bg-green-100 text-green-800",
-        intermediate: "bg-yellow-100 text-yellow-800",
-        advanced: "bg-red-100 text-red-800"
+        default: "bg-green-100 text-green-800",
+        complex: "bg-yellow-100 text-yellow-800",
+        onboarding: "bg-red-100 text-red-800"
       }
       return (
-        <Badge className={colors[difficulty as keyof typeof colors]}>
-          {difficulty}
+        <Badge className={colors[quizType as keyof typeof colors]}>
+          {quizType}
         </Badge>
       )
     },
@@ -282,39 +282,6 @@ export default function QuizzesManagementPage() {
         </div>
       </div>
     ),
-  },
-  {
-    accessorKey: "averageScore",
-    header: "Avg Score",
-    cell: ({ row }: { row: { original: any } }) => (
-      <div className="text-center">
-        <div className="font-medium">{row.original.averageScore.toFixed(1)}%</div>
-        <div className="text-sm text-muted-foreground">
-          {row.original.averageCompletionTime.toFixed(1)} min
-        </div>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "popularity",
-    header: "Popularity",
-    cell: ({ row }: { row: { original: any } }) => {
-      const quiz = row.original
-      const popularity = (quiz.completedAttempts / quiz.totalAttempts) * 100
-      return (
-        <div className="flex items-center gap-2">
-          <div className="flex-1 bg-gray-200 rounded-full h-2">
-            <div 
-              className="bg-blue-600 h-2 rounded-full" 
-              style={{ width: `${Math.min(popularity, 100)}%` }}
-            />
-          </div>
-          <span className="text-sm text-muted-foreground w-12">
-            {popularity.toFixed(0)}%
-          </span>
-        </div>
-      )
-    },
   },
   {
     id: "actions",
