@@ -6,6 +6,7 @@ import Providers from "@/components/providers";
 import Script from 'next/script';
 import CookieConsent from 'react-cookie-consent';
 import { useState } from 'react';
+import Link from "next/link";
 
 export default function PublicPagesLayout({
   children,
@@ -39,16 +40,15 @@ export default function PublicPagesLayout({
       )}
       <CookieConsent
         location="bottom"
-        buttonText="Accept Cookies"
-        declineButtonText="Decline Cookies"
+        buttonText="Got it!"
+        declineButtonText="Not now"
         declineButtonStyle={{ background: 'white', color: '#8984fb', border: '1px solid #8984fb' }}
         cookieName="tinyStepsCookieConsent"
         onAccept={() => setConsentGiven(true)}
         style={{ background: '#fff', color: 'black' }}
         buttonStyle={{ background: '#8984fb', color: '#fff' }}
       >
-        This website uses cookies to enhance your experience. 
-        {/* Click on the &apos;Accept cookies&apos; button or ignore it to manage our preferences. */}
+        This website uses cookies to enhance your experience on our website. <Link href="/cookie-policy" className="text-primary hover:underline">Learn more</Link>
       </CookieConsent>
       <ConditionalNavbar />
       {children}
