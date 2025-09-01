@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import apiClient from './apiClient';
-import type { 
-  Quiz, 
-  QuizResult, 
+import type {
+  Quiz,
+  QuizResult,
   QuizAnalytics
 } from '@/data/quizzes';
 
@@ -265,7 +265,7 @@ export class QuizAPI {
   private static instance: QuizAPI;
   private baseURL = '/api/quizzes';
 
-  private constructor() {}
+  private constructor() { }
 
   static getInstance(): QuizAPI {
     if (!QuizAPI.instance) {
@@ -275,22 +275,22 @@ export class QuizAPI {
   }
 
   // Public Quiz Endpoints
-  async getPublicQuizzes(query?: Partial<QuizQuery>): Promise<{ 
-    quizzes: Quiz[]; 
-    total: number; 
-    page: number; 
+  async getPublicQuizzes(query?: Partial<QuizQuery>): Promise<{
+    quizzes: Quiz[];
+    total: number;
+    page: number;
     totalPages: number;
     categories: string[];
   }> {
     try {
-      const response = await apiClient.get<{ 
-        data: { 
-          quizzes: Quiz[]; 
-          total: number; 
-          page: number; 
+      const response = await apiClient.get<{
+        data: {
+          quizzes: Quiz[];
+          total: number;
+          page: number;
           totalPages: number;
           categories: string[];
-        } 
+        }
       }>(`${this.baseURL}/public/quizzes`, { params: query });
       return response.data;
     } catch (error: any) {
@@ -381,22 +381,28 @@ export class QuizAPI {
 
   // Progressive Quiz Creation Methods
   async createQuizBasic(data: CreateQuizBasicData): Promise<Quiz> {
-    const response = await apiClient.post('/quizzes/basic', data);
+    const response = await apiClient.post(`${this.baseURL}/quizzes/basic`, data);
+    return (response as any).data.data;
+  }
+
+  // Update quiz basic information (for existing quizzes)
+  async updateQuizBasic(data: CreateQuizBasicData, quizId: string): Promise<Quiz> {
+    const response = await apiClient.put(`${this.baseURL}/quizzes/basic/${quizId}`, data);
     return (response as any).data.data;
   }
 
   async addQuizDimensions(quizId: string, dimensions: any[]): Promise<Quiz> {
-    const response = await apiClient.put(`/quizzes/${quizId}/dimensions`, { dimensions });
+    const response = await apiClient.put(`${this.baseURL}/quizzes/${quizId}/dimensions`, { dimensions });
     return (response as any).data.data;
   }
 
   async addQuizQuestions(quizId: string, questions: any[]): Promise<Quiz> {
-    const response = await apiClient.put(`/quizzes/${quizId}/questions`, { questions });
+    const response = await apiClient.put(`${this.baseURL}/quizzes/${quizId}/questions`, { questions });
     return (response as any).data.data;
   }
 
   async addQuizGradingCriteria(quizId: string, gradingData: any): Promise<Quiz> {
-    const response = await apiClient.put(`/quizzes/${quizId}/grading`, gradingData);
+    const response = await apiClient.put(`${this.baseURL}/quizzes/${quizId}/grading`, gradingData);
     return (response as any).data.data;
   }
 
@@ -562,7 +568,7 @@ export function transformBackendQuizResult(backendResult: BackendQuizResult): Qu
     id: backendResult.id,
     quizId: backendResult.quizId,
     userId: backendResult.userId,
-    userName: backendResult.user?.firstName && backendResult.user?.lastName 
+    userName: backendResult.user?.firstName && backendResult.user?.lastName
       ? `${backendResult.user.firstName} ${backendResult.user.lastName}`
       : 'Anonymous User',
     userEmail: backendResult.user?.email || 'anonymous@example.com',
@@ -610,9 +616,9 @@ export function transformBackendQuizAnalytics(backendAnalytics: BackendQuizAnaly
 }
 
 // Export types for external use
-export type { 
-  Quiz, 
-  QuizResult, 
+export type {
+  Quiz,
+  QuizResult,
   QuizAnalytics
 } from '@/data/quizzes';
 

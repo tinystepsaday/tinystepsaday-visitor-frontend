@@ -184,7 +184,7 @@ export function BasicInformationStep({ data, onUpdate, onNext }: BasicInformatio
                   />
                   <div className="flex-1">
                     <p className="text-sm font-medium">Cover image selected</p>
-                    <p className="text-xs text-muted-foreground truncate">{data.coverImage}</p>
+                    {/* <p className="text-xs text-muted-foreground truncate">{data.coverImage}</p> */}
                   </div>
                 </div>
               </div>

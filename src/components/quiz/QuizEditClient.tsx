@@ -163,8 +163,9 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
     const initializeData = async () => {
       try {
         if (quiz && !isInitialized) {
-          // Editing existing quiz - populate all data
+          // Editing existing quiz - populate all data and set the quiz ID
           setFormData({
+            id: quiz.id, // Set the quiz ID for editing mode
             title: quiz.title,
             subtitle: quiz.subtitle,
             description: quiz.description,
@@ -194,9 +195,10 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
             complexGradingCriteria: quiz.complexGradingCriteria || []
           })
         } else if (!quiz && !isInitialized) {
-          // Creating new quiz - set minimal defaults
+          // Creating new quiz - set minimal defaults and ensure no ID
           setFormData(prev => ({
             ...prev,
+            id: undefined, // Ensure no ID for new quiz
             status: 'DRAFT',
             isPublic: false,
             quizType: 'DEFAULT',
@@ -222,7 +224,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
   // Progressive save - save each step as we go
   const saveStepProgress = async (stepNumber: number, updatedData: Partial<QuizFormData>): Promise<boolean> => {
     setIsSaving(true)
-    
+
     try {
       if (stepNumber === 1 && !formData.id) {
         // Create new quiz with basic information
@@ -233,14 +235,14 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
       } else {
         throw new Error('Cannot save progress: Quiz not created yet');
       }
-      
+
       setHasUnsavedChanges(false)
       return true
-      
+
     } catch (err) {
       console.error('Error saving step progress:', err)
       const errorMessage = extractBackendErrorMessage(err, 'Failed to save progress. Please try again.')
-      
+
       toast({
         title: "Save Error",
         description: errorMessage,
@@ -257,7 +259,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
     if (!updatedData.title || !updatedData.description || !updatedData.category || !updatedData.quizType) {
       throw new Error('Missing required fields: title, description, category, and quizType are required');
     }
-    
+
     const basicData: CreateQuizBasicData = {
       title: updatedData.title,
       subtitle: updatedData.subtitle || '',
@@ -272,16 +274,16 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
       isPublic: updatedData.isPublic || false,
       tags: updatedData.tags || []
     }
-    
+
     const result = await quizAPI.createQuizBasic(basicData);
-    
+
     // Update form data with the new quiz ID
     if (result && result.id) {
       setFormData(prev => ({ ...prev, id: result.id }));
     } else {
       throw new Error('Failed to create quiz: No ID returned');
     }
-    
+
     toast({
       title: "Quiz Created",
       description: "Basic quiz information saved. Continue to next step.",
@@ -293,8 +295,33 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
     if (!formData.id) {
       throw new Error('Quiz ID is required for progressive updates');
     }
-    
+
     switch (stepNumber) {
+      case 1: // Basic Information
+        if (updatedData.title || updatedData.description || updatedData.category || updatedData.quizType) {
+          const basicData: CreateQuizBasicData = {
+            title: updatedData.title || formData.title,
+            subtitle: updatedData.subtitle || formData.subtitle,
+            description: updatedData.description || formData.description,
+            coverImage: updatedData.coverImage || formData.coverImage,
+            quizType: updatedData.quizType || formData.quizType,
+            redirectAfterAnswer: updatedData.redirectAfterAnswer || formData.redirectAfterAnswer,
+            category: updatedData.category || formData.category,
+            estimatedTime: updatedData.estimatedTime || formData.estimatedTime,
+            difficulty: updatedData.difficulty || formData.difficulty,
+            status: updatedData.status || formData.status,
+            isPublic: updatedData.isPublic !== undefined ? updatedData.isPublic : formData.isPublic,
+            tags: updatedData.tags || formData.tags
+          }
+
+          await quizAPI.updateQuizBasic(basicData, formData.id);
+          toast({
+            title: "Progress Saved",
+            description: "Basic quiz information updated successfully.",
+          })
+        }
+        break
+
       case 2: // Dimensions
         if (updatedData.quizType === 'COMPLEX' && updatedData.dimensions) {
           await quizAPI.addQuizDimensions(formData.id, updatedData.dimensions)
@@ -304,7 +331,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
           })
         }
         break
-        
+
       case 3: // Questions
         if (updatedData.questions) {
           // Ensure questions have proper dimension assignment with both dimensionId and dimension object
@@ -325,7 +352,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
               } : undefined
             };
           });
-          
+
           await quizAPI.addQuizQuestions(formData.id, questionsWithDimensions)
           toast({
             title: "Progress Saved",
@@ -333,15 +360,15 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
           })
         }
         break
-        
+
       case 4: // Grading Criteria
         if (updatedData.quizType === 'COMPLEX' && updatedData.complexGradingCriteria) {
-          await quizAPI.addQuizGradingCriteria(formData.id, { 
-            complexGradingCriteria: updatedData.complexGradingCriteria 
+          await quizAPI.addQuizGradingCriteria(formData.id, {
+            complexGradingCriteria: updatedData.complexGradingCriteria
           })
         } else if (updatedData.gradingCriteria) {
-          await quizAPI.addQuizGradingCriteria(formData.id, { 
-            gradingCriteria: updatedData.gradingCriteria 
+          await quizAPI.addQuizGradingCriteria(formData.id, {
+            gradingCriteria: updatedData.gradingCriteria
           })
         }
         toast({
@@ -349,7 +376,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
           description: "Grading criteria added successfully.",
         })
         break
-        
+
       default:
         // Fallback to regular update
         await quizAPI.updateQuiz(formData.id, updatedData)
@@ -366,7 +393,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
     const newFormData = { ...formData, ...stepData }
     setFormData(newFormData)
     setHasUnsavedChanges(true)
-    
+
     // For complex quizzes, handle dimension assignment in questions step
     if (stepNumber === 3 && newFormData.quizType === 'COMPLEX' && stepData.questions) {
       const updatedQuestions = stepData.questions.map((question, index) => {
@@ -393,7 +420,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
             }
           }
         }
-        
+
         // If dimensionId exists, ensure dimension object is also set
         if (question.dimensionId) {
           const dimension = newFormData.dimensions.find(d => d.id === question.dimensionId);
@@ -415,13 +442,13 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
             }
           }
         }
-        
+
         return {
           ...question,
           order: question.order || index
         }
       })
-      
+
       // Update form data with properly assigned dimensions
       setFormData(prev => ({
         ...prev,
@@ -438,7 +465,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
   // Enhanced save progress with progressive saving - only save current step
   const saveProgress = async (stepData?: Partial<QuizFormData>) => {
     const dataToSave = stepData ? { ...formData, ...stepData } : formData
-    
+
     // Save current step progress only
     const success = await saveStepProgress(currentStep, dataToSave)
     if (success) {
@@ -451,9 +478,58 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
   }
 
   // Navigation functions
-  const nextStep = () => {
+  const nextStep = async () => {
     if (currentStep < STEPS.length) {
-      setCurrentStep(currentStep + 1)
+      // Validate and save progress before moving to next step
+      const canProceed = await validateAndSaveStep(currentStep);
+      if (canProceed) {
+        setCurrentStep(currentStep + 1);
+      }
+    }
+  }
+
+  // Validate and save current step before proceeding
+  const validateAndSaveStep = async (stepNumber: number): Promise<boolean> => {
+    try {
+      // For step 1, ensure basic information is saved
+      if (stepNumber === 1) {
+        if (!formData.title || !formData.description || !formData.category || !formData.quizType) {
+          toast({
+            title: "Missing Required Information",
+            description: "Please fill in all required fields (title, description, category, and quiz type) before proceeding.",
+            variant: "destructive"
+          });
+          return false;
+        }
+
+        // Save basic information if not already saved
+        if (!formData.id) {
+          await saveStepProgress(1, formData);
+        } else {
+          // Update existing quiz basic info
+          await saveStepProgress(1, formData);
+        }
+      }
+
+      // For other steps, ensure quiz ID exists
+      if (stepNumber > 1 && !formData.id) {
+        toast({
+          title: "Quiz Not Created",
+          description: "Please complete and save the basic information first before proceeding to the next step.",
+          variant: "destructive"
+        });
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error validating step:', error);
+      toast({
+        title: "Validation Error",
+        description: "Failed to validate step. Please try again.",
+        variant: "destructive"
+      });
+      return false;
     }
   }
 
@@ -479,20 +555,20 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
         return !!(formData.title && formData.description && formData.category)
       case 2: // Dimensions
         if (formData.quizType !== 'COMPLEX') return true
-        return formData.dimensions.length > 0 && 
-               formData.dimensions.every(d => 
-                 d.name && d.shortName && 
-                 d.minScore !== undefined && d.maxScore !== undefined && 
-                 d.threshold !== undefined
-               )
+        return formData.dimensions.length > 0 &&
+          formData.dimensions.every(d =>
+            d.name && d.shortName &&
+            d.minScore !== undefined && d.maxScore !== undefined &&
+            d.threshold !== undefined
+          )
       case 3: // Questions
         if (formData.questions.length === 0) return false
         if (!formData.questions.every(q => q.text && q.options.length >= 2)) return false
-        
+
         // For complex quizzes, ensure all questions are assigned to valid dimensions
         if (formData.quizType === 'COMPLEX') {
           const validDimensionIds = formData.dimensions.map(d => d.id)
-          return formData.questions.every(q => 
+          return formData.questions.every(q =>
             q.dimensionId && validDimensionIds.includes(q.dimensionId)
           )
         }
@@ -500,14 +576,14 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
       case 4: // Grading Criteria
         if (formData.quizType === 'COMPLEX') {
           return formData.complexGradingCriteria.length > 0 &&
-                 formData.complexGradingCriteria.every(c => 
-                   c.name && c.label && c.scoringLogic
-                 )
+            formData.complexGradingCriteria.every(c =>
+              c.name && c.label && c.scoringLogic
+            )
         } else {
           return formData.gradingCriteria.length > 0 &&
-                 formData.gradingCriteria.every(c => 
-                   c.name && c.minScore !== undefined && c.maxScore !== undefined
-                 )
+            formData.gradingCriteria.every(c =>
+              c.name && c.minScore !== undefined && c.maxScore !== undefined
+            )
         }
       case 5: // Review
         return true
@@ -519,12 +595,12 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
   // Check if step is accessible
   const isStepAccessible = (step: number): boolean => {
     if (step === 1) return true
-    
+
     // For progressive creation, allow access to next step if current step is completed
     if (step === currentStep + 1) {
       return isStepCompleted(currentStep)
     }
-    
+
     // Check if previous steps are completed
     for (let i = 1; i < step; i++) {
       if (!isStepCompleted(i)) return false
@@ -549,9 +625,9 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
               </Button>
             </Link>
             <div className="flex items-center gap-2">
-              <Button 
-                type="button" 
-                onClick={() => saveProgress()} 
+              <Button
+                type="button"
+                onClick={() => saveProgress()}
                 disabled={isSaving || !hasUnsavedChanges}
                 variant="outline"
               >
@@ -559,13 +635,31 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
               </Button>
             </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              {isEditing ? 'Edit Quiz' : 'Create New Quiz'}
-            </h1>
-            <p className="text-muted-foreground">
-              {isEditing ? 'Update your quiz configuration' : 'Build a new assessment quiz step by step'}
-            </p>
+          <div className="w-full">
+            <div className="flex items-center justify-between w-full">
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight">
+                  {isEditing ? 'Edit Quiz' : 'Create New Quiz'}
+                </h1>
+                <p className="text-muted-foreground">
+                  {isEditing ? 'Update your quiz configuration' : 'Build a new assessment quiz step by step'}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                {formData.id ? (
+                  <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="font-medium">Quiz Created</span>
+                    <span className="text-xs text-green-500">ID: {formData.id}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 text-sm text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
+                    <div className="h-2 w-2 bg-orange-500 rounded-full"></div>
+                    <span className="font-medium">Draft Mode</span>
+                  </div>
+                )}
+              </div>
+            </div>
             {hasUnsavedChanges && (
               <p className="text-sm text-amber-600 mt-2">
                 ⚠ You have unsaved changes in Step {currentStep} ({STEPS[currentStep - 1].title}). Click &quot;Save Progress&quot; to save your work.
@@ -585,29 +679,28 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
                 Step {currentStep} of {STEPS.length}
               </span>
             </div>
-            
+
             <Progress value={(currentStep / STEPS.length) * 100} className="w-full" />
-            
+
             <div className="flex items-center justify-between">
               {STEPS.map((step) => {
                 const isCompleted = isStepCompleted(step.id)
                 const isAccessible = isStepAccessible(step.id)
                 const isCurrent = currentStep === step.id
-                
+
                 return (
                   <div key={step.id} className="flex flex-col items-center space-y-2">
                     <button
                       onClick={() => isAccessible && goToStep(step.id)}
                       disabled={!isAccessible}
-                      className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all ${
-                        isCompleted 
-                          ? 'bg-green-500 border-green-500 text-white' 
-                          : isCurrent 
-                            ? 'bg-primary border-primary text-white'
-                            : isAccessible
-                              ? 'border-gray-300 hover:border-primary cursor-pointer'
-                              : 'border-gray-200 text-gray-400 cursor-not-allowed'
-                      }`}
+                      className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all ${isCompleted
+                        ? 'bg-green-500 border-green-500 text-white'
+                        : isCurrent
+                          ? 'bg-primary border-primary text-white'
+                          : isAccessible
+                            ? 'border-gray-300 hover:border-primary cursor-pointer'
+                            : 'border-gray-200 text-gray-400 cursor-not-allowed'
+                        }`}
                     >
                       {isCompleted ? (
                         <CheckCircle className="h-5 w-5" />
@@ -616,9 +709,8 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
                       )}
                     </button>
                     <div className="text-center">
-                      <p className={`text-xs font-medium ${
-                        isCurrent ? 'text-primary' : 'text-muted-foreground'
-                      }`}>
+                      <p className={`text-xs font-medium ${isCurrent ? 'text-primary' : 'text-muted-foreground'
+                        }`}>
                         {step.title}
                       </p>
                       <p className="text-xs text-muted-foreground hidden md:block">
@@ -647,7 +739,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
               onNext={nextStep}
             />
           )}
-          
+
           {currentStep === 2 && (
             <DimensionsStep
               data={formData}
@@ -656,7 +748,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
               onPrev={prevStep}
             />
           )}
-          
+
           {currentStep === 3 && (
             <QuestionsStep
               data={formData}
@@ -665,7 +757,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
               onPrev={prevStep}
             />
           )}
-          
+
           {currentStep === 4 && (
             <GradingCriteriaStep
               data={formData}
@@ -674,7 +766,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
               onPrev={prevStep}
             />
           )}
-          
+
           {currentStep === 5 && (
             <ReviewStep
               data={formData}
