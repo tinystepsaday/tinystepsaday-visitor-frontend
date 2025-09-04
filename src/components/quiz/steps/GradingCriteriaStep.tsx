@@ -104,12 +104,12 @@ export function GradingCriteriaStep({ data, onUpdate, onNext, onPrev }: GradingC
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between">
+      <div className="flex justify-between cursor-pointer">
         <Button variant="outline" onClick={onPrev}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Previous
         </Button>
-        <Button onClick={onNext} disabled={!canProceed()}>
+        <Button onClick={onNext} disabled={!canProceed()} className="cursor-pointer">
           Next: Review
           <ArrowRight className="h-4 w-4 ml-2" />
         </Button>

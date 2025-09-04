@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -49,22 +49,7 @@ export function ReviewStep({ data, onPrev }: ReviewStepProps) {
       </div>
 
       {/* Validation Status */}
-      <Card className={isValid ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            {isValid ? (
-              <>
-                <CheckCircle className="h-5 w-5 text-green-600" />
-                <span className="text-green-800">Ready to Publish</span>
-              </>
-            ) : (
-              <>
-                <AlertCircle className="h-5 w-5 text-red-600" />
-                <span className="text-red-800">Configuration Issues Found</span>
-              </>
-            )}
-          </CardTitle>
-        </CardHeader>
+      <Card className={!isValid ? 'border-red-200 bg-red-50' : 'hidden'}>
         <CardContent>
           {errors.length > 0 && (
             <div className="space-y-2">
@@ -76,7 +61,10 @@ export function ReviewStep({ data, onPrev }: ReviewStepProps) {
               </ul>
             </div>
           )}
-          
+        </CardContent>
+      </Card>
+      <Card className={!isValid ? 'border-amber-200 bg-amber-50' : 'hidden'}>
+        <CardContent>
           {warnings.length > 0 && (
             <div className="space-y-2 mt-4">
               <h4 className="font-medium text-amber-800">Warnings:</h4>
@@ -86,12 +74,6 @@ export function ReviewStep({ data, onPrev }: ReviewStepProps) {
                 ))}
               </ul>
             </div>
-          )}
-
-          {isValid && (
-            <p className="text-green-700">
-              ✓ Your quiz configuration is complete and ready to be published!
-            </p>
           )}
         </CardContent>
       </Card>
@@ -136,8 +118,8 @@ export function ReviewStep({ data, onPrev }: ReviewStepProps) {
             <div>
               <span className="font-medium">Grading Criteria:</span>
               <p className="text-muted-foreground">
-                {data.quizType === 'COMPLEX' 
-                  ? data.complexGradingCriteria.length 
+                {data.quizType === 'COMPLEX'
+                  ? data.complexGradingCriteria.length
                   : data.gradingCriteria.length
                 }
               </p>
@@ -161,7 +143,7 @@ export function ReviewStep({ data, onPrev }: ReviewStepProps) {
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between">
+      <div className="flex justify-between cursor-pointer">
         <Button variant="outline" onClick={onPrev}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Previous

@@ -630,6 +630,7 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
                 onClick={() => saveProgress()}
                 disabled={isSaving || !hasUnsavedChanges}
                 variant="outline"
+                className="cursor-pointer"
               >
                 {isSaving ? 'Saving...' : `Save Progress - Step ${currentStep}`}
               </Button>

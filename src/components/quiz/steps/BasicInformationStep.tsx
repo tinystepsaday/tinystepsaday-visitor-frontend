@@ -290,11 +290,11 @@ export function BasicInformationStep({ data, onUpdate, onNext }: BasicInformatio
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-end">
+      <div className="flex justify-end cursor-pointer">
         <Button 
           onClick={onNext} 
           disabled={!canProceed()}
-          className="min-w-[120px]"
+          className="min-w-[120px] cursor-pointer"
         >
           Next: Dimensions
         </Button>

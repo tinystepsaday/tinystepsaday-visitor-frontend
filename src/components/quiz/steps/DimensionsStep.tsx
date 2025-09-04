@@ -204,12 +204,12 @@ export function DimensionsStep({ data, onUpdate, onNext, onPrev }: DimensionsSte
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between">
+      <div className="flex justify-between cursor-pointer">
         <Button variant="outline" onClick={onPrev}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Previous
         </Button>
-        <Button onClick={onNext} disabled={!canProceed()}>
+        <Button onClick={onNext} disabled={!canProceed()} className="cursor-pointer">
           Next: Questions
           <ArrowRight className="h-4 w-4 ml-2" />
         </Button>
