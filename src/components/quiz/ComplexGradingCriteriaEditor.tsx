@@ -1,19 +1,22 @@
 "use client"
 
 import { useState } from 'react'
-import { Plus, Trash2, Edit3, X, Check } from 'lucide-react'
+import { Plus, Trash2, Edit3, X, Check, ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { MediaSelector } from '@/components/media-selector'
+import Image from 'next/image'
 
 export interface ComplexGradingCriteria {
   id: string
   name: string
   label: string
   color: string
+  image?: string
   recommendations: string[]
   areasOfImprovement: string[]
   supportNeeded: string[]
@@ -316,64 +319,129 @@ export function ComplexGradingCriteriaEditor({
                         disabled={!isEditing || editingCriteria.id !== criterion.id}
                       />
                     </div>
+                  </div>
 
-                    <div className="space-y-2">
-                      <Label>Description</Label>
-                      <Textarea
-                        value={criterion.description}
-                        onChange={(e) => updateCriteria(criterion.id, 'description', e.target.value)}
-                        placeholder="e.g., The Architect is a type of personality that is characterized by their strong sense of logic and rationality."
-                        disabled={!isEditing || editingCriteria.id !== criterion.id}
+                  {/* Image Selection */}
+                  <div className="space-y-2">
+                    <Label>Image</Label>
+                    <div className="space-y-3">
+                      {criterion.image && (
+                        <div className="space-y-3">
+                          {/* Preview Section */}
+                          <div className="relative">
+                            <div className="absolute top-2 right-2">
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => updateCriteria(criterion.id, 'image', '')}
+                                className="h-8 w-8 p-0 rounded-full shadow-lg"
+                                disabled={!isEditing || editingCriteria.id !== criterion.id}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+
+                          {/* Image Info */}
+                          <div className="flex items-center gap-3 p-3 border rounded-lg bg-muted/50">
+                            <Image
+                              src={criterion.image}
+                              alt="Criteria thumbnail"
+                              className="w-12 h-12 object-cover rounded-md"
+                              width={100}
+                              height={100}
+                            />
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">Criteria image selected</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      <MediaSelector
+                        onSelect={(media) => updateCriteria(criterion.id, 'image', media.url)}
+                        trigger={
+                          <Button
+                            variant="outline"
+                            className="w-full"
+                            disabled={!isEditing || editingCriteria.id !== criterion.id}
+                          >
+                            <ImageIcon className="mr-2 h-4 w-4" />
+                            {criterion.image ? 'Change Image' : 'Select Image'}
+                          </Button>
+                        }
+                        multiple={false}
+                        maxFiles={1}
+                        acceptedTypes={['image/*']}
                       />
                     </div>
-
                     <div className="space-y-2">
-                      <Label>Scoring Logic Type *</Label>
-                      <Select
-                        value={criterion.scoringLogic.type}
-                        onValueChange={(value) => updateScoringLogic(criterion.id, 'type', value)}
-                        disabled={!isEditing || editingCriteria.id !== criterion.id}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="threshold">Threshold</SelectItem>
-                          <SelectItem value="highest">Highest Score</SelectItem>
-                          <SelectItem value="topN">Top N</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <p className="text-sm text-muted-foreground">
+                        Select an image from your media library or upload a new one. This image will be displayed in quiz results.
+                      </p>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <ImageIcon className="h-3 w-3" />
+                        <span>Recommended: 400x300 pixels or similar aspect ratio for best display</span>
+                      </div>
                     </div>
+                  </div>
 
-                    <div className="space-y-2">
-                      <Label>Min Score</Label>
-                      <Input
-                        type="number"
-                        value={criterion.scoringLogic.minScore}
-                        onChange={(e) => updateScoringLogic(criterion.id, 'minScore', parseInt(e.target.value) || 0)}
-                        disabled={!isEditing || editingCriteria.id !== criterion.id}
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label>Description</Label>
+                    <Textarea
+                      value={criterion.description}
+                      onChange={(e) => updateCriteria(criterion.id, 'description', e.target.value)}
+                      placeholder="e.g., The Architect is a type of personality that is characterized by their strong sense of logic and rationality."
+                      disabled={!isEditing || editingCriteria.id !== criterion.id}
+                    />
+                  </div>
 
-                    <div className="space-y-2">
-                      <Label>Max Score</Label>
-                      <Input
-                        type="number"
-                        value={criterion.scoringLogic.maxScore}
-                        onChange={(e) => updateScoringLogic(criterion.id, 'maxScore', parseInt(e.target.value) || 0)}
-                        disabled={!isEditing || editingCriteria.id !== criterion.id}
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label>Scoring Logic Type *</Label>
+                    <Select
+                      value={criterion.scoringLogic.type}
+                      onValueChange={(value) => updateScoringLogic(criterion.id, 'type', value)}
+                      disabled={!isEditing || editingCriteria.id !== criterion.id}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="threshold">Threshold</SelectItem>
+                        <SelectItem value="highest">Highest Score</SelectItem>
+                        <SelectItem value="topN">Top N</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                    <div className="space-y-2">
-                      <Label>N</Label>
-                      <Input
-                        type="number"
-                        value={criterion.scoringLogic.n}
-                        onChange={(e) => updateScoringLogic(criterion.id, 'n', parseInt(e.target.value) || 0)}
-                        disabled={!isEditing || editingCriteria.id !== criterion.id}
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label>Min Score</Label>
+                    <Input
+                      type="number"
+                      value={criterion.scoringLogic.minScore}
+                      onChange={(e) => updateScoringLogic(criterion.id, 'minScore', parseInt(e.target.value) || 0)}
+                      disabled={!isEditing || editingCriteria.id !== criterion.id}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Max Score</Label>
+                    <Input
+                      type="number"
+                      value={criterion.scoringLogic.maxScore}
+                      onChange={(e) => updateScoringLogic(criterion.id, 'maxScore', parseInt(e.target.value) || 0)}
+                      disabled={!isEditing || editingCriteria.id !== criterion.id}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>N</Label>
+                    <Input
+                      type="number"
+                      value={criterion.scoringLogic.n}
+                      onChange={(e) => updateScoringLogic(criterion.id, 'n', parseInt(e.target.value) || 0)}
+                      disabled={!isEditing || editingCriteria.id !== criterion.id}
+                    />
                   </div>
 
                   {/* Scoring Logic Configuration */}

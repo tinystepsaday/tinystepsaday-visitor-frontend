@@ -159,6 +159,7 @@ interface BackendQuiz {
     maxScore: number;
     label: string;
     color: string;
+    image?: string;
     recommendations?: string[];
     areasOfImprovement?: string[];
     supportNeeded?: string[];
@@ -173,6 +174,7 @@ interface BackendQuiz {
     name: string;
     label: string;
     color: string;
+    image?: string;
     recommendations: string[];
     areasOfImprovement: string[];
     supportNeeded: string[];
@@ -549,6 +551,7 @@ export function transformBackendQuiz(backendQuiz: BackendQuiz): Quiz {
       maxScore: gc.maxScore,
       label: gc.label,
       color: gc.color,
+      image: gc.image,
       recommendations: gc.recommendations || [],
       areasOfImprovement: gc.areasOfImprovement || [],
       supportNeeded: gc.supportNeeded || [],
@@ -558,7 +561,22 @@ export function transformBackendQuiz(backendQuiz: BackendQuiz): Quiz {
       proposedBlogPosts: gc.proposedBlogPosts || [],
       description: gc.description
     })) || [],
-    complexGradingCriteria: backendQuiz.complexGradingCriteria || [],
+    complexGradingCriteria: backendQuiz.complexGradingCriteria?.map((cgc) => ({
+      id: cgc.id,
+      name: cgc.name,
+      label: cgc.label,
+      color: cgc.color,
+      image: cgc.image,
+      recommendations: cgc.recommendations || [],
+      areasOfImprovement: cgc.areasOfImprovement || [],
+      supportNeeded: cgc.supportNeeded || [],
+      proposedCourses: cgc.proposedCourses || [],
+      proposedProducts: cgc.proposedProducts || [],
+      proposedStreaks: cgc.proposedStreaks || [],
+      proposedBlogPosts: cgc.proposedBlogPosts || [],
+      description: cgc.description,
+      scoringLogic: cgc.scoringLogic
+    })) || [],
     dimensions: backendQuiz.dimensions || []
   };
 }

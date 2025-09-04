@@ -83,6 +83,7 @@ export interface QuizFormData {
     maxScore: number
     label: string
     color: string
+    image?: string
     recommendations: string[]
     areasOfImprovement?: string[]
     supportNeeded?: string[]
@@ -99,6 +100,7 @@ export interface QuizFormData {
     name: string
     label: string
     color: string
+    image?: string
     recommendations: string[]
     areasOfImprovement: string[]
     supportNeeded: string[]

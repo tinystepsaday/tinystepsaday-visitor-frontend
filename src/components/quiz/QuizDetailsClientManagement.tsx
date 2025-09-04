@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { ArrowLeft, Edit, BarChart3, Users, Clock, Target, Calendar, Book, Package, Lightbulb, ChevronDown, ChevronUp } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -198,10 +199,21 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
                         <CollapsibleTrigger asChild>
                           <div className="flex items-center justify-between p-4 hover:bg-muted/50 cursor-pointer transition-colors">
                             <div className="flex items-center gap-3">
-                              <div 
-                                className="w-3 h-3 rounded-full"
-                                style={{ backgroundColor: criteria.color }}
-                              />
+                              {criteria.image ? (
+                                <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200">
+                                  <Image
+                                    src={criteria.image}
+                                    alt={`${criteria.name} illustration`}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div 
+                                  className="w-3 h-3 rounded-full"
+                                  style={{ backgroundColor: criteria.color }}
+                                />
+                              )}
                               <div className="text-left">
                                 <p className="font-medium">{criteria.name}</p>
                                 <p className="text-sm text-muted-foreground">
@@ -399,10 +411,21 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
                       <CollapsibleTrigger asChild>
                         <div className="flex items-center justify-between p-4 hover:bg-muted/50 cursor-pointer transition-colors">
                           <div className="flex items-center gap-3">
-                            <div 
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: criteria.color }}
-                            />
+                            {criteria.image ? (
+                              <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200">
+                                <Image
+                                  src={criteria.image}
+                                  alt={`${criteria.name} illustration`}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            ) : (
+                              <div 
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: criteria.color }}
+                              />
+                            )}
                             <div className="text-left">
                               <p className="font-medium">{criteria.name}</p>
                               <p className="text-sm text-muted-foreground">

@@ -20,6 +20,7 @@ interface QuizResultWithQuiz extends QuizResult {
   matchingCriteria?: {
     name: string;
     description: string;
+    image?: string;
     recommendations: string[];
     proposedCourses: Array<{ id: string; name: string; slug: string }>;
     proposedProducts: Array<{ id: string; name: string; slug: string }>;
@@ -65,6 +66,7 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
           matchingCriteria: matchingCriteria ? {
             name: matchingCriteria.name,
             description: matchingCriteria.description || "",
+            image: matchingCriteria.image,
             recommendations: matchingCriteria.recommendations,
             proposedCourses: matchingCriteria.proposedCourses,
             proposedProducts: matchingCriteria.proposedProducts,
@@ -244,6 +246,20 @@ export default function QuizResultDetails({ resultId }: QuizResultDetailsProps) 
                 <div className={`${getLevelBadgeColor(result.level, result.color)} text-xl md:text-3xl font-bold text-center mb-4 p-4 rounded-lg`}>
                   {result.matchingCriteria?.name || result.classification}
                 </div>
+                
+                {/* Display grading criteria image if available */}
+                {result.matchingCriteria?.image && (
+                  <div className="flex justify-center mb-4">
+                    <div className="relative w-32 h-24 rounded-lg overflow-hidden border-2 border-gray-200">
+                      <Image
+                        src={result.matchingCriteria.image}
+                        alt={`${result.matchingCriteria.name} illustration`}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="p-4 bg-muted rounded-lg">

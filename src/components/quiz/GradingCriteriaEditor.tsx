@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import { Plus, Trash2, GripVertical } from 'lucide-react'
+import { Plus, Trash2, GripVertical, ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -10,7 +10,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ColorPicker } from '@/components/ui/color-picker'
 import { Badge } from '@/components/ui/badge'
+import { MediaSelector } from '@/components/media-selector'
 import { type GradingCriteria } from '@/data/quizzes'
+import Image from 'next/image'
 
 interface GradingCriteriaEditorProps {
   criteria: GradingCriteria[]
@@ -219,6 +221,66 @@ export function GradingCriteriaEditor({
                   onChange={(color) => updateCriteria(criterion.id, 'color', color)}
                   label="Color"
                 />
+              </div>
+            </div>
+
+            {/* Image Selection */}
+            <div className="space-y-2">
+              <Label>Image</Label>
+              <div className="space-y-3">
+                {criterion.image && (
+                  <div className="space-y-3">
+                    {/* Preview Section */}
+                    <div className="relative">
+                      <div className="absolute top-2 right-2">
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => updateCriteria(criterion.id, 'image', '')}
+                          className="h-8 w-8 p-0 rounded-full shadow-lg"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Image Info */}
+                    <div className="flex items-center gap-3 p-3 border rounded-lg bg-muted/50">
+                      <Image
+                        src={criterion.image}
+                        alt="Criteria thumbnail"
+                        className="w-12 h-12 object-cover rounded-md"
+                        width={100}
+                        height={100}
+                      />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">Criteria image selected</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                <MediaSelector
+                  onSelect={(media) => updateCriteria(criterion.id, 'image', media.url)}
+                  trigger={
+                    <Button variant="outline" className="w-full">
+                      <ImageIcon className="mr-2 h-4 w-4" />
+                      {criterion.image ? 'Change Image' : 'Select Image'}
+                    </Button>
+                  }
+                  multiple={false}
+                  maxFiles={1}
+                  acceptedTypes={['image/*']}
+                />
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Select an image from your media library or upload a new one. This image will be displayed in quiz results.
+                </p>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <ImageIcon className="h-3 w-3" />
+                  <span>Recommended: 400x300 pixels or similar aspect ratio for best display</span>
+                </div>
               </div>
             </div>
 

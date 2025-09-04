@@ -4,6 +4,7 @@ import React from 'react'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Calendar, Clock, Target, CheckCircle, AlertCircle, FileText } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -213,6 +214,20 @@ export default function QuizResultDetailsPage({ params }: QuizResultDetailsPageP
                 </div>
                 <Progress value={result.percentage} className="h-2" />
               </div>
+
+              {/* Display grading criteria image if available */}
+              {matchingCriteria?.image && (
+                <div className="flex justify-center">
+                  <div className="relative w-32 h-24 rounded-lg overflow-hidden border-2 border-gray-200">
+                    <Image
+                      src={matchingCriteria.image}
+                      alt={`${matchingCriteria.name} illustration`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                </div>
+              )}
 
               <div className="p-4 bg-muted rounded-lg">
                 <h4 className="font-medium mb-2">Feedback</h4>
