@@ -620,10 +620,10 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
       <div className="flex items-center justify-between">
         <div className="flex flex-col items-start gap-4 w-full justify-between">
           <div className="flex items-center justify-between w-full">
-            <Link href="/management/quizzes">
+            <Link href={`/management/quizzes/${formData.id}`}>
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Quizzes
+                Back to Quiz
               </Button>
             </Link>
             <div className="flex items-center gap-2">
@@ -650,13 +650,15 @@ export default function QuizEditClient({ quiz, isEditing = false }: QuizEditClie
               </div>
               <div className="flex items-center gap-2">
                 {formData.id ? (
-                  <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                  <div className="flex items-center gap-2 text-sm flex-wrap text-green-600 bg-green-50 px-3 py-1 rounded-full">
                     <CheckCircle className="h-4 w-4" />
-                    <span className="font-medium">Quiz Created</span>
-                    <span className="text-xs text-green-500">ID: {formData.id}</span>
+                    <div className='flex flex-col md:flex-row gap-1'>
+                      <span className="font-medium">Quiz Created/Updated</span>
+                      <span className="text-xs text-green-500">ID: {formData.id}</span>
+                    </div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 text-sm text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
+                  <div className="flex items-center gap-2 text-sm flex-wrap text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
                     <div className="h-2 w-2 bg-orange-500 rounded-full"></div>
                     <span className="font-medium">Draft Mode</span>
                   </div>

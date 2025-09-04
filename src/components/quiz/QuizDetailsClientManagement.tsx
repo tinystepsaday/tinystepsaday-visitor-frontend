@@ -117,6 +117,9 @@ export default function QuizDetailsClientManagement({ quiz }: QuizDetailsClientM
               <CardTitle>Quiz Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {quiz.coverImage && (
+                <Image src={quiz.coverImage} alt='' height={200} width={500} className='w-full rounded-xl mb-4' />
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div className='flex gap-2 items-center'>
                   <label className="text-sm font-medium text-muted-foreground">Category</label>
